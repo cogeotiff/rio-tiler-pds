@@ -1,0 +1,7 @@
+Authors
+-------
+
+* Vincent Sarago <vincent@developmentseed.org>
+* Sean Gillies <sean@mapbox.com>
+
+See also https://github.com/cogeotiff/rio-tiler-pds/graphs/contributors.
