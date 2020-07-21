@@ -1,4 +1,6 @@
-# Rio-tiler-pds
+# [WORK IN PROGRESS] Rio-tiler-pds
+
+**Important** This is the new hosting module for rio-tiler mission specific code: please see https://github.com/cogeotiff/rio-tiler/issues/195
 
 Rio-tiler plugin to read mercator tiles from Public datasets.
 
