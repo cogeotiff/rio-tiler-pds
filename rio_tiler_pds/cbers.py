@@ -232,5 +232,5 @@ def tile(
 
     addresses = [f"{cbers_prefix}_BAND{band}.tif" for band in bands]
     return reader.multi_tile(
-        addresses, tile_x, tile_y, tile_z, tilesize=tilesize, nodata=0
+        addresses, tile_x, tile_y, tile_z, tilesize=tilesize, nodata=0, **kwargs
     )

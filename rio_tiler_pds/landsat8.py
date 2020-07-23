@@ -337,6 +337,7 @@ def tile(
                 tilesize=tilesize,
                 nodata=nodata,
                 resampling_method=resamp,
+                **kwargs
             )
 
         return tile, mask

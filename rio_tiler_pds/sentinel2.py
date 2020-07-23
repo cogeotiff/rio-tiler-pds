@@ -272,5 +272,5 @@ def tile(
 
     addresses = [f"{sentinel_prefix}/{band}.jp2" for band in bands]
     return reader.multi_tile(
-        addresses, tile_x, tile_y, tile_z, tilesize=tilesize, nodata=0
+        addresses, tile_x, tile_y, tile_z, tilesize=tilesize, nodata=0, **kwargs
     )
