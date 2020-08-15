@@ -1,35 +1,25 @@
 """tests rio_tiler.landsat8"""
 
 import os
+from unittest.mock import patch
 
 import numpy
 import pytest
 import rasterio
-from mock import patch
-from rio_toa import toa_utils
 
-from rio_tiler.errors import InvalidBandName, InvalidLandsatSceneId, TileOutsideBounds
-from rio_tiler_pds import landsat8
+from rio_tiler.errors import InvalidAssetName, MissingAssets, TileOutsideBounds
+from rio_tiler_pds.errors import InvalidLandsatSceneId
+from rio_tiler_pds.landsat import AWSPDS_L8Reader
+from rio_tiler_pds.landsat.utils import sceneid_parser
 
 LANDSAT_SCENE_C1 = "LC08_L1TP_016037_20170813_20170814_01_RT"
 LANDSAT_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "landsat-pds")
-
 LANDSAT_PATH = os.path.join(
     LANDSAT_BUCKET, "c1", "L8", "016", "037", LANDSAT_SCENE_C1, LANDSAT_SCENE_C1
 )
 
 with open("{}_MTL.txt".format(LANDSAT_PATH), "r") as f:
-    LANDSAT_METADATA = toa_utils._parse_mtl_txt(f.read())
-
-with open("{}_MTL.txt".format(LANDSAT_PATH), "r") as f:
-    LANDSAT_METADATA_RAW = f.read().encode("utf-8")
-
-
-def mock_rasterio_open(asset):
-    """Mock rasterio Open."""
-    assert asset.startswith("s3://landsat-pds")
-    asset = asset.replace("s3://landsat-pds", LANDSAT_BUCKET)
-    return rasterio.open(asset)
+    LANDSAT_METADATA = f.read().encode("utf-8")
 
 
 @pytest.fixture(autouse=True)
@@ -43,157 +33,193 @@ def testing_env_var(monkeypatch):
     monkeypatch.setenv("GDAL_DISABLE_READDIR_ON_OPEN", "TRUE")
 
 
-@patch("rio_tiler_pds.landsat8._landsat_get_mtl")
-def test_bounds_valid(landsat_get_mtl):
+def mock_rasterio_open(asset):
+    """Mock rasterio Open."""
+    assert asset.startswith("s3://landsat-pds")
+    asset = asset.replace("s3://landsat-pds", LANDSAT_BUCKET)
+    return rasterio.open(asset)
+
+
+@patch("rio_tiler_pds.landsat.awspds_landsat8.aws_get_object")
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_L8Reader(rio, get_object):
     """Should work as expected (get and parse metadata)."""
-    landsat_get_mtl.return_value = LANDSAT_METADATA
-
-    meta = landsat8.bounds(LANDSAT_SCENE_C1)
-    assert meta.get("sceneid") == LANDSAT_SCENE_C1
-    assert len(meta.get("bounds")) == 4
-
-
-@patch("rio_tiler_pds.landsat8.rasterio")
-@patch("rio_tiler_pds.landsat8._landsat_get_mtl")
-def test_metadata_valid_default(landsat_get_mtl, rio):
-    """Get bounds and get stats for all bands."""
-    landsat_get_mtl.return_value = LANDSAT_METADATA
     rio.open = mock_rasterio_open
+    get_object.return_value = LANDSAT_METADATA
 
-    meta = landsat8.metadata(LANDSAT_SCENE_C1)
-    assert meta["sceneid"] == LANDSAT_SCENE_C1
-    assert len(meta["bounds"]) == 4
-    assert len(meta["statistics"].items()) == 12
-    assert len(meta["statistics"]["1"]["histogram"][0]) == 10
-    assert list(map(int, meta["statistics"]["1"]["pc"])) == [1206, 6957]
-
-    meta = landsat8.metadata(LANDSAT_SCENE_C1, hist_options=dict(bins=20))
-    assert meta["sceneid"] == LANDSAT_SCENE_C1
-    assert len(meta["statistics"]["1"]["histogram"][0]) == 20
-
-    meta = landsat8.metadata(LANDSAT_SCENE_C1, hist_options=dict(range=[1000, 4000]))
-    assert meta["sceneid"] == LANDSAT_SCENE_C1
-    assert len(meta["statistics"]["1"]["histogram"][0]) == 10
-
-
-@patch("rio_tiler_pds.landsat8.rasterio")
-@patch("rio_tiler_pds.landsat8._landsat_get_mtl")
-def test_metadata_valid_custom(landsat_get_mtl, rio):
-    """Get bounds and get stats for all bands with custom percentiles."""
-    landsat_get_mtl.return_value = LANDSAT_METADATA
-    rio.open = mock_rasterio_open
-
-    meta = landsat8.metadata(LANDSAT_SCENE_C1, pmin=10, pmax=90)
-    assert meta["sceneid"] == LANDSAT_SCENE_C1
-    assert len(meta["bounds"]) == 4
-    assert len(meta["statistics"].items()) == 12
-    assert list(map(int, meta["statistics"]["1"]["pc"])) == [1274, 3964]
-
-
-@patch("rio_tiler_pds.landsat8.rasterio")
-@patch("rio_tiler_pds.landsat8._landsat_get_mtl")
-def test_tile_valid(landsat_get_mtl, rio):
-    """Should work as expected."""
-    landsat_get_mtl.return_value = LANDSAT_METADATA
-    rio.open = mock_rasterio_open
-
-    tile_z = 8
-    tile_x = 71
-    tile_y = 102
-
-    data, mask = landsat8.tile(LANDSAT_SCENE_C1, tile_x, tile_y, tile_z)
-    assert data.shape == (3, 256, 256)
-    assert data.dtype == numpy.uint16
-    assert mask.shape == (256, 256)
-    assert not mask.all()
-
-    data, mask = landsat8.tile(
-        LANDSAT_SCENE_C1, tile_x, tile_y, tile_z, bands=("5", "4", "3")
-    )
-    assert data.shape == (3, 256, 256)
-    assert mask.shape == (256, 256)
-
-    data, mask = landsat8.tile(LANDSAT_SCENE_C1, tile_x, tile_y, tile_z, bands="10")
-    assert data.shape == (1, 256, 256)
-    assert data.dtype == numpy.uint16
-    assert mask.shape == (256, 256)
-
-    data, mask = landsat8.tile(LANDSAT_SCENE_C1, tile_x, tile_y, tile_z, bands="QA")
-    assert data.shape == (1, 256, 256)
-    assert data.dtype == numpy.uint16
-    assert mask.shape == (256, 256)
-    assert not mask.all()
-
-    data, mask = landsat8.tile(LANDSAT_SCENE_C1, tile_x, tile_y, tile_z, pan=True)
-    assert data.shape == (3, 256, 256)
-    assert data.dtype == numpy.uint16
-    assert mask.shape == (256, 256)
-
-
-@patch("rio_tiler_pds.landsat8.rasterio")
-@patch("rio_tiler_pds.landsat8._landsat_get_mtl")
-def test_tile_invalidband(landsat_get_mtl, rio):
-    """Should raise an error on invalid band name."""
-    tile_z = 8
-    tile_x = 71
-    tile_y = 102
-    bands = "25"
-
-    with pytest.raises(InvalidBandName):
-        landsat8.tile(LANDSAT_SCENE_C1, tile_x, tile_y, tile_z, bands=bands)
-
-    landsat_get_mtl.assert_not_called()
-
-
-@patch("rio_tiler_pds.landsat8.rasterio")
-@patch("rio_tiler_pds.landsat8._landsat_get_mtl")
-def test_tile_invalid_bounds(landsat_get_mtl, rio):
-    """Should raise an error with invalid tile"""
-    landsat_get_mtl.return_value = LANDSAT_METADATA
-    rio.open = mock_rasterio_open
-
-    tile_z = 8
-    tile_x = 701
-    tile_y = 102
-
-    with pytest.raises(TileOutsideBounds):
-        landsat8.tile(LANDSAT_SCENE_C1, tile_x, tile_y, tile_z)
-
-
-def test_landsat_id_pre_invalid():
-    """Raises error on invalid pre-collection."""
-    scene = "L0300342017083LGN00"
     with pytest.raises(InvalidLandsatSceneId):
-        landsat8.landsat_parser(scene)
+        with AWSPDS_L8Reader("LC08_005004_20170410_20170414_01_T1"):
+            pass
 
+    with AWSPDS_L8Reader(LANDSAT_SCENE_C1) as landsat:
+        assert landsat.scene_params["scene"] == LANDSAT_SCENE_C1
+        assert landsat.minzoom == 7
+        assert landsat.maxzoom == 12
+        assert len(landsat.bounds) == 4
+        assert landsat.assets == (
+            "B1",
+            "B2",
+            "B3",
+            "B4",
+            "B5",
+            "B6",
+            "B7",
+            "B8",
+            "B9",
+            "B10",
+            "B11",
+            "BQA",
+        )
 
-def test_landsat_id_c1_invalid():
-    """Raises error on invalid collection1 sceneid."""
-    scene = "LC08_005004_20170410_20170414_01_T1"
-    with pytest.raises(InvalidLandsatSceneId):
-        landsat8.landsat_parser(scene)
+        with pytest.raises(MissingAssets):
+            landsat.info()
 
+        with pytest.raises(InvalidAssetName):
+            landsat.info(assets="BAND5")
 
-def test_landsat_id_pre_valid():
-    """Parse landsat valid pre-collection sceneid and return metadata."""
-    scene = "LC80300342017083LGN00"
-    expected_content = {
-        "sensor": "C",
-        "satellite": "8",
-        "path": "030",
-        "row": "034",
-        "acquisitionYear": "2017",
-        "acquisitionJulianDay": "083",
-        "groundStationIdentifier": "LGN",
-        "archiveVersion": "00",
-        "scene": "LC80300342017083LGN00",
-        "date": "2017-03-24",
-        "scheme": "s3",
-        "bucket": "landsat-pds",
-        "prefix": "L8/030/034/LC80300342017083LGN00",
-    }
+        metadata = landsat.info(assets="B5")
+        assert len(metadata["band_metadata"]) == 1
+        assert metadata["band_descriptions"] == [(1, "B5")]
 
-    assert landsat8.landsat_parser(scene) == expected_content
+        metadata = landsat.info(assets=landsat.assets)
+        assert len(metadata["band_metadata"]) == 12
+
+        with pytest.raises(MissingAssets):
+            landsat.stats()
+
+        stats = landsat.stats(assets="B1")
+        assert stats["B1"]["pc"] == [1206, 6957]
+
+        stats = landsat.stats(assets=landsat.assets)
+        assert len(stats.items()) == 12
+        assert list(stats) == list(landsat.assets)
+
+        stats = landsat.stats(assets="B1", hist_options=dict(bins=20))
+        assert len(stats["B1"]["histogram"][0]) == 20
+
+        stats = landsat.stats(pmin=10, pmax=90, assets="B1")
+        assert stats["B1"]["pc"] == [1274, 3964]
+
+        with pytest.raises(MissingAssets):
+            landsat.metadata()
+
+        metadata = landsat.metadata(assets="B1")
+        assert metadata["statistics"]["B1"]["pc"] == [1206, 6957]
+        assert metadata["band_metadata"] == [(1, {})]
+        assert metadata["band_descriptions"] == [(1, "B1")]
+
+        metadata = landsat.metadata(assets=("B1", "B2"))
+        assert metadata["band_metadata"] == [(1, {}), (2, {})]
+        assert metadata["band_descriptions"] == [(1, "B1"), (2, "B2")]
+
+        tile_z = 8
+        tile_x = 71
+        tile_y = 102
+
+        with pytest.raises(MissingAssets):
+            landsat.tile(tile_x, tile_y, tile_z)
+
+        data, mask = landsat.tile(tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"))
+        assert data.shape == (3, 256, 256)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (256, 256)
+        assert not mask.all()
+
+        # Temp are float32
+        data, mask = landsat.tile(tile_x, tile_y, tile_z, assets="B10")
+        assert data.shape == (1, 256, 256)
+        assert data.dtype == numpy.float32
+        assert mask.shape == (256, 256)
+
+        data, mask = landsat.tile(
+            tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"), pan=True
+        )
+        assert data.shape == (3, 256, 256)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (256, 256)
+
+        tile_z = 8
+        tile_x = 701
+        tile_y = 102
+        with pytest.raises(TileOutsideBounds):
+            landsat.tile(tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"))
+
+        tile_z = 8
+        tile_x = 71
+        tile_y = 102
+        data, mask = landsat.tile(
+            tile_x, tile_y, tile_z, expression="B5*0.8, B4*1.1, B3*0.8"
+        )
+        assert data.shape == (3, 256, 256)
+        assert data.dtype == numpy.float64
+        assert mask.shape == (256, 256)
+
+        with pytest.raises(MissingAssets):
+            landsat.preview()
+
+        data, mask = landsat.preview(assets=("B4", "B3", "B2"))
+        assert data.shape == (3, 259, 255)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (259, 255)
+        assert not mask.all()
+
+        # Temp are float32
+        data, mask = landsat.preview(assets="B10")
+        assert data.shape == (1, 259, 255)
+        assert data.dtype == numpy.float32
+        assert mask.shape == (259, 255)
+
+        data, mask = landsat.preview(
+            assets=("B4", "B3", "B2"), pan=True, width=256, height=256
+        )
+        assert data.shape == (3, 256, 256)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (256, 256)
+
+        data, mask = landsat.preview(expression="B5*0.8, B4*1.1, B3*0.8")
+        assert data.shape == (3, 259, 255)
+        assert data.dtype == numpy.float64
+        assert mask.shape == (259, 255)
+
+        with pytest.raises(MissingAssets):
+            landsat.point(-80.094, 33.2062)
+
+        values = landsat.point(-80.094, 33.2062, assets="B7")
+        assert values == [667]
+
+        values = landsat.point(-80.094, 33.2062, assets=("B7", "B4"))
+        assert len(values) == 2
+
+        values = landsat.point(-80.094, 33.2062, expression="B5*0.8, B4*1.1, B3*0.8")
+        assert len(values) == 3
+
+        with pytest.raises(MissingAssets):
+            landsat.part((-80.593, 32.9134, -79.674, 33.6790))
+
+        data, mask = landsat.part((-80.593, 32.9134, -79.674, 33.6790), assets="B7")
+        assert data.shape == (1, 87, 104)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (87, 104)
+        assert mask.all()
+
+        data, mask = landsat.part(
+            (-80.593, 32.9134, -79.674, 33.6790), expression="B5*0.8, B4*1.1, B3*0.8"
+        )
+        assert data.shape == (3, 87, 104)
+        assert data.dtype == numpy.float64
+        assert mask.shape == (87, 104)
+        assert mask.all()
+
+        data, mask = landsat.part(
+            (-80.593, 32.9134, -79.674, 33.6790),
+            assets=("B4", "B3", "B2"),
+            pan=True,
+            width=80,
+            height=80,
+        )
+        assert data.shape == (3, 80, 80)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (80, 80)
 
 
 def test_landsat_id_c1_valid():
@@ -215,28 +241,6 @@ def test_landsat_id_c1_valid():
         "collectionCategory": "T1",
         "scene": "LC08_L1TP_005004_20170410_20170414_01_T1",
         "date": "2017-04-10",
-        "scheme": "s3",
-        "bucket": "landsat-pds",
-        "prefix": "c1/L8/005/004/LC08_L1TP_005004_20170410_20170414_01_T1",
     }
 
-    assert landsat8.landsat_parser(scene) == expected_content
-
-
-@patch("rio_tiler_pds.landsat8.urlopen")
-def test_landsat_get_mtl_valid(urlopen):
-    """Return MTL metadata."""
-    urlopen.return_value.read.return_value = LANDSAT_METADATA_RAW
-    meta_data = landsat8._landsat_get_mtl(LANDSAT_SCENE_C1)
-    assert (
-        meta_data["L1_METADATA_FILE"]["METADATA_FILE_INFO"]["LANDSAT_SCENE_ID"]
-        == "LC80160372017225LGN00"
-    )
-
-
-@patch("rio_tiler_pds.landsat8.urlopen")
-def test_landsat_get_mtl_invalid(urlopen):
-    """Raises error when MTL file not found or empty."""
-    urlopen.return_value.read.return_value = {}
-    with pytest.raises(Exception):
-        landsat8._landsat_get_mtl(LANDSAT_SCENE_C1)
+    assert sceneid_parser(scene) == expected_content

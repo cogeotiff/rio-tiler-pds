@@ -6,21 +6,18 @@ with open("README.md") as f:
     readme = f.read()
 
 # Runtime requirements.
-inst_reqs = [
-    "rio-tiler~=2.0b1",
-    "rio-toa",
-]
+inst_reqs = ["rio-tiler>=2.0b7", "rio-toa"]
 
 extra_reqs = {
     "test": ["pytest", "pytest-cov"],
-    "dev": ["pytest", "pytest-cov", "pre-commit",],
+    "dev": ["pytest", "pytest-cov", "pre-commit"],
 }
 
 setup(
     name="rio-tiler-pds",
     version="0.0.1",
     python_requires=">=3",
-    description=u"""Get mercator tile from CloudOptimized GeoTIFF and other cloud hosted raster such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS""",
+    description=u"""Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS""",
     long_description=readme,
     long_description_content_type="text/markdown",
     classifiers=[
