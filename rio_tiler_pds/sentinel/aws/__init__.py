@@ -3,14 +3,15 @@
 import re
 from typing import Any, Union
 
+from ...errors import InvalidSentinelSceneId
+from ..utils import s2_sceneid_parser
 from .sentinel1 import S1CReader  # noqa
 from .sentinel2 import S2L1CReader, S2L2ACOGReader, S2L2AReader  # noqa
 
-from ..utils import s2_sceneid_parser
-from ...errors import InvalidSentinelSceneId
 
-
-def SentinelReader(sceneid: str, *args: Any, **kwargs: Any) -> Union[S2L1CReader, S2L2ACOGReader, S2L2AReader, S1CReader]:
+def SentinelReader(
+    sceneid: str, *args: Any, **kwargs: Any
+) -> Union[S2L1CReader, S2L2ACOGReader, S2L2AReader, S1CReader]:
     """Select Reader based on Sceneid."""
     if sceneid.startswith("S1"):
         return S1CReader(sceneid, *args, **kwargs)

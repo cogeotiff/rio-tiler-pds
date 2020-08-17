@@ -8,7 +8,12 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel.aws import S2L1CReader, S2L2ACOGReader, S2L2AReader, SentinelReader
+from rio_tiler_pds.sentinel.aws import (
+    S2L1CReader,
+    S2L2ACOGReader,
+    S2L2AReader,
+    SentinelReader,
+)
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
