@@ -8,7 +8,8 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel.aws import S1CReader
+from rio_tiler_pds.sentinel.aws import S1CReader, SentinelReader
+
 
 SENTINEL_SCENE = "S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s1-l1c")
@@ -38,6 +39,14 @@ def mock_rasterio_open(asset):
     assert asset.startswith("s3://sentinel-s1-l1c")
     asset = asset.replace("s3://sentinel-s1-l1c", SENTINEL_BUCKET)
     return rasterio.open(asset)
+
+
+@patch("rio_tiler_pds.sentinel.aws.sentinel1.aws_get_object")
+def test_SentinelReader(get_object):
+    """Test AWSPDS_S1CReader."""
+    get_object.return_value = SENTINEL_METADATA
+    with SentinelReader(SENTINEL_SCENE) as sentinel:
+        assert sentinel.productInfo
 
 
 @patch("rio_tiler_pds.sentinel.aws.sentinel1.aws_get_object")

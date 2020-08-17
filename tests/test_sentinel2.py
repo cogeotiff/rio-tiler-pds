@@ -8,7 +8,7 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel.aws import S2L1CReader, S2L2ACOGReader, S2L2AReader
+from rio_tiler_pds.sentinel.aws import S2L1CReader, S2L2ACOGReader, S2L2AReader, SentinelReader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
@@ -307,3 +307,25 @@ def test_sentinel_cogid_valid():
         "_day": "19",
     }
     assert s2_sceneid_parser(SENTINEL_COG_SCENE_L2) == expected_content
+
+
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
+def test_SentinelReader(get_object):
+    """Test AWSPDS_S1CReader."""
+    get_object.return_value = L1C_TILEJSON
+    with SentinelReader(SENTINEL_SCENE_L1) as sentinel:
+        assert isinstance(sentinel, S2L1CReader)
+        assert sentinel.tileInfo
+        assert sentinel.scene_params["processingLevel"] == "L1C"
+
+    get_object.return_value = L2A_TILEJSON
+    with SentinelReader(SENTINEL_SCENE_L2) as sentinel:
+        assert isinstance(sentinel, S2L2AReader)
+        assert sentinel.tileInfo
+        assert sentinel.scene_params["processingLevel"] == "L2A"
+
+    get_object.return_value = L2ACOG_JSON
+    with SentinelReader(SENTINEL_COG_SCENE_L2) as sentinel:
+        assert isinstance(sentinel, S2L2ACOGReader)
+        assert sentinel.tileInfo
+        assert sentinel.scene_params["processingLevel"] == "L2A"
