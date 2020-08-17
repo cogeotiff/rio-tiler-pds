@@ -1,8 +1,9 @@
-import attr
-from typing import Any, Dict, Sequence, Tuple, Union, Optional
+from typing import Any, Dict, Optional, Sequence, Tuple, Union
 
-from rio_tiler.io import MultiBaseReader
+import attr
+
 from rio_tiler.errors import MissingAssets
+from rio_tiler.io import MultiBaseReader
 from rio_tiler.tasks import multi_values
 
 
@@ -53,13 +54,10 @@ class MultiBandReader(MultiBaseReader):
             (ix + 1, bands_metadata[asset]["band_metadata"][0][1])
             for ix, asset in enumerate(assets)
         ]
-        meta["band_descriptions"] = [
-            (ix + 1, asset) for ix, asset in enumerate(assets)
-        ]
+        meta["band_descriptions"] = [(ix + 1, asset) for ix, asset in enumerate(assets)]
         meta["dtype"] = bands_metadata[assets[0]]["dtype"]
         meta["colorinterp"] = [
-            bands_metadata[asset]["colorinterp"][0]
-            for _, asset in enumerate(assets)
+            bands_metadata[asset]["colorinterp"][0] for _, asset in enumerate(assets)
         ]
         meta["nodata_type"] = bands_metadata[assets[0]]["nodata_type"]
         return meta
@@ -85,12 +83,7 @@ class MultiBandReader(MultiBaseReader):
                 return cog.stats(*args, **kwargs)[1]
 
         return multi_values(
-            assets,
-            _reader,
-            pmin,
-            pmax,
-            hist_options=hist_options,
-            *kwargs,
+            assets, _reader, pmin, pmax, hist_options=hist_options, *kwargs,
         )
 
     def metadata(
@@ -121,17 +114,13 @@ class MultiBandReader(MultiBaseReader):
             (ix + 1, bands_metadata[asset]["band_metadata"][0][1])
             for ix, asset in enumerate(assets)
         ]
-        meta["band_descriptions"] = [
-            (ix + 1, asset) for ix, asset in enumerate(assets)
-        ]
+        meta["band_descriptions"] = [(ix + 1, asset) for ix, asset in enumerate(assets)]
         meta["dtype"] = bands_metadata[assets[0]]["dtype"]
         meta["colorinterp"] = [
-            bands_metadata[asset]["colorinterp"][0]
-            for _, asset in enumerate(assets)
+            bands_metadata[asset]["colorinterp"][0] for _, asset in enumerate(assets)
         ]
         meta["nodata_type"] = bands_metadata[assets[0]]["nodata_type"]
         meta["statistics"] = {
-            asset: bands_metadata[asset]["statistics"]
-            for _, asset in enumerate(assets)
+            asset: bands_metadata[asset]["statistics"] for _, asset in enumerate(assets)
         }
         return meta

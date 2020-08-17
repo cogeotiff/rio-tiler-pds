@@ -1,24 +1,35 @@
 """rio_tiler_pds.landsat.awspds: Landsat-8 processing."""
 
-import attr
 import os
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, Union
 
-from typing import Any, Dict, Sequence, Tuple, Union, Optional, List, Type
-
+import attr
 import numpy
 from rio_toa import toa_utils
 
 from rio_tiler.errors import InvalidAssetName, MissingAssets
-from rio_tiler.utils import pansharpening_brovey
 from rio_tiler.expression import apply_expression
-from rio_tiler.utils import aws_get_object
 from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.tasks import multi_arrays, multi_values
+from rio_tiler.utils import aws_get_object, pansharpening_brovey
 
 from ...reader import MultiBandReader
-from ..utils import sceneid_parser, dn_to_toa
+from ..utils import dn_to_toa, sceneid_parser
 
-landsat8_valid_bands = ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "BQA")
+landsat8_valid_bands = (
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B9",
+    "B10",
+    "B11",
+    "BQA",
+)
 
 
 @attr.s
@@ -45,9 +56,11 @@ class L8Reader(MultiBandReader):
         self.mtl_metadata = toa_utils._parse_mtl_txt(
             aws_get_object(self._hostname, mtl_file).decode()
         )
-        self.bounds = tuple(toa_utils._get_bounds_from_metadata(
-            self.mtl_metadata["L1_METADATA_FILE"]["PRODUCT_METADATA"]
-        ))
+        self.bounds = tuple(
+            toa_utils._get_bounds_from_metadata(
+                self.mtl_metadata["L1_METADATA_FILE"]["PRODUCT_METADATA"]
+            )
+        )
         self.assets = landsat8_valid_bands
 
         return self
@@ -66,15 +79,21 @@ class L8Reader(MultiBandReader):
         ).tolist()
 
         statistics["min"] = dn_to_toa(
-            numpy.array([statistics["min"]]), asset, self.mtl_metadata["L1_METADATA_FILE"]
+            numpy.array([statistics["min"]]),
+            asset,
+            self.mtl_metadata["L1_METADATA_FILE"],
         )[0]
 
         statistics["max"] = dn_to_toa(
-            numpy.array([statistics["max"]]), asset, self.mtl_metadata["L1_METADATA_FILE"]
+            numpy.array([statistics["max"]]),
+            asset,
+            self.mtl_metadata["L1_METADATA_FILE"],
         )[0]
 
         statistics["std"] = dn_to_toa(
-            numpy.array([statistics["std"]]), asset, self.mtl_metadata["L1_METADATA_FILE"]
+            numpy.array([statistics["std"]]),
+            asset,
+            self.mtl_metadata["L1_METADATA_FILE"],
         )[0]
 
         statistics["histogram"][1] = dn_to_toa(
@@ -107,12 +126,7 @@ class L8Reader(MultiBandReader):
                 return self._convert_stats(result, asset)
 
         return multi_values(
-            assets,
-            _reader,
-            pmin,
-            pmax,
-            hist_options=hist_options,
-            **kwargs,
+            assets, _reader, pmin, pmax, hist_options=hist_options, **kwargs,
         )
 
     def metadata(
@@ -134,7 +148,9 @@ class L8Reader(MultiBandReader):
             nodata = 1 if asset == "BQA" else 0
             with self.reader(url, **self.reader_options) as cog:
                 metadata = cog.metadata(*args, nodata=nodata, **kwargs)
-                metadata["statistics"] = self._convert_stats(metadata["statistics"][1], asset)
+                metadata["statistics"] = self._convert_stats(
+                    metadata["statistics"][1], asset
+                )
                 return metadata
 
         bands_metadata = multi_values(assets, _reader, pmin, pmax, **kwargs)
@@ -143,18 +159,14 @@ class L8Reader(MultiBandReader):
             (ix + 1, bands_metadata[asset]["band_metadata"][0][1])
             for ix, asset in enumerate(assets)
         ]
-        meta["band_descriptions"] = [
-            (ix + 1, asset) for ix, asset in enumerate(assets)
-        ]
+        meta["band_descriptions"] = [(ix + 1, asset) for ix, asset in enumerate(assets)]
         meta["dtype"] = bands_metadata[assets[0]]["dtype"]
         meta["colorinterp"] = [
-            bands_metadata[asset]["colorinterp"][0]
-            for _, asset in enumerate(assets)
+            bands_metadata[asset]["colorinterp"][0] for _, asset in enumerate(assets)
         ]
         meta["nodata_type"] = bands_metadata[assets[0]]["nodata_type"]
         meta["statistics"] = {
-            asset: bands_metadata[asset]["statistics"]
-            for _, asset in enumerate(assets)
+            asset: bands_metadata[asset]["statistics"] for _, asset in enumerate(assets)
         }
         return meta
 
@@ -184,7 +196,7 @@ class L8Reader(MultiBandReader):
             )
 
         if pan:
-            assets = tuple(assets) + ("B8", )
+            assets = tuple(assets) + ("B8",)
 
         def _reader(
             asset: str, *args: Any, **kwargs: Any
@@ -241,7 +253,7 @@ class L8Reader(MultiBandReader):
             )
 
         if pan:
-            assets = tuple(assets) + ("B8", )
+            assets = tuple(assets) + ("B8",)
 
         def _reader(
             asset: str, *args: Any, **kwargs: Any
@@ -290,7 +302,7 @@ class L8Reader(MultiBandReader):
             )
 
         if pan:
-            assets = tuple(assets) + ("B8", )
+            assets = tuple(assets) + ("B8",)
 
         def _reader(asset: str, **kwargs: Any) -> Tuple[numpy.ndarray, numpy.ndarray]:
             url = self._get_asset_url(asset)

@@ -1,11 +1,12 @@
 """rio_tiler_pds.landsat.utils."""
 
 import re
-from typing import Dict, Any
-from rio_toa import brightness_temp, reflectance
-from ..errors import InvalidLandsatSceneId
+from typing import Any, Dict
 
 import numpy
+from rio_toa import brightness_temp, reflectance
+
+from ..errors import InvalidLandsatSceneId
 
 
 def sceneid_parser(sceneid: str) -> Dict:
@@ -25,7 +26,9 @@ def sceneid_parser(sceneid: str) -> Dict:
         dictionary with metadata constructed from the sceneid.
 
     """
-    collection_1 = r"^(L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT))$"
+    collection_1 = (
+        r"^(L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT))$"
+    )
     if not re.match(collection_1, sceneid):
         raise InvalidLandsatSceneId("Could not match {}".format(sceneid))
 
@@ -81,7 +84,9 @@ def dn_to_toa(arr: numpy.ndarray, band: str, metadata: Dict) -> numpy.ndarray:
         arr = arr.astype("uint16")
 
     elif band in ["B10", "B11"]:  # TIRS
-        multi_rad = metadata["RADIOMETRIC_RESCALING"].get(f"RADIANCE_MULT_BAND_{band[1:]}")
+        multi_rad = metadata["RADIOMETRIC_RESCALING"].get(
+            f"RADIANCE_MULT_BAND_{band[1:]}"
+        )
         add_rad = metadata["RADIOMETRIC_RESCALING"].get(f"RADIANCE_ADD_BAND_{band[1:]}")
         k1 = metadata["TIRS_THERMAL_CONSTANTS"].get(f"K1_CONSTANT_BAND_{band[1:]}")
         k2 = metadata["TIRS_THERMAL_CONSTANTS"].get(f"K2_CONSTANT_BAND_{band[1:]}")

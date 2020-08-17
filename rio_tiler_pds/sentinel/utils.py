@@ -1,8 +1,9 @@
 """rio_tiler_pds.sentinel.utils."""
 
 import re
+from typing import Any, Dict
+
 from ..errors import InvalidSentinelSceneId
-from typing import Dict, Any
 
 
 def s2_sceneid_parser(sceneid: str) -> Dict:
@@ -19,7 +20,7 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
     out: dict
         dictionary with metadata constructed from the sceneid.
 
-    """    
+    """
     if re.match("^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$", sceneid):
         pattern = (
             r"^S"
@@ -55,7 +56,7 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
             r"_"
             r"(?P<num>[0-9]{1})"
             r"_"
-            r"(?P<processingLevel>L[0-2][ABC])$"            
+            r"(?P<processingLevel>L[0-2][ABC])$"
         )
     else:
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))

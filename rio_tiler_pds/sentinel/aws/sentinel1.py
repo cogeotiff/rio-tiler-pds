@@ -1,10 +1,10 @@
 """rio_tiler.io.sentinel1: Sentinel-1 processing."""
 
-import os
 import json
-import attr
-from typing import Any, Dict, Sequence, Union, Optional, Type
+import os
+from typing import Dict, Type
 
+import attr
 import rasterio
 from rasterio import transform
 from rasterio.features import bounds as featureBounds
@@ -12,8 +12,8 @@ from rasterio.vrt import WarpedVRT
 from rasterio.warp import transform_bounds
 
 from rio_tiler import constants
-from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.errors import InvalidAssetName
+from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.utils import aws_get_object
 
 from ...reader import MultiBandReader

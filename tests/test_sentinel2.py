@@ -8,7 +8,7 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel.aws import S2L1CReader, S2L2AReader, S2L2ACOGReader
+from rio_tiler_pds.sentinel.aws import S2L1CReader, S2L2ACOGReader, S2L2AReader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
@@ -186,7 +186,9 @@ with open(L2ACOG_TJSON_PATH, "rb") as f:
     L2ACOG_JSON = f.read()
 
 
-SENTINEL_COG_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-cogs")
+SENTINEL_COG_BUCKET = os.path.join(
+    os.path.dirname(__file__), "fixtures", "sentinel-cogs"
+)
 
 
 def mock_rasterio_open_cogs(asset):
@@ -235,7 +237,10 @@ def test_AWSPDS_S2L2ACOGReader(rio, get_object):
         stats = sentinel.stats(assets="B01")
         assert stats["B01"]["pc"] == [1029, 1929]
 
-        assert sentinel._get_asset_url("B01") == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
+        assert (
+            sentinel._get_asset_url("B01")
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
+        )
 
 
 def test_sentinel_newid_valid():

@@ -1,18 +1,18 @@
 """rio_tiler_pds.sentinel.awspds_sentinel2."""
 
-import os
 import json
-import attr
-from typing import Dict, Type
+import os
 from collections import OrderedDict
+from typing import Dict, Type
 
+import attr
 from rasterio.crs import CRS
-from rasterio.warp import transform_geom
 from rasterio.features import bounds as featureBounds
+from rasterio.warp import transform_geom
 
 from rio_tiler import constants
-from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.errors import InvalidAssetName
+from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.utils import aws_get_object
 
 from ...reader import MultiBandReader
@@ -47,9 +47,7 @@ class S2L1CReader(MultiBandReader):
         )
         input_geom = self.tileInfo["tileDataGeometry"]
         input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
-        self.datageom = transform_geom(
-            input_crs, constants.WGS84_CRS, input_geom
-        )
+        self.datageom = transform_geom(input_crs, constants.WGS84_CRS, input_geom)
         self.bounds = featureBounds(self.datageom)
 
         self.assets = (
@@ -83,7 +81,20 @@ SENTINEL_L2_BANDS = OrderedDict(
         ("20", ["B02", "B03", "B04", "B05", "B06", "B07", "B08", "B11", "B12", "B8A"]),
         (
             "60",
-            ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B11", "B12", "B8A"],
+            [
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B11",
+                "B12",
+                "B8A",
+            ],
         ),
     ]
 )
@@ -125,9 +136,7 @@ class S2L2AReader(MultiBandReader):
         )
         input_geom = self.tileInfo["tileDataGeometry"]
         input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
-        self.datageom = transform_geom(
-            input_crs, constants.WGS84_CRS, input_geom
-        )
+        self.datageom = transform_geom(input_crs, constants.WGS84_CRS, input_geom)
         self.bounds = featureBounds(self.datageom)
 
         self.assets = (

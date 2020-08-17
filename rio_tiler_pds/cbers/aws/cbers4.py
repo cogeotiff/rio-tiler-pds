@@ -1,13 +1,14 @@
 """rio_tiler.cbers: cbers processing."""
 
-import attr
 from typing import Dict, Type
 
-from rio_tiler.io import BaseReader, COGReader
-from rio_tiler.errors import InvalidAssetName
+import attr
 
-from ..utils import cbers_parser
+from rio_tiler.errors import InvalidAssetName
+from rio_tiler.io import BaseReader, COGReader
+
 from ...reader import MultiBandReader
+from ..utils import cbers_parser
 
 
 @attr.s
