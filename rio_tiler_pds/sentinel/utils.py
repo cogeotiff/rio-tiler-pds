@@ -19,32 +19,48 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
     out: dict
         dictionary with metadata constructed from the sceneid.
 
-    """
+    """    
+    if re.match("^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$", sceneid):
+        pattern = (
+            r"^S"
+            r"(?P<sensor>\w{1})"
+            r"(?P<satellite>[AB]{1})"
+            r"_"
+            r"(?P<processingLevel>L[0-2][ABC])"
+            r"_"
+            r"(?P<acquisitionYear>[0-9]{4})"
+            r"(?P<acquisitionMonth>[0-9]{2})"
+            r"(?P<acquisitionDay>[0-9]{2})"
+            r"_"
+            r"(?P<utm>[0-9]{2})"
+            r"(?P<lat>\w{1})"
+            r"(?P<sq>\w{2})"
+            r"_"
+            r"(?P<num>[0-9]{1})$"
+        )
 
-    if not re.match("^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$", sceneid):
+    elif re.match("^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$", sceneid):
+        pattern = (
+            r"^S"
+            r"(?P<sensor>\w{1})"
+            r"(?P<satellite>[AB]{1})"
+            r"_"
+            r"(?P<utm>[0-9]{2})"
+            r"(?P<lat>\w{1})"
+            r"(?P<sq>\w{2})"
+            r"_"
+            r"(?P<acquisitionYear>[0-9]{4})"
+            r"(?P<acquisitionMonth>[0-9]{2})"
+            r"(?P<acquisitionDay>[0-9]{2})"
+            r"_"
+            r"(?P<num>[0-9]{1})"
+            r"_"
+            r"(?P<processingLevel>L[0-2][ABC])$"            
+        )
+    else:
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))
 
-    sentinel_pattern = (
-        r"^S"
-        r"(?P<sensor>\w{1})"
-        r"(?P<satellite>[AB]{1})"
-        r"_"
-        r"(?P<processingLevel>L[0-2][ABC])"
-        r"_"
-        r"(?P<acquisitionYear>[0-9]{4})"
-        r"(?P<acquisitionMonth>[0-9]{2})"
-        r"(?P<acquisitionDay>[0-9]{2})"
-        r"_"
-        r"(?P<utm>[0-9]{2})"
-        r"(?P<lat>\w{1})"
-        r"(?P<sq>\w{2})"
-        r"_"
-        r"(?P<num>[0-9]{1})$"
-    )
-
-    meta: Dict[str, Any] = re.match(
-        sentinel_pattern, sceneid, re.IGNORECASE
-    ).groupdict()
+    meta: Dict[str, Any] = re.match(pattern, sceneid, re.IGNORECASE).groupdict()
     meta["scene"] = sceneid
     meta["date"] = "{}-{}-{}".format(
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]

@@ -9,7 +9,7 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName, MissingAssets, TileOutsideBounds
 from rio_tiler_pds.errors import InvalidLandsatSceneId
-from rio_tiler_pds.landsat import AWSPDS_L8Reader
+from rio_tiler_pds.landsat.aws import L8Reader
 from rio_tiler_pds.landsat.utils import sceneid_parser
 
 LANDSAT_SCENE_C1 = "LC08_L1TP_016037_20170813_20170814_01_RT"
@@ -40,7 +40,7 @@ def mock_rasterio_open(asset):
     return rasterio.open(asset)
 
 
-@patch("rio_tiler_pds.landsat.awspds_landsat8.aws_get_object")
+@patch("rio_tiler_pds.landsat.aws.landsat8.aws_get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_L8Reader(rio, get_object):
     """Should work as expected (get and parse metadata)."""
@@ -48,10 +48,10 @@ def test_AWSPDS_L8Reader(rio, get_object):
     get_object.return_value = LANDSAT_METADATA
 
     with pytest.raises(InvalidLandsatSceneId):
-        with AWSPDS_L8Reader("LC08_005004_20170410_20170414_01_T1"):
+        with L8Reader("LC08_005004_20170410_20170414_01_T1"):
             pass
 
-    with AWSPDS_L8Reader(LANDSAT_SCENE_C1) as landsat:
+    with L8Reader(LANDSAT_SCENE_C1) as landsat:
         assert landsat.scene_params["scene"] == LANDSAT_SCENE_C1
         assert landsat.minzoom == 7
         assert landsat.maxzoom == 12

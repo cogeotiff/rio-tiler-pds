@@ -16,8 +16,8 @@ from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler.utils import aws_get_object
 
-from ..reader import MultiBandReader
-from .utils import s1_sceneid_parser
+from ...reader import MultiBandReader
+from ..utils import s1_sceneid_parser
 
 
 @attr.s
@@ -47,7 +47,7 @@ class GCPCOGReader(COGReader):
 
 
 @attr.s
-class AWSPDS_S1CReader(MultiBandReader):
+class S1CReader(MultiBandReader):
     """AWS Public Dataset Sentinel 1 reader."""
 
     sceneid: str = attr.ib()

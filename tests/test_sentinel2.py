@@ -8,11 +8,12 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel import AWSPDS_S2L1CReader, AWSPDS_S2L2AReader
+from rio_tiler_pds.sentinel.aws import S2L1CReader, S2L2AReader, S2L2ACOGReader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
 SENTINEL_SCENE_L2 = "S2A_L2A_20170729_19UDP_0"
+SENTINEL_COG_SCENE_L2 = "S2A_29RKH_20200219_0_L2A"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s2")
 
 L1C_TJSON_PATH = os.path.join(
@@ -51,7 +52,7 @@ def mock_rasterio_open(asset):
     return rasterio.open(asset)
 
 
-@patch("rio_tiler_pds.sentinel.awspds_sentinel2.aws_get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2L1CReader(rio, get_object):
     """Test AWSPDS_S2L1CReader."""
@@ -59,10 +60,10 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
     get_object.return_value = L1C_TILEJSON
 
     with pytest.raises(InvalidSentinelSceneId):
-        with AWSPDS_S2L1CReader("S2A_tile_20170323_17SNC"):
+        with S2L1CReader("S2A_tile_20170323_17SNC"):
             pass
 
-    with AWSPDS_S2L1CReader(SENTINEL_SCENE_L1) as sentinel:
+    with S2L1CReader(SENTINEL_SCENE_L1) as sentinel:
         assert sentinel.scene_params["scene"] == SENTINEL_SCENE_L1
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
@@ -116,7 +117,7 @@ with open(L2A_TJSON_PATH, "rb") as f:
     L2A_TILEJSON = f.read()
 
 
-@patch("rio_tiler_pds.sentinel.awspds_sentinel2.aws_get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2L2AReader(rio, get_object):
     """Test AWSPDS_S2L2AReader."""
@@ -124,10 +125,10 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
     get_object.return_value = L2A_TILEJSON
 
     with pytest.raises(InvalidSentinelSceneId):
-        with AWSPDS_S2L1CReader("S2A_tile_20170323_17SNC"):
+        with S2L1CReader("S2A_tile_20170323_17SNC"):
             pass
 
-    with AWSPDS_S2L2AReader(SENTINEL_SCENE_L2) as sentinel:
+    with S2L2AReader(SENTINEL_SCENE_L2) as sentinel:
         assert sentinel.scene_params["scene"] == SENTINEL_SCENE_L2
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
@@ -172,6 +173,71 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
         assert sentinel._get_resolution("SCL") == "20"
 
 
+L2ACOG_TJSON_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "fixtures",
+    "sentinel-cogs",
+    "sentinel-s2-l2a-cogs",
+    "2020",
+    SENTINEL_COG_SCENE_L2,
+    f"{SENTINEL_COG_SCENE_L2}.json",
+)
+with open(L2ACOG_TJSON_PATH, "rb") as f:
+    L2ACOG_JSON = f.read()
+
+
+SENTINEL_COG_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-cogs")
+
+
+def mock_rasterio_open_cogs(asset):
+    """Mock rasterio Open for Sentinel2 dataset."""
+    assert asset.startswith("s3://sentinel-cogs")
+    asset = asset.replace("s3://sentinel-cogs", SENTINEL_COG_BUCKET)
+    return rasterio.open(asset)
+
+
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_S2L2ACOGReader(rio, get_object):
+    """Test AWSPDS_S2L2ACOGReader."""
+    rio.open = mock_rasterio_open_cogs
+    get_object.return_value = L2ACOG_JSON
+
+    with pytest.raises(InvalidSentinelSceneId):
+        with S2L2ACOGReader("S2A_tile_20170323_17SNC"):
+            pass
+
+    with S2L2ACOGReader(SENTINEL_COG_SCENE_L2) as sentinel:
+        assert sentinel.scene_params["scene"] == SENTINEL_COG_SCENE_L2
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sentinel.assets == (
+            "B01",
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B09",
+            "B11",
+            "B12",
+            "B8A",
+            "AOT",
+            "SCL",
+            "WVP",
+        )
+        with pytest.raises(InvalidAssetName):
+            sentinel.stats(assets="B1")
+
+        stats = sentinel.stats(assets="B01")
+        assert stats["B01"]["pc"] == [1029, 1929]
+
+        assert sentinel._get_asset_url("B01") == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
+
+
 def test_sentinel_newid_valid():
     """Parse sentinel-2 valid sceneid and return metadata."""
     expected_content = {
@@ -214,3 +280,25 @@ def test_sentinel_newidl2a_valid():
         "_day": "29",
     }
     assert s2_sceneid_parser(SENTINEL_SCENE_L2) == expected_content
+
+
+def test_sentinel_cogid_valid():
+    """Parse sentinel-2 COG id valid sceneid and return metadata."""
+    expected_content = {
+        "sensor": "2",
+        "satellite": "A",
+        "processingLevel": "L2A",
+        "acquisitionYear": "2020",
+        "acquisitionMonth": "02",
+        "acquisitionDay": "19",
+        "utm": "29",
+        "lat": "R",
+        "sq": "KH",
+        "num": "0",
+        "scene": "S2A_29RKH_20200219_0_L2A",
+        "date": "2020-02-19",
+        "_utm": "29",
+        "_month": "2",
+        "_day": "19",
+    }
+    assert s2_sceneid_parser(SENTINEL_COG_SCENE_L2) == expected_content

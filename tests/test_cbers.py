@@ -7,8 +7,8 @@ import pytest
 import rasterio
 
 from rio_tiler.errors import InvalidAssetName, MissingAssets, TileOutsideBounds
-from rio_tiler_pds.cbers import AWSPDS_CBERSReader
-from rio_tiler_pds.cbers.awspds_cbers import cbers_parser
+from rio_tiler_pds.cbers.aws import CBERSReader
+from rio_tiler_pds.cbers.utils import cbers_parser
 from rio_tiler_pds.errors import InvalidCBERSSceneId
 
 CBERS_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "cbers-pds")
@@ -47,10 +47,10 @@ def test_AWSPDS_CBERSReader_MUX(rio):
 
     scene = "CBERS_4_MUX_20171121_057_094"
     with pytest.raises(InvalidCBERSSceneId):
-        with AWSPDS_CBERSReader(scene):
+        with CBERSReader(scene):
             pass
 
-    with AWSPDS_CBERSReader(CBERS_MUX_SCENE) as cbers:
+    with CBERSReader(CBERS_MUX_SCENE) as cbers:
         bounds = cbers.bounds
         assert cbers.scene_params.get("scene") == CBERS_MUX_SCENE
         assert len(bounds) == 4
@@ -116,7 +116,7 @@ def test_AWSPDS_CBERSReader_MUX(rio):
         tile_x = 694
         tile_y = 495
         with pytest.raises(TileOutsideBounds):
-            cbers.tile(tile_x, tile_y, tile_z)
+            cbers.tile(tile_x, tile_y, tile_z, assets=cbers.scene_params["rgb"])
 
         tile_z = 10
         tile_x = 664
@@ -133,7 +133,7 @@ def test_AWSPDS_CBERSReader_AWFI(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
 
-    with AWSPDS_CBERSReader(CBERS_AWFI_SCENE) as cbers:
+    with CBERSReader(CBERS_AWFI_SCENE) as cbers:
         bounds = cbers.bounds
         assert cbers.scene_params.get("scene") == CBERS_AWFI_SCENE
         assert len(bounds) == 4
@@ -156,7 +156,7 @@ def test_AWSPDS_CBERSReader_PAN10M(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
 
-    with AWSPDS_CBERSReader(CBERS_PAN10M_SCENE) as cbers:
+    with CBERSReader(CBERS_PAN10M_SCENE) as cbers:
         bounds = cbers.bounds
         assert cbers.scene_params.get("scene") == CBERS_PAN10M_SCENE
         assert len(bounds) == 4
@@ -179,7 +179,7 @@ def test_AWSPDS_CBERSReader_PAN5M(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
 
-    with AWSPDS_CBERSReader(CBERS_PAN5M_SCENE) as cbers:
+    with CBERSReader(CBERS_PAN5M_SCENE) as cbers:
         bounds = cbers.bounds
         assert cbers.scene_params.get("scene") == CBERS_PAN5M_SCENE
         assert len(bounds) == 4

@@ -1,13 +1,13 @@
 import attr
 from typing import Any, Dict, Sequence, Tuple, Union, Optional
 
-from rio_tiler.io import MultiAssetsReader
+from rio_tiler.io import MultiBaseReader
 from rio_tiler.errors import MissingAssets
 from rio_tiler.tasks import multi_values
 
 
 @attr.s
-class MultiBandReader(MultiAssetsReader):
+class MultiBandReader(MultiBaseReader):
     """AWS Public Dataset CBERS 4 reader."""
 
     minzoom: int = attr.ib(init=False)

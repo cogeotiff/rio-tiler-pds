@@ -8,21 +8,21 @@ from typing import Any, Dict, Sequence, Tuple, Union, Optional, List, Type
 import numpy
 from rio_toa import toa_utils
 
-from rio_tiler.errors import InvalidAssetName, TileOutsideBounds, MissingAssets
-from rio_tiler.utils import pansharpening_brovey, tile_exists
+from rio_tiler.errors import InvalidAssetName, MissingAssets
+from rio_tiler.utils import pansharpening_brovey
 from rio_tiler.expression import apply_expression
 from rio_tiler.utils import aws_get_object
 from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.tasks import multi_arrays, multi_values
 
-from ..reader import MultiBandReader
-from .utils import sceneid_parser, dn_to_toa
+from ...reader import MultiBandReader
+from ..utils import sceneid_parser, dn_to_toa
 
 landsat8_valid_bands = ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "BQA")
 
 
 @attr.s
-class AWSPDS_L8Reader(MultiBandReader):
+class L8Reader(MultiBandReader):
     """AWS Public Dataset Landsat 8 reader."""
 
     sceneid: str = attr.ib()
@@ -172,11 +172,6 @@ class AWSPDS_L8Reader(MultiBandReader):
         **kwargs: Any,
     ) -> Tuple[numpy.ndarray, numpy.ndarray]:
         """Read a Mercator Map tile multiple assets."""
-        if not tile_exists(self.bounds, tile_z, tile_x, tile_y):
-            raise TileOutsideBounds(
-                "Tile {}/{}/{} is outside image bounds".format(tile_z, tile_x, tile_y)
-            )
-
         if isinstance(assets, str):
             assets = (assets,)
 
