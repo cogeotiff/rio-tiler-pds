@@ -1,4 +1,4 @@
-"""rio_tiler_pds.cbers.utils."""
+"""CBERS utility functions."""
 
 import re
 from typing import Any, Dict
@@ -7,17 +7,19 @@ from ..errors import InvalidCBERSSceneId
 
 
 def sceneid_parser(sceneid: str) -> Dict:
-    """Parse CBERS scene id.
+    """Parse CBERS 4 scene id.
 
-    Attributes
-    ----------
-        sceneid : str
-            CBERS sceneid.
+    Args:
+        sceneid (str): CBERS 4 sceneid.
 
-    Returns
-    -------
-        out : dict
-            dictionary with metadata constructed from the sceneid.
+    Returns:
+        dict: dictionary with metadata constructed from the sceneid.
+
+    Raises:
+        InvalidCBERSSceneId: If `sceneid` doesn't match the regex schema.
+
+    Examples:
+        >>> sceneid_parser('CBERS_4_MUX_20171121_057_094_L2')
 
     """
     if not re.match(r"^CBERS_4_\w+_[0-9]{8}_[0-9]{3}_[0-9]{3}_L[0-9]$", sceneid):

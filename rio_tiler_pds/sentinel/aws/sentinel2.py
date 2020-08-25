@@ -1,7 +1,8 @@
-"""rio_tiler_pds.sentinel.awspds_sentinel2."""
+"""AWS Sentinel 2 readers."""
 
 import json
 import os
+import re
 from collections import OrderedDict
 from typing import Dict, Tuple, Type
 
@@ -35,7 +36,27 @@ default_l1c_assets = (
 
 @attr.s
 class S2L1CReader(MultiBandReader):
-    """AWS Public Dataset Sentinel 2 L1C reader."""
+    """AWS Public Dataset Sentinel 2 L1C reader.
+
+    Args:
+        sceneid (str): Sentinel-2 L1C sceneid.
+
+    Attributes:
+        bounds (tuple): scene's bounds.
+        minzoom (int): scene's Min Zoom level (default is 8).
+        maxzoom (int): scene's Max Zoom level (default is 14).
+        center (tuple): scene center + minzoom.
+        spatial_info (dict): bounds, center and zooms info.
+        scene_params (dict): scene id parameters.
+        assets (tuple): list of available assets (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
+        tileInfo (dict): sentinel 2 tileInfo.json content.
+        datageom (dict): sentinel 2 data geometry.
+
+    Examples:
+        >>> with S2L1CReader('S2A_L1C_20170729_19UDP_0') as scene:
+                print(scene.bounds)
+
+    """
 
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
@@ -130,7 +151,27 @@ default_l2a_assets = (
 
 @attr.s
 class S2L2AReader(S2L1CReader):
-    """AWS Public Dataset Sentinel 2 L2A reader."""
+    """AWS Public Dataset Sentinel 2 L2A reader.
+
+    Args:
+        sceneid (str): Sentinel-2 L2A sceneid.
+
+    Attributes:
+        bounds (tuple): scene's bounds.
+        minzoom (int): scene's Min Zoom level (default is 8).
+        maxzoom (int): scene's Max Zoom level (default is 14).
+        center (tuple): scene center + minzoom.
+        spatial_info (dict): bounds, center and zooms info.
+        scene_params (dict): scene id parameters.
+        assets (tuple): list of available assets (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
+        tileInfo (dict): sentinel 2 tileInfo.json content.
+        datageom (dict): sentinel 2 data geometry.
+
+    Examples:
+        >>> with S2L1CReader('S2A_L1C_20170729_19UDP_0') as scene:
+                print(scene.bounds)
+
+    """
 
     assets: tuple = attr.ib(init=False, default=default_l2a_assets)
 
@@ -160,8 +201,27 @@ class S2L2AReader(S2L1CReader):
 
 
 @attr.s
-class S2L2ACOGReader(MultiBandReader):
-    """AWS Public Dataset Sentinel 2 L2A COGS reader."""
+class S2COGReader(MultiBandReader):
+    """AWS Public Dataset Sentinel 2 COGS reader.
+
+    Args:
+        sceneid (str): Sentinel-2 sceneid.
+
+    Attributes:
+        bounds (tuple): scene's bounds.
+        minzoom (int): scene's Min Zoom level (default is 8).
+        maxzoom (int): scene's Max Zoom level (default is 14).
+        center (tuple): scene center + minzoom.
+        spatial_info (dict): bounds, center and zooms info.
+        scene_params (dict): scene id parameters.
+        assets (tuple): list of available assets (defined by the STAC item.json).
+        stac_item (dict): sentinel 2 COG STAC item content.
+
+    Examples:
+        >>> with S2COGReader('S2A_29RKH_20200219_0_L2A') as scene:
+                print(scene.bounds)
+
+    """
 
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
@@ -169,23 +229,31 @@ class S2L2ACOGReader(MultiBandReader):
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
 
-    assets: tuple = attr.ib(init=False, default=default_l2a_assets)
+    assets: tuple = attr.ib(init=False)
     stac_item: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-cogs"
-    _prefix: str = "sentinel-s2-l2a-cogs/{acquisitionYear}/{scene}"
+    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{acquisitionYear}/{scene}"
 
     def __enter__(self):
         """Support using with Context Managers."""
         self.scene_params = s2_sceneid_parser(self.sceneid)
 
+        cog_sceneid = self.scene_params["scene"]
         item_key = os.path.join(
-            self._prefix.format(**self.scene_params), f"{self.sceneid}.json"
+            self._prefix.format(**self.scene_params), f"{cog_sceneid}.json",
         )
 
         self.stac_item = json.loads(
             get_object(self._hostname, item_key, request_pays=True)
+        )
+        self.assets = tuple(
+            [
+                asset
+                for asset in self.stac_item["assets"]
+                if re.match("B[0-9A]{2}", asset)
+            ]
         )
         self.bounds = self.stac_item["bbox"]
 

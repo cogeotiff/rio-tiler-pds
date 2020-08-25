@@ -1,4 +1,4 @@
-"""rio_tiler_pds.sentinel.utils."""
+"""Sentinel 1 & 2 utility functions."""
 
 import re
 from typing import Any, Dict
@@ -7,21 +7,28 @@ from ..errors import InvalidSentinelSceneId
 
 
 def s2_sceneid_parser(sceneid: str) -> Dict:
+    """Parse Sentinel 2 scene id.
+
+    Args:
+        sceneid (str): Sentinel-2 sceneid.
+
+    Returns:
+        dict: dictionary with metadata constructed from the sceneid.
+
+    Raises:
+        InvalidSentinelSceneId: If `sceneid` doesn't match the regex schema.
+
+    Examples:
+        >>> s2_sceneid_parser('S2A_L1C_20170729_19UDP_0')
+
+        >>> s2_sceneid_parser('S2A_L2A_20170729_19UDP_0')
+
+        >>> s2_sceneid_parser('S2A_29RKH_20200219_0_L2A')
+
     """
-    Parse Sentinel-2 scene id.
-
-    Attributes
-    ----------
-    sceneid: str
-        Sentinel-2 sceneid.
-
-    Returns
-    -------
-    out: dict
-        dictionary with metadata constructed from the sceneid.
-
-    """
-    if re.match("^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$", sceneid):
+    if re.match(
+        "^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$", sceneid
+    ):  # Legacy sceneid format
         pattern = (
             r"^S"
             r"(?P<sensor>\w{1})"
@@ -40,7 +47,9 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
             r"(?P<num>[0-9]{1})$"
         )
 
-    elif re.match("^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$", sceneid):
+    elif re.match(
+        "^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$", sceneid
+    ):  # New sceneid format
         pattern = (
             r"^S"
             r"(?P<sensor>\w{1})"
@@ -62,7 +71,11 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))
 
     meta: Dict[str, Any] = re.match(pattern, sceneid, re.IGNORECASE).groupdict()
-    meta["scene"] = sceneid
+    meta[
+        "scene"
+    ] = "S{sensor}{satellite}_{utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}".format(
+        **meta
+    )
     meta["date"] = "{}-{}-{}".format(
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
     )
@@ -70,23 +83,25 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
     meta["_utm"] = meta["utm"].lstrip("0")
     meta["_month"] = meta["acquisitionMonth"].lstrip("0")
     meta["_day"] = meta["acquisitionDay"].lstrip("0")
+    meta["_levelLow"] = meta["processingLevel"].lower()
 
     return meta
 
 
 def s1_sceneid_parser(sceneid: str) -> Dict:
-    """
-    Parse Sentinel-1 scene id.
+    """Parse Sentinel 1 scene id.
 
-    Attributes
-    ----------
-    sceneid: str
-        Sentinel-1 sceneid.
+    Args:
+        sceneid (str): Sentinel-1 sceneid.
 
-    Returns
-    -------
-    out: dict
-        dictionary with metadata constructed from the sceneid.
+    Returns:
+        dict: dictionary with metadata constructed from the sceneid.
+
+    Raises:
+        InvalidSentinelSceneId: If `sceneid` doesn't match the regex schema.
+
+    Examples:
+        >>> s1_sceneid_parser('S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B')
 
     """
     if not re.match(

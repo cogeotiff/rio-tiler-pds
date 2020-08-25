@@ -1,4 +1,4 @@
-"""rio_tiler.io.sentinel1: Sentinel-1 processing."""
+"""AWS Sentinel 1 reader."""
 
 import json
 import os
@@ -16,7 +16,26 @@ from ..utils import s1_sceneid_parser
 
 @attr.s
 class S1L1CReader(MultiBandReader):
-    """AWS Public Dataset Sentinel 1 reader."""
+    """AWS Public Dataset Sentinel 1 reader.
+
+    Args:
+        sceneid (str): Sentinel-1 sceneid.
+
+    Attributes:
+        bounds (tuple): scene's bounds.
+        minzoom (int): scene's Min Zoom level (default is 8).
+        maxzoom (int): scene's Max Zoom level (default is 14).
+        center (tuple): scene center + minzoom.
+        spatial_info (dict): bounds, center and zooms info.
+        assets (tuple): list of available assets (default is ('vv', 'vh')).
+        productInfo (dict): sentinel 1 productInfo.json content.
+        datageom (dict): sentinel 1 data geometry.
+
+    Examples:
+        >>> with S1L1CReader('S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B') as scene:
+                print(scene.bounds)
+
+    """
 
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=GCPCOGReader)

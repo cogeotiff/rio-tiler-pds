@@ -26,7 +26,16 @@ def get_object(bucket: str, key: str, request_pays: bool = False) -> bytes:
 
 @attr.s
 class MultiBandReader(MultiBaseReader):
-    """AWS Public Dataset CBERS 4 reader."""
+    """Multi Band Reader.
+
+    Attributes:
+        bounds (tuple): scene's bounds.
+        minzoom (int): scene's Min Zoom level (default is 8).
+        maxzoom (int): scene's Max Zoom level (default is 14).
+        center (tuple): scene center + minzoom.
+        spatial_info (dict): bounds, center and zooms info.
+
+    """
 
     minzoom: int = attr.ib(init=False)
     maxzoom: int = attr.ib(init=False)
@@ -190,10 +199,21 @@ class MultiBandReader(MultiBaseReader):
 
 @attr.s
 class GCPCOGReader(COGReader):
-    """Custom COG Reader with GCPS support."""
+    """Custom COG Reader with GCPS support.
+
+    Attributes:
+        bounds (tuple): COG's bounds.
+        minzoom (int): COG's Min Zoom level.
+        maxzoom (int): COG's Max Zoom level.
+        center (tuple): scene center + minzoom.
+        spatial_info (dict): bounds, center and zooms info.
+        src_dataset (DatasetReader): rasterio openned dataset.
+        dataset (WarpedVRT): rasterio WarpedVRT dataset.
+
+    """
 
     def __enter__(self):
-        """Support using with Context Managers."""
+        """Open rasterio datasets."""
         self.src_dataset = rasterio.open(self.filepath)
         self.dataset = WarpedVRT(
             self.src_dataset,
@@ -209,6 +229,6 @@ class GCPCOGReader(COGReader):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
+        """Close rasterio datasets."""
         self.dataset.close()
         self.src_dataset.close()

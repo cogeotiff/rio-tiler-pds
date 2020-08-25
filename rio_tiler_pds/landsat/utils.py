@@ -1,4 +1,4 @@
-"""rio_tiler_pds.landsat.utils."""
+"""Landsat utility functions."""
 
 import re
 from typing import Any, Dict
@@ -10,20 +10,21 @@ from ..errors import InvalidLandsatSceneId
 
 
 def sceneid_parser(sceneid: str) -> Dict:
-    """
-    Parse Landsat scene id.
+    """Parse Landsat 8 scene id.
 
     Author @perrygeo - http://www.perrygeo.com
 
-    Attributes
-    ----------
-    sceneid: str
-        Landsat sceneid.
+    Args:
+        sceneid (str): Landsat 8 sceneid.
 
-    Returns
-    -------
-    out: dict
-        dictionary with metadata constructed from the sceneid.
+    Returns:
+        dict: dictionary with metadata constructed from the sceneid.
+
+    Raises:
+        InvalidLandsatSceneId: If `sceneid` doesn't match the regex schema.
+
+    Examples:
+        >>> sceneid_parser('LC08_L1TP_016037_20170813_20170814_01_RT')
 
     """
     collection_1 = r"^L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
@@ -66,7 +67,17 @@ def sceneid_parser(sceneid: str) -> Dict:
 
 
 def dn_to_toa(arr: numpy.ndarray, band: str, metadata: Dict) -> numpy.ndarray:
-    """Convert DN to TOA or Temp."""
+    """Convert DN to TOA or Temp.
+
+    Args:
+        arr (numpy.ndarray): Digital Number array values.
+        band (str): Landsat 8 band's name.
+        metadata (str): Landsat MTL metadata.
+
+    Returns:
+        numpy.ndarray: DN coverted to TOA or Temperature.
+
+    """
     if band in ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9"]:  # OLI
         multi_reflect = metadata["RADIOMETRIC_RESCALING"].get(
             f"REFLECTANCE_MULT_BAND_{band[1:]}"

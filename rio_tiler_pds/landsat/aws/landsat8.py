@@ -1,4 +1,4 @@
-"""rio_tiler_pds.landsat.awspds: Landsat-8 processing."""
+"""AWS Landsat 8 reader."""
 
 import os
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, Union
@@ -34,7 +34,26 @@ landsat8_valid_bands = (
 
 @attr.s
 class L8Reader(MultiBandReader):
-    """AWS Public Dataset Landsat 8 reader."""
+    """AWS Public Dataset Landsat 8 reader.
+
+    Args:
+        sceneid (str): Landsat 8 sceneid.
+
+    Attributes:
+        bounds (tuple): scene's bounds.
+        minzoom (int): scene's Min Zoom level (default is 7).
+        maxzoom (int): scene's Max Zoom level (default is 12).
+        center (tuple): scene center + minzoom.
+        spatial_info (dict): bounds, center and zooms info.
+        scene_params (dict): scene id parameters.
+        assets (tuple): list of available assets (default is ('B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'BQA')).
+        mtl_metadata (dict): Landsat 8 MTL document content.
+
+    Examples:
+        >>> with S2L1CReader('S2A_L1C_20170729_19UDP_0') as scene:
+                print(scene.bounds)
+
+    """
 
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
