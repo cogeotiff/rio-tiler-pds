@@ -26,9 +26,7 @@ def sceneid_parser(sceneid: str) -> Dict:
         dictionary with metadata constructed from the sceneid.
 
     """
-    collection_1 = (
-        r"^(L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT))$"
-    )
+    collection_1 = r"^L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
     if not re.match(collection_1, sceneid):
         raise InvalidLandsatSceneId("Could not match {}".format(sceneid))
 

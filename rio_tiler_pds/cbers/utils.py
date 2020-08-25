@@ -6,7 +6,7 @@ from typing import Any, Dict
 from ..errors import InvalidCBERSSceneId
 
 
-def cbers_parser(sceneid: str) -> Dict:
+def sceneid_parser(sceneid: str) -> Dict:
     """Parse CBERS scene id.
 
     Attributes
@@ -63,7 +63,7 @@ def cbers_parser(sceneid: str) -> Dict:
             "bands": ("B2", "B3", "B4"),
             "rgb": ("B3", "B4", "B2"),
         },
-        "PAN5M": {"reference_band": "B1", "bands": ("B1"), "rgb": ("B1", "B1", "B1")},
+        "PAN5M": {"reference_band": "B1", "bands": ("B1",), "rgb": ("B1", "B1", "B1")},
     }
     meta["reference_band"] = instrument_params[instrument]["reference_band"]
     meta["bands"] = instrument_params[instrument]["bands"]

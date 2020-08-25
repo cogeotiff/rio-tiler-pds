@@ -8,7 +8,7 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel.aws import S1CReader, SentinelReader
+from rio_tiler_pds.sentinel.aws import S1L1CReader
 
 SENTINEL_SCENE = "S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s1-l1c")
@@ -40,26 +40,18 @@ def mock_rasterio_open(asset):
     return rasterio.open(asset)
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel1.aws_get_object")
-def test_SentinelReader(get_object):
-    """Test AWSPDS_S1CReader."""
-    get_object.return_value = SENTINEL_METADATA
-    with SentinelReader(SENTINEL_SCENE) as sentinel:
-        assert sentinel.productInfo
-
-
-@patch("rio_tiler_pds.sentinel.aws.sentinel1.aws_get_object")
-@patch("rio_tiler_pds.sentinel.aws.sentinel1.rasterio")
-def test_AWSPDS_S1CReader(rio, get_object):
-    """Test AWSPDS_S1CReader."""
+@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler_pds.reader.rasterio")
+def test_AWSPDS_S1L1CReader(rio, get_object):
+    """Test AWSPDS_S1L1CReader."""
     rio.open = mock_rasterio_open
     get_object.return_value = SENTINEL_METADATA
 
     with pytest.raises(InvalidSentinelSceneId):
-        with S1CReader("S2A_tile_20170729_19UDP_0"):
+        with S1L1CReader("S2A_tile_20170729_19UDP_0"):
             pass
 
-    with S1CReader(SENTINEL_SCENE) as sentinel:
+    with S1L1CReader(SENTINEL_SCENE) as sentinel:
         assert sentinel.scene_params["scene"] == SENTINEL_SCENE
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14

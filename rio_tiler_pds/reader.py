@@ -1,12 +1,27 @@
 """MultiBand reader."""
 
-from typing import Any, Dict, Optional, Sequence, Tuple, Union
+import warnings
+from functools import lru_cache
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import attr
+import rasterio
+from rasterio import transform
+from rasterio.vrt import WarpedVRT
+from rasterio.warp import transform_bounds
 
-from rio_tiler.errors import MissingAssets
-from rio_tiler.io import MultiBaseReader
+from rio_tiler import constants
+from rio_tiler.errors import ExpressionMixingWarning, MissingAssets
+from rio_tiler.expression import apply_expression
+from rio_tiler.io import COGReader, MultiBaseReader
 from rio_tiler.tasks import multi_values
+from rio_tiler.utils import aws_get_object
+
+
+@lru_cache(maxsize=512)
+def get_object(bucket: str, key: str, request_pays: bool = False) -> bytes:
+    """Add LRU cache on top of AWS Get Object."""
+    return aws_get_object(bucket, key, request_pays=request_pays)
 
 
 @attr.s
@@ -126,3 +141,74 @@ class MultiBandReader(MultiBaseReader):
             asset: bands_metadata[asset]["statistics"] for _, asset in enumerate(assets)
         }
         return meta
+
+    def point(
+        self,
+        lon: float,
+        lat: float,
+        assets: Union[Sequence[str], str] = None,
+        expression: Optional[str] = "",
+        asset_expression: Optional[
+            str
+        ] = "",  # Expression for each asset based on index names
+        **kwargs: Any,
+    ) -> List:
+        """Read a value from COGs."""
+        if isinstance(assets, str):
+            assets = (assets,)
+
+        if assets and expression:
+            warnings.warn(
+                "Both expression and assets passed; expression will overwrite assets parameter.",
+                ExpressionMixingWarning,
+            )
+
+        if expression:
+            assets = self.parse_expression(expression)
+
+        if not assets:
+            raise MissingAssets(
+                "assets must be passed either via expression or assets options."
+            )
+
+        def _reader(asset: str, *args, **kwargs: Any) -> Dict:
+            url = self._get_asset_url(asset)
+            with self.reader(url, **self.reader_options) as cog:  # type: ignore
+                return cog.point(*args, **kwargs)[0]  # We only return the firt value
+
+        data = multi_values(
+            assets, _reader, lon, lat, expression=asset_expression, **kwargs,
+        )
+
+        values = [d for _, d in data.items()]
+        if expression:
+            blocks = expression.split(",")
+            values = apply_expression(blocks, assets, values).tolist()
+
+        return values
+
+
+@attr.s
+class GCPCOGReader(COGReader):
+    """Custom COG Reader with GCPS support."""
+
+    def __enter__(self):
+        """Support using with Context Managers."""
+        self.src_dataset = rasterio.open(self.filepath)
+        self.dataset = WarpedVRT(
+            self.src_dataset,
+            src_crs=self.src_dataset.gcps[1],
+            src_transform=transform.from_gcps(self.src_dataset.gcps[0]),
+            src_nodata=0,
+        )
+
+        self.bounds = transform_bounds(
+            self.dataset.crs, constants.WGS84_CRS, *self.dataset.bounds, densify_pts=21
+        )
+
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Support using with Context Managers."""
+        self.dataset.close()
+        self.src_dataset.close()

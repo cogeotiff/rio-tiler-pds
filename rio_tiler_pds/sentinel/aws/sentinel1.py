@@ -2,52 +2,20 @@
 
 import json
 import os
-from typing import Dict, Type
+from typing import Dict, Tuple, Type
 
 import attr
-import rasterio
-from rasterio import transform
 from rasterio.features import bounds as featureBounds
-from rasterio.vrt import WarpedVRT
-from rasterio.warp import transform_bounds
 
-from rio_tiler import constants
 from rio_tiler.errors import InvalidAssetName
-from rio_tiler.io import BaseReader, COGReader
-from rio_tiler.utils import aws_get_object
+from rio_tiler.io import BaseReader
 
-from ...reader import MultiBandReader
+from ...reader import GCPCOGReader, MultiBandReader, get_object
 from ..utils import s1_sceneid_parser
 
 
 @attr.s
-class GCPCOGReader(COGReader):
-    """Custom COG Reader with GCPS support."""
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        self.src_dataset = rasterio.open(self.filepath)
-        self.dataset = WarpedVRT(
-            self.src_dataset,
-            src_crs=self.src_dataset.gcps[1],
-            src_transform=transform.from_gcps(self.src_dataset.gcps[0]),
-            src_nodata=0,
-        )
-
-        self.bounds = transform_bounds(
-            self.dataset.crs, constants.WGS84_CRS, *self.dataset.bounds, densify_pts=21
-        )
-
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        self.dataset.close()
-        self.src_dataset.close()
-
-
-@attr.s
-class S1CReader(MultiBandReader):
+class S1L1CReader(MultiBandReader):
     """AWS Public Dataset Sentinel 1 reader."""
 
     sceneid: str = attr.ib()
@@ -55,6 +23,10 @@ class S1CReader(MultiBandReader):
     reader_options: Dict = attr.ib(factory=dict)
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
+
+    assets: Tuple = attr.ib(init=False, default=("vv", "vh"))
+    productInfo: Dict = attr.ib(init=False)
+    datageom: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-s1-l1c"
@@ -68,13 +40,11 @@ class S1CReader(MultiBandReader):
             self._prefix.format(**self.scene_params), "productInfo.json"
         )
 
-        # TODO: Should be cached
         self.productInfo = json.loads(
-            aws_get_object(self._hostname, productinfo_key, request_pays=True)
+            get_object(self._hostname, productinfo_key, request_pays=True)
         )
         self.datageom = self.productInfo["footprint"]
         self.bounds = featureBounds(self.datageom)
-        self.assets = ("vv", "vh")
         return self
 
     def _get_asset_url(self, asset: str) -> str:

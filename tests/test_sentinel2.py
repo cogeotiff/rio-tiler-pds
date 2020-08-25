@@ -6,14 +6,9 @@ from unittest.mock import patch
 import pytest
 import rasterio
 
-from rio_tiler.errors import InvalidAssetName
+from rio_tiler.errors import ExpressionMixingWarning, InvalidAssetName, MissingAssets
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel.aws import (
-    S2L1CReader,
-    S2L2ACOGReader,
-    S2L2AReader,
-    SentinelReader,
-)
+from rio_tiler_pds.sentinel.aws import S2L1CReader, S2L2ACOGReader, S2L2AReader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
@@ -57,7 +52,7 @@ def mock_rasterio_open(asset):
     return rasterio.open(asset)
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
+@patch("rio_tiler_pds.reader.aws_get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2L1CReader(rio, get_object):
     """Test AWSPDS_S2L1CReader."""
@@ -89,6 +84,22 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
         )
         with pytest.raises(InvalidAssetName):
             sentinel.stats(assets="B1")
+
+        values = sentinel.point(-69.41, 48.25, assets=("B01", "B02"))
+        assert values == [1193, 846]
+
+        values = sentinel.point(-69.41, 48.25, assets="B01")
+        assert values == [1193]
+
+        values = sentinel.point(-69.41, 48.25, expression="B01/B02")
+        assert values[0] == 1193.0 / 846.0
+
+        with pytest.raises(MissingAssets):
+            sentinel.point(-69.41, 48.25)
+
+        with pytest.warns(ExpressionMixingWarning):
+            values = sentinel.point(-69.41, 48.25, assets="B01", expression="B01/B02")
+            assert values[0] == 1193.0 / 846.0
 
         stats = sentinel.stats(assets="B01")
         assert stats["B01"]["pc"] == [1094, 8170]
@@ -122,7 +133,7 @@ with open(L2A_TJSON_PATH, "rb") as f:
     L2A_TILEJSON = f.read()
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
+@patch("rio_tiler_pds.reader.aws_get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2L2AReader(rio, get_object):
     """Test AWSPDS_S2L2AReader."""
@@ -151,9 +162,9 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
             "B11",
             "B12",
             "B8A",
-            "AOT",
-            "SCL",
-            "WVP",
+            # "AOT",
+            # "SCL",
+            # "WVP",
         )
         with pytest.raises(InvalidAssetName):
             sentinel.stats(assets="B1")
@@ -203,7 +214,7 @@ def mock_rasterio_open_cogs(asset):
     return rasterio.open(asset)
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
+@patch("rio_tiler_pds.reader.aws_get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2L2ACOGReader(rio, get_object):
     """Test AWSPDS_S2L2ACOGReader."""
@@ -232,9 +243,9 @@ def test_AWSPDS_S2L2ACOGReader(rio, get_object):
             "B11",
             "B12",
             "B8A",
-            "AOT",
-            "SCL",
-            "WVP",
+            # "AOT",
+            # "SCL",
+            # "WVP",
         )
         with pytest.raises(InvalidAssetName):
             sentinel.stats(assets="B1")
@@ -312,25 +323,3 @@ def test_sentinel_cogid_valid():
         "_day": "19",
     }
     assert s2_sceneid_parser(SENTINEL_COG_SCENE_L2) == expected_content
-
-
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.aws_get_object")
-def test_SentinelReader(get_object):
-    """Test AWSPDS_S1CReader."""
-    get_object.return_value = L1C_TILEJSON
-    with SentinelReader(SENTINEL_SCENE_L1) as sentinel:
-        assert isinstance(sentinel, S2L1CReader)
-        assert sentinel.tileInfo
-        assert sentinel.scene_params["processingLevel"] == "L1C"
-
-    get_object.return_value = L2A_TILEJSON
-    with SentinelReader(SENTINEL_SCENE_L2) as sentinel:
-        assert isinstance(sentinel, S2L2AReader)
-        assert sentinel.tileInfo
-        assert sentinel.scene_params["processingLevel"] == "L2A"
-
-    get_object.return_value = L2ACOG_JSON
-    with SentinelReader(SENTINEL_COG_SCENE_L2) as sentinel:
-        assert isinstance(sentinel, S2L2ACOGReader)
-        assert sentinel.tileInfo
-        assert sentinel.scene_params["processingLevel"] == "L2A"

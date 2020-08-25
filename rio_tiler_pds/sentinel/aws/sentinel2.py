@@ -3,7 +3,7 @@
 import json
 import os
 from collections import OrderedDict
-from typing import Dict, Type
+from typing import Dict, Tuple, Type
 
 import attr
 from rasterio.crs import CRS
@@ -13,10 +13,24 @@ from rasterio.warp import transform_geom
 from rio_tiler import constants
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler.io import BaseReader, COGReader
-from rio_tiler.utils import aws_get_object
 
-from ...reader import MultiBandReader
+from ...reader import MultiBandReader, get_object
 from ..utils import s2_sceneid_parser
+
+default_l1c_assets = (
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B09",
+    "B11",
+    "B12",
+    "B8A",
+)
 
 
 @attr.s
@@ -28,6 +42,10 @@ class S2L1CReader(MultiBandReader):
     reader_options: Dict = attr.ib(default={"nodata": 0})
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
+
+    assets: Tuple = attr.ib(init=False, default=default_l1c_assets)
+    tileInfo: Dict = attr.ib(init=False)
+    datageom: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-s2-l1c"
@@ -41,29 +59,13 @@ class S2L1CReader(MultiBandReader):
             self._prefix.format(**self.scene_params), "tileInfo.json"
         )
 
-        # TODO: Should be cached
         self.tileInfo = json.loads(
-            aws_get_object(self._hostname, tileinfo_key, request_pays=True)
+            get_object(self._hostname, tileinfo_key, request_pays=True)
         )
         input_geom = self.tileInfo["tileDataGeometry"]
         input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
         self.datageom = transform_geom(input_crs, constants.WGS84_CRS, input_geom)
         self.bounds = featureBounds(self.datageom)
-
-        self.assets = (
-            "B01",
-            "B02",
-            "B03",
-            "B04",
-            "B05",
-            "B06",
-            "B07",
-            "B08",
-            "B09",
-            "B11",
-            "B12",
-            "B8A",
-        )
         return self
 
     def _get_asset_url(self, asset: str) -> str:
@@ -107,56 +109,34 @@ SENTINEL_L2_PRODUCTS = OrderedDict(
     ]
 )
 
+default_l2a_assets = (
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B09",
+    "B11",
+    "B12",
+    "B8A",
+    # "AOT",
+    # "SCL",
+    # "WVP",
+)
+
 
 @attr.s
-class S2L2AReader(MultiBandReader):
+class S2L2AReader(S2L1CReader):
     """AWS Public Dataset Sentinel 2 L2A reader."""
 
-    sceneid: str = attr.ib()
-    reader: Type[BaseReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(default={"nodata": 0})
-    minzoom: int = attr.ib(init=False, default=8)
-    maxzoom: int = attr.ib(init=False, default=14)
+    assets: tuple = attr.ib(init=False, default=default_l2a_assets)
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-s2-l2a"
     _prefix: str = "tiles/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{_day}/{num}"
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        self.scene_params = s2_sceneid_parser(self.sceneid)
-
-        tileinfo_key = os.path.join(
-            self._prefix.format(**self.scene_params), "tileInfo.json"
-        )
-
-        # TODO: Should be cached
-        self.tileInfo = json.loads(
-            aws_get_object(self._hostname, tileinfo_key, request_pays=True)
-        )
-        input_geom = self.tileInfo["tileDataGeometry"]
-        input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
-        self.datageom = transform_geom(input_crs, constants.WGS84_CRS, input_geom)
-        self.bounds = featureBounds(self.datageom)
-
-        self.assets = (
-            "B01",
-            "B02",
-            "B03",
-            "B04",
-            "B05",
-            "B06",
-            "B07",
-            "B08",
-            "B09",
-            "B11",
-            "B12",
-            "B8A",
-            "AOT",
-            "SCL",
-            "WVP",
-        )
-        return self
 
     def _get_resolution(self, asset: str) -> str:
         """Return L2A resolution prefix"""
@@ -189,6 +169,9 @@ class S2L2ACOGReader(MultiBandReader):
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
 
+    assets: tuple = attr.ib(init=False, default=default_l2a_assets)
+    stac_item: Dict = attr.ib(init=False)
+
     _scheme: str = "s3"
     _hostname: str = "sentinel-cogs"
     _prefix: str = "sentinel-s2-l2a-cogs/{acquisitionYear}/{scene}"
@@ -197,33 +180,15 @@ class S2L2ACOGReader(MultiBandReader):
         """Support using with Context Managers."""
         self.scene_params = s2_sceneid_parser(self.sceneid)
 
-        tileinfo_key = os.path.join(
+        item_key = os.path.join(
             self._prefix.format(**self.scene_params), f"{self.sceneid}.json"
         )
 
-        # TODO: Should be cached
-        self.tileInfo = json.loads(
-            aws_get_object(self._hostname, tileinfo_key, request_pays=True)
+        self.stac_item = json.loads(
+            get_object(self._hostname, item_key, request_pays=True)
         )
-        self.bounds = self.tileInfo["bbox"]
+        self.bounds = self.stac_item["bbox"]
 
-        self.assets = (
-            "B01",
-            "B02",
-            "B03",
-            "B04",
-            "B05",
-            "B06",
-            "B07",
-            "B08",
-            "B09",
-            "B11",
-            "B12",
-            "B8A",
-            "AOT",
-            "SCL",
-            "WVP",
-        )
         return self
 
     def _get_asset_url(self, asset: str) -> str:

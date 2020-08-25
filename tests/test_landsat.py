@@ -40,7 +40,7 @@ def mock_rasterio_open(asset):
     return rasterio.open(asset)
 
 
-@patch("rio_tiler_pds.landsat.aws.landsat8.aws_get_object")
+@patch("rio_tiler_pds.reader.aws_get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_L8Reader(rio, get_object):
     """Should work as expected (get and parse metadata)."""

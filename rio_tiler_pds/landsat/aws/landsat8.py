@@ -11,9 +11,9 @@ from rio_tiler.errors import InvalidAssetName, MissingAssets
 from rio_tiler.expression import apply_expression
 from rio_tiler.io import BaseReader, COGReader
 from rio_tiler.tasks import multi_arrays, multi_values
-from rio_tiler.utils import aws_get_object, pansharpening_brovey
+from rio_tiler.utils import pansharpening_brovey
 
-from ...reader import MultiBandReader
+from ...reader import MultiBandReader, get_object
 from ..utils import dn_to_toa, sceneid_parser
 
 landsat8_valid_bands = (
@@ -42,6 +42,9 @@ class L8Reader(MultiBandReader):
     minzoom: int = attr.ib(init=False, default=7)
     maxzoom: int = attr.ib(init=False, default=12)
 
+    mtl_metadata: Dict = attr.ib(init=False)
+    assets: Tuple = attr.ib(init=False, default=landsat8_valid_bands)
+
     _scheme: str = "s3"
     _hostname: str = "landsat-pds"
     _prefix: str = "c1/L8/{path}/{row}/{scene}"
@@ -52,17 +55,14 @@ class L8Reader(MultiBandReader):
         mtl_file = os.path.join(
             self._prefix.format(**self.scene_params), f"{self.sceneid}_MTL.txt"
         )
-        # TODO: Should be cached
         self.mtl_metadata = toa_utils._parse_mtl_txt(
-            aws_get_object(self._hostname, mtl_file).decode()
+            get_object(self._hostname, mtl_file).decode()
         )
         self.bounds = tuple(
             toa_utils._get_bounds_from_metadata(
                 self.mtl_metadata["L1_METADATA_FILE"]["PRODUCT_METADATA"]
             )
         )
-        self.assets = landsat8_valid_bands
-
         return self
 
     def _get_asset_url(self, asset: str) -> str:

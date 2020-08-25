@@ -8,7 +8,7 @@ import rasterio
 
 from rio_tiler.errors import InvalidAssetName, MissingAssets, TileOutsideBounds
 from rio_tiler_pds.cbers.aws import CBERSReader
-from rio_tiler_pds.cbers.utils import cbers_parser
+from rio_tiler_pds.cbers.utils import sceneid_parser
 from rio_tiler_pds.errors import InvalidCBERSSceneId
 
 CBERS_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "cbers-pds")
@@ -185,7 +185,7 @@ def test_AWSPDS_CBERSReader_PAN5M(rio):
         assert len(bounds) == 4
         assert cbers.minzoom
         assert cbers.maxzoom
-        assert cbers.assets == ("B1")
+        assert cbers.assets == ("B1",)
 
         tile_z = 10
         tile_x = 390
@@ -217,7 +217,7 @@ def test_cbers_id_valid():
         "rgb": ("B7", "B6", "B5"),
     }
 
-    assert cbers_parser(scene) == expected_content
+    assert sceneid_parser(scene) == expected_content
 
     scene = "CBERS_4_AWFI_20171121_057_094_L2"
     expected_content = {
@@ -237,7 +237,7 @@ def test_cbers_id_valid():
         "rgb": ("B15", "B14", "B13"),
     }
 
-    assert cbers_parser(scene) == expected_content
+    assert sceneid_parser(scene) == expected_content
 
     scene = "CBERS_4_PAN10M_20171121_057_094_L2"
     expected_content = {
@@ -257,7 +257,7 @@ def test_cbers_id_valid():
         "rgb": ("B3", "B4", "B2"),
     }
 
-    assert cbers_parser(scene) == expected_content
+    assert sceneid_parser(scene) == expected_content
 
     scene = "CBERS_4_PAN5M_20171121_057_094_L2"
     expected_content = {
@@ -273,8 +273,8 @@ def test_cbers_id_valid():
         "scene": "CBERS_4_PAN5M_20171121_057_094_L2",
         "date": "2017-11-21",
         "reference_band": "B1",
-        "bands": ("B1"),
+        "bands": ("B1",),
         "rgb": ("B1", "B1", "B1"),
     }
 
-    assert cbers_parser(scene) == expected_content
+    assert sceneid_parser(scene) == expected_content

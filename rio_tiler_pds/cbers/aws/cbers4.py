@@ -8,7 +8,7 @@ from rio_tiler.errors import InvalidAssetName
 from rio_tiler.io import BaseReader, COGReader
 
 from ...reader import MultiBandReader
-from ..utils import cbers_parser
+from ..utils import sceneid_parser
 
 
 @attr.s
@@ -25,11 +25,11 @@ class CBERSReader(MultiBandReader):
 
     def __enter__(self):
         """Support using with Context Managers."""
-        self.scene_params = cbers_parser(self.sceneid)
+        self.scene_params = sceneid_parser(self.sceneid)
         self.assets = self.scene_params["bands"]
 
         ref = self._get_asset_url(self.scene_params["reference_band"])
-        # TODO: Should be cached
+
         with self.reader(ref, **self.reader_options) as cog:
             self.bounds = cog.bounds
             self.minzoom = cog.minzoom
