@@ -1,4 +1,4 @@
-# Rio-Tiler-PDS: A rio-tiler plugin for Public Dataset
+# Rio-Tiler-PDS: A rio-tiler plugin for Public Datasets
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/10407788/91102350-ffa75400-e636-11ea-8374-3450a72745c9.png" style="max-width: 800px;" alt="rio-tiler-pds"></a>
@@ -24,8 +24,7 @@
   </a>
 </p>
 
-
-**Important** This is the new hosting module for rio-tiler mission specific code: please see https://github.com/cogeotiff/rio-tiler/issues/195
+**Important** This is the new module for rio-tiler missions specific (ref: https://github.com/cogeotiff/rio-tiler/issues/195)
 
 ## Install
 
