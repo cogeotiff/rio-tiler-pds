@@ -325,16 +325,16 @@ with S2L2AReader("S2A_L2A_20170729_19UDP_0") as sentinel:
       }
 ```
 
-#### L2A - COG
+#### COG (Only L2A available for now)
 
 assets: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
 Note: `AOT, SCL, WVP` assets are not supported.
 
 ```python
-from rio_tiler_pds.sentinel.aws import S2L2ACOGReader  
+from rio_tiler_pds.sentinel.aws import S2COGReader  
 
-with S2L2ACOGReader("S2A_29RKH_20200219_0_L2A") as sentinel: 
+with S2COGReader("S2A_29RKH_20200219_0_L2A") as sentinel: 
     print(sentinel.assets)
     > ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')
 
