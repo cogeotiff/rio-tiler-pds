@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.0.1 (2020-08-25)
+## 0.0.1 (2020-08-26)
 
 Initial release.
 
