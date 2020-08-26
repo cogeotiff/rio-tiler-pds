@@ -19,11 +19,6 @@ class CBERSReader(MultiBandReader):
         sceneid (str): CBERS 4 sceneid.
 
     Attributes:
-        bounds (tuple): scene's bounds.
-        minzoom (int): scene's Min Zoom level (default is 8).
-        maxzoom (int): scene's Max Zoom level (default is 14).
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
         scene_params (dict): scene id parameters.
         assets (tuple): list of available assets (default is defined for each sensor).
 
@@ -56,7 +51,7 @@ class CBERSReader(MultiBandReader):
         return self
 
     def _get_asset_url(self, asset: str) -> str:
-        """Validate band name and return asset's url."""
+        """Validate asset's name and return asset's url."""
         if asset not in self.assets:
             raise InvalidAssetName(f"{asset} is not valid")
 

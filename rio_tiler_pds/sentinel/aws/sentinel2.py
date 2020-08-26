@@ -42,11 +42,8 @@ class S2L1CReader(MultiBandReader):
         sceneid (str): Sentinel-2 L1C sceneid.
 
     Attributes:
-        bounds (tuple): scene's bounds.
-        minzoom (int): scene's Min Zoom level (default is 8).
-        maxzoom (int): scene's Max Zoom level (default is 14).
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
+        minzoom (int): Dataset's Min Zoom level (default is 8).
+        maxzoom (int): Dataset's Max Zoom level (default is 14).
         scene_params (dict): scene id parameters.
         assets (tuple): list of available assets (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
         tileInfo (dict): sentinel 2 tileInfo.json content.
@@ -157,15 +154,7 @@ class S2L2AReader(S2L1CReader):
         sceneid (str): Sentinel-2 L2A sceneid.
 
     Attributes:
-        bounds (tuple): scene's bounds.
-        minzoom (int): scene's Min Zoom level (default is 8).
-        maxzoom (int): scene's Max Zoom level (default is 14).
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
-        scene_params (dict): scene id parameters.
         assets (tuple): list of available assets (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
-        tileInfo (dict): sentinel 2 tileInfo.json content.
-        datageom (dict): sentinel 2 data geometry.
 
     Examples:
         >>> with S2L1CReader('S2A_L1C_20170729_19UDP_0') as scene:
@@ -208,11 +197,8 @@ class S2COGReader(MultiBandReader):
         sceneid (str): Sentinel-2 sceneid.
 
     Attributes:
-        bounds (tuple): scene's bounds.
-        minzoom (int): scene's Min Zoom level (default is 8).
-        maxzoom (int): scene's Max Zoom level (default is 14).
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
+        minzoom (int): Dataset's Min Zoom level (default is 8).
+        maxzoom (int): Dataset's Max Zoom level (default is 14).
         scene_params (dict): scene id parameters.
         assets (tuple): list of available assets (defined by the STAC item.json).
         stac_item (dict): sentinel 2 COG STAC item content.

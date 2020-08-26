@@ -40,11 +40,8 @@ class L8Reader(MultiBandReader):
         sceneid (str): Landsat 8 sceneid.
 
     Attributes:
-        bounds (tuple): scene's bounds.
-        minzoom (int): scene's Min Zoom level (default is 7).
-        maxzoom (int): scene's Max Zoom level (default is 12).
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
+        minzoom (int): Dataset's Min Zoom level (default is 7).
+        maxzoom (int): Dataset's Max Zoom level (default is 12).
         scene_params (dict): scene id parameters.
         assets (tuple): list of available assets (default is ('B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'BQA')).
         mtl_metadata (dict): Landsat 8 MTL document content.

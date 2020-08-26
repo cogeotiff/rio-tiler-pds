@@ -22,11 +22,8 @@ class S1L1CReader(MultiBandReader):
         sceneid (str): Sentinel-1 sceneid.
 
     Attributes:
-        bounds (tuple): scene's bounds.
-        minzoom (int): scene's Min Zoom level (default is 8).
-        maxzoom (int): scene's Max Zoom level (default is 14).
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
+        minzoom (int): Dataset's Min Zoom level (default is 8).
+        maxzoom (int): Dataset's Max Zoom level (default is 14).
         assets (tuple): list of available assets (default is ('vv', 'vh')).
         productInfo (dict): sentinel 1 productInfo.json content.
         datageom (dict): sentinel 1 data geometry.

@@ -29,11 +29,9 @@ class MultiBandReader(MultiBaseReader):
     """Multi Band Reader.
 
     Attributes:
-        bounds (tuple): scene's bounds.
-        minzoom (int): scene's Min Zoom level (default is 8).
-        maxzoom (int): scene's Max Zoom level (default is 14).
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
+        bounds (tuple): Dataset's bounds.
+        minzoom (int): Dataset's Min Zoom level.
+        maxzoom (int): Dataset's Max Zoom level.
 
     """
 
@@ -51,7 +49,7 @@ class MultiBandReader(MultiBaseReader):
 
     @property
     def spatial_info(self) -> Dict:
-        """Return Dataset's spatial info."""
+        """Dataset's spatial info (bounds, center and zooms)."""
         return {
             "bounds": self.bounds,
             "center": self.center,
@@ -162,7 +160,7 @@ class MultiBandReader(MultiBaseReader):
         ] = "",  # Expression for each asset based on index names
         **kwargs: Any,
     ) -> List:
-        """Read a value from COGs."""
+        """Read a pixel values from multiple assets,"""
         if isinstance(assets, str):
             assets = (assets,)
 
@@ -202,11 +200,6 @@ class GCPCOGReader(COGReader):
     """Custom COG Reader with GCPS support.
 
     Attributes:
-        bounds (tuple): COG's bounds.
-        minzoom (int): COG's Min Zoom level.
-        maxzoom (int): COG's Max Zoom level.
-        center (tuple): scene center + minzoom.
-        spatial_info (dict): bounds, center and zooms info.
         src_dataset (DatasetReader): rasterio openned dataset.
         dataset (WarpedVRT): rasterio WarpedVRT dataset.
 
