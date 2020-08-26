@@ -69,7 +69,7 @@ If there is a dataset that can easily be described with a `scene id` please feel
 
 ## Warnings
 
-#### Requester-pays Buckets 
+#### Requester-pays Buckets
 
 On AWS, `sentinel2`, `sentinel1`, and `cbers` dataset are stored in a `requester-pays` bucket, meaning the cost of GET, LIST requests will be charged to the users. For rio-tiler to work with those buckets, you'll need to set `AWS_REQUEST_PAYER="requester"` in your environement.
 
@@ -89,7 +89,7 @@ Ref: [Do you really want people using your data](https://medium.com/@_VincentS_/
 Each dataset has its own submodule (e.g sentinel2: `rio_tiler_pds.sentinel.aws`)
 
 ```python
-from rio_tiler_pds.landsat.aws import L8Reader 
+from rio_tiler_pds.landsat.aws import L8Reader
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 from rio_tiler_pds.sentinel.aws import (
     S2L1CReader,  # JPEG2000
@@ -113,7 +113,7 @@ All Readers are subclass of [`rio_tiler.io.BaseReader`](https://github.com/cogeo
 - **info**: Returns asset's (band) simple info (e.g nodata, band_descriptions, ....)
 - **stats**: Returns asset's statistics (percentile, histogram, ...)
 - **metadata**: info + stats
-- **tile**: Read web mercator map tile from assets (bands) 
+- **tile**: Read web mercator map tile from assets (bands)
 - **part**: Extract part of assets (bands)
 - **preview**: Returns a low resolution preview from assets (bands)
 - **point**: Returns asset's pixel value for a given lon,lat
@@ -127,14 +127,14 @@ All readers take scene id as main input. The **scene id** is used internaly by t
 
 e.g: Landsat on AWS
 
-Because the Landsat AWS PDS follows a regular schema to store the data (`s3://{bucket}/c1/L8/{path}/{row}/{scene}/{scene}_{asset}.TIF"`), we can easily reconstruct the full asset's path by parsing the scene id. 
+Because the Landsat AWS PDS follows a regular schema to store the data (`s3://{bucket}/c1/L8/{path}/{row}/{scene}/{scene}_{asset}.TIF"`), we can easily reconstruct the full asset's path by parsing the scene id.
 
 ```python
-from rio_tiler_pds.landsat.aws import L8Reader 
-from rio_tiler_pds.landsat.utils import sceneid_parser   
+from rio_tiler_pds.landsat.aws import L8Reader
+from rio_tiler_pds.landsat.utils import sceneid_parser
 
 sceneid_parser("LC08_L1TP_016037_20170813_20170814_01_RT")
-      
+
 > {
   'sensor': 'C',
   'satellite': '08',
@@ -153,9 +153,9 @@ sceneid_parser("LC08_L1TP_016037_20170813_20170814_01_RT")
   'date': '2017-08-13'
 }
 
-with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat: 
-    print(landsat._get_asset_url("B1")) 
-            
+with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
+    print(landsat._get_asset_url("B1"))
+
 > s3://landsat-pds/c1/L8/016/037/LC08_L1TP_016037_20170813_20170814_01_RT/LC08_L1TP_016037_20170813_20170814_01_RT_B1.TIF
 ```
 
@@ -165,7 +165,7 @@ Each Dataset have their specific scene id format:
 
 - Landsat
   - link: [rio_tiler_pds.landsat.utils.sceneid_parser](https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/landsat/utils.py#L35-L56)
-  - regex: `^L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$` 
+  - regex: `^L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$`
   - example: `LC08_L1TP_016037_20170813_20170814_01_RT`
 
 - Sentinel 1 L1C
@@ -173,7 +173,7 @@ Each Dataset have their specific scene id format:
   - regex: `^S1[AB]_(IW)|(EW)_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$`
   - example: `S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B`
 
-- Sentinel 2 JPEG200 and Sentinel 2 COG 
+- Sentinel 2 JPEG200 and Sentinel 2 COG
   - link: [rio_tiler_pds.sentinel.utils.s2_sceneid_parser](https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/sentinel/utils.py#L25-L60)
   - regex: `^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$` or `^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$`
   - example: `S2A_29RKH_20200219_0_L2A`, `S2A_L1C_20170729_19UDP_0`, `S2A_L2A_20170729_19UDP_0`
@@ -187,7 +187,7 @@ Each Dataset have their specific scene id format:
 
 ### File Per Band
 
-rio-tiler-pds Readers assume that assets (eo:band) are stored in separate files. 
+rio-tiler-pds Readers assume that assets (eo:band) are stored in separate files.
 
 ```bash
 $ aws s3 ls landsat-pds/c1/L8/013/031/LC08_L1TP_013031_20130930_20170308_01_T1/
@@ -208,7 +208,7 @@ LC08_L1TP_013031_20130930_20170308_01_T1_BQA.TIF
 
 When reading data or metadata, readers will merge them.
 
-e.g 
+e.g
 ```python
 with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
     tile, mask = sentinel.tile(77, 89, 8, assets=("B01", "B02")
@@ -250,4 +250,3 @@ See [AUTHORS.txt](https://github.com/cogeotiff/rio-tiler-pds/blob/master/AUTHORS
 ## Changes
 
 See [CHANGES.md](https://github.com/cogeotiff/rio-tiler-pds/blob/master/CHANGES.md).
-

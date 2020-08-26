@@ -27,6 +27,7 @@ nav:
   - Usage: 'usage.md'
   - Development - Contributing: 'contributing.md'
   - Release: 'release-notes.md'
+  - API: mkapi/api/rio_tiler_pds
 
 # Theme
 theme:
@@ -41,6 +42,10 @@ theme:
   font:
     text: 'Nunito Sans'
     code: 'Fira Code'
+
+plugins:
+  - search
+  - mkapi
 
 # Uncomment if I use math in the docs in the future
 # extra_javascript:
