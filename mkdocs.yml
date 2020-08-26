@@ -27,7 +27,10 @@ nav:
   - Usage: 'usage.md'
   - Development - Contributing: 'contributing.md'
   - Release: 'release-notes.md'
-  - API: mkapi/api/rio_tiler_pds
+  - API: 
+    - landsat: API/landsat.md
+    - sentinel: API/sentinel.md
+    - cbers: API/cbers.md
 
 # Theme
 theme:
@@ -43,10 +46,19 @@ theme:
     text: 'Nunito Sans'
     code: 'Fira Code'
 
+extra_css:
+  - css/mkdocstrings.css
+
 plugins:
   - search
-  - mkapi:
-      src_dirs: [rio_tiler_pds]
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          rendering:
+            show_source: true  
+      watch:
+        - rio_tiler_pds
 
 # Uncomment if I use math in the docs in the future
 # extra_javascript:
