@@ -1,6 +1,6 @@
-# Contributing
+# Development - Contributing
 
-Issues and pull requests are more than welcome.
+Issues and pull requests are more than welcome: https://github.com/cogeotiff/rio-tiler-pds/issues
 
 **dev install**
 
