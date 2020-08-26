@@ -27,7 +27,11 @@ nav:
   - Usage: 'usage.md'
   - Development - Contributing: 'contributing.md'
   - Release: 'release-notes.md'
-  - API: mkapi/api/rio_tiler_pds
+  - API:
+    - BaseClasses: API/baseclasses.md
+    - cbers: API/cbers.md
+    - sentinel: API/sentinel.md
+    - landsat: API/landsat.md
 
 # Theme
 theme:
