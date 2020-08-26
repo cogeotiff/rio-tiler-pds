@@ -45,7 +45,8 @@ theme:
 
 plugins:
   - search
-  - mkapi
+  - mkapi:
+      src_dirs: [rio_tiler_pds]
 
 # Uncomment if I use math in the docs in the future
 # extra_javascript:
