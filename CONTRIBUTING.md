@@ -17,3 +17,21 @@ This repo is set to use `pre-commit` to run *isort*, *flake8*, *pydocstring*, *b
 ```bash
 $ pre-commit install
 ```
+
+### Docs
+
+```
+pip install mkdocs mkdocs-material pygments mkapi
+```
+
+Hot-reloading docs:
+
+```
+mkdocs serve
+```
+
+Deploy docs:
+
+```
+mkdocs gh-deploy
+```
