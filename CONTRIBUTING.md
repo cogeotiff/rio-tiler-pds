@@ -21,16 +21,19 @@ $ pre-commit install
 ### Docs
 
 ```
-pip install mkdocs mkdocs-material pygments mkapi
+pip install rio_tiler_pds[docs]
 ```
 
 Hot-reloading docs:
 
 ```
+git clone https://github.com/cogeotiff/rio-tiler-pds
+cd rio-tiler-pds
 mkdocs serve
 ```
 
-Deploy docs:
+To manually deploy docs (note you should never need to do this because Github
+Actions deploys automatically for new commits.):
 
 ```
 mkdocs gh-deploy
