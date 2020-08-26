@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.0.1 (2020-08-25)
+## 0.0.1 (2020-08-26)
 
 Initial release.
 
@@ -15,7 +15,7 @@ Initial release.
 
 #### Readers
 ```python
-from rio_tiler_pds.landsat.aws import L8Reader 
+from rio_tiler_pds.landsat.aws import L8Reader
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 from rio_tiler_pds.sentinel.aws import (
     S2L1CReader,  # JPEG2000
