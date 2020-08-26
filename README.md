@@ -69,7 +69,7 @@ If there is a dataset that can easily be described with a `scene id` please feel
 
 ## Warnings
 
-#### Requester-pays Buckets 
+#### Requester-pays Buckets
 
 On AWS, `sentinel2`, `sentinel1`, and `cbers` dataset are stored in a `requester-pays` bucket, meaning the cost of GET, LIST requests will be charged to the users. For rio-tiler to work with those buckets, you'll need to set `AWS_REQUEST_PAYER="requester"` in your environement.
 
