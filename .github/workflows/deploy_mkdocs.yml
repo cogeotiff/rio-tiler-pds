@@ -19,6 +19,11 @@ jobs:
       - name: Checkout master
         uses: actions/checkout@v1
 
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.x" 
+     
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
