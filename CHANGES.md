@@ -15,7 +15,7 @@ Initial release.
 
 #### Readers
 ```python
-from rio_tiler_pds.landsat.aws import L8Reader 
+from rio_tiler_pds.landsat.aws import L8Reader
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 from rio_tiler_pds.sentinel.aws import (
     S2L1CReader,  # JPEG2000
