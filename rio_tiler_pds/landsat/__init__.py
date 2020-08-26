@@ -1,0 +1,1 @@
+"""rio-tiler-pds.landsat"""

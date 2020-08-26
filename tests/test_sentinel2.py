@@ -1,17 +1,37 @@
 """tests rio_tiler.sentinel2"""
 
 import os
+from unittest.mock import patch
 
 import pytest
 import rasterio
-from mock import patch
 
-from rio_tiler.errors import InvalidBandName, InvalidSentinelSceneId, TileOutsideBounds
-from rio_tiler_pds import sentinel2
+from rio_tiler.errors import ExpressionMixingWarning, InvalidAssetName, MissingAssets
+from rio_tiler_pds.errors import InvalidSentinelSceneId
+from rio_tiler_pds.sentinel.aws import S2COGReader, S2L1CReader, S2L2AReader
+from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
-SENTINEL_SCENE = "S2A_L1C_20170729_19UDP_0"
+SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
 SENTINEL_SCENE_L2 = "S2A_L2A_20170729_19UDP_0"
+SENTINEL_COG_SCENE_L2 = "S2A_29RKH_20200219_0_L2A"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s2")
+
+L1C_TJSON_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "fixtures",
+    "sentinel-s2-l1c",
+    "tiles",
+    "19",
+    "U",
+    "DP",
+    "2017",
+    "7",
+    "29",
+    "0",
+    "tileInfo.json",
+)
+with open(L1C_TJSON_PATH, "rb") as f:
+    L1C_TILEJSON = f.read()
 
 
 @pytest.fixture(autouse=True)
@@ -32,93 +52,243 @@ def mock_rasterio_open(asset):
     return rasterio.open(asset)
 
 
-@patch("rio_tiler_pds.sentinel2.rasterio")
-def test_bounds_valid(rio):
-    """Should work as expected (get bounds)."""
+@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_S2L1CReader(rio, get_object):
+    """Test AWSPDS_S2L1CReader."""
     rio.open = mock_rasterio_open
+    get_object.return_value = L1C_TILEJSON
 
-    meta = sentinel2.bounds(SENTINEL_SCENE)
-    assert meta.get("sceneid") == "S2A_L1C_20170729_19UDP_0"
-    assert len(meta.get("bounds")) == 4
-
-
-@patch("rio_tiler.reader.rasterio")
-def test_metadata_valid_default(rio):
-    """Get bounds and get stats for all bands."""
-    rio.open = mock_rasterio_open
-
-    meta = sentinel2.metadata(SENTINEL_SCENE)
-    assert meta["sceneid"] == SENTINEL_SCENE
-    assert len(meta["bounds"]) == 4
-    assert len(meta["statistics"].items()) == 13
-    assert meta["statistics"]["01"]["pc"] == [1094, 8170]
-
-
-@patch("rio_tiler.reader.rasterio")
-def test_metadata_valid_custom(rio):
-    """Get bounds and get stats for all bands with custom percentiles."""
-    rio.open = mock_rasterio_open
-
-    meta = sentinel2.metadata(SENTINEL_SCENE, pmin=5, pmax=95)
-    assert meta["sceneid"] == SENTINEL_SCENE
-    assert len(meta["bounds"]) == 4
-    assert len(meta["statistics"].items()) == 13
-    assert meta["statistics"]["01"]["pc"] == [1116, 7166]
-
-    meta = sentinel2.metadata(
-        SENTINEL_SCENE, pmin=5, pmax=95, hist_options=dict(bins=20)
-    )
-    assert meta["sceneid"] == SENTINEL_SCENE
-    assert len(meta["bounds"]) == 4
-    assert len(meta["statistics"].items()) == 13
-    assert meta["statistics"]["01"]["pc"] == [1116, 7166]
-    assert len(meta["statistics"]["01"]["histogram"][0]) == 20
-
-    meta = sentinel2.metadata(SENTINEL_SCENE, hist_options=dict(range=[1000, 4000]))
-    assert meta["sceneid"] == SENTINEL_SCENE
-    assert len(meta["statistics"]["01"]["histogram"][0]) == 10
-
-
-@patch("rio_tiler_pds.sentinel2.rasterio")
-@patch("rio_tiler.reader.rasterio")
-def test_tile_valid_default(rio, srio):
-    """Should work as expected."""
-    rio.open = mock_rasterio_open
-    srio.open = mock_rasterio_open
-
-    tile_z = 8
-    tile_x = 77
-    tile_y = 89
-
-    data, mask = sentinel2.tile(SENTINEL_SCENE, tile_x, tile_y, tile_z)
-    assert data.shape == (3, 256, 256)
-    assert mask.shape == (256, 256)
-
-    data, mask = sentinel2.tile(
-        SENTINEL_SCENE, tile_x, tile_y, tile_z, bands=("08", "04", "03")
-    )
-    assert data.shape == (3, 256, 256)
-    assert mask.shape == (256, 256)
-
-    data, mask = sentinel2.tile(SENTINEL_SCENE, tile_x, tile_y, tile_z, bands="08")
-    assert data.shape == (1, 256, 256)
-    assert mask.shape == (256, 256)
-
-    with pytest.raises(InvalidBandName):
-        sentinel2.tile(SENTINEL_SCENE, tile_x, tile_y, tile_z, bands="9A")
-
-    tile_z = 8
-    tile_x = 177
-    tile_y = 89
-
-    with pytest.raises(TileOutsideBounds):
-        sentinel2.tile(SENTINEL_SCENE, tile_x, tile_y, tile_z)
-
-
-def test_sentinel_id_invalid():
-    """Raises error on invalid sentinel-2 sceneid."""
     with pytest.raises(InvalidSentinelSceneId):
-        sentinel2.sentinel2_parser("S2A_tile_20170323_17SNC")
+        with S2L1CReader("S2A_tile_20170323_17SNC"):
+            pass
+
+    with S2L1CReader(SENTINEL_SCENE_L1) as sentinel:
+        assert sentinel.scene_params["scene"] == "S2A_19UDP_20170729_0_L1C"
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sentinel.assets == (
+            "B01",
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B09",
+            "B11",
+            "B12",
+            "B8A",
+        )
+        with pytest.raises(InvalidAssetName):
+            sentinel.stats(assets="B1")
+
+        values = sentinel.point(-69.41, 48.25, assets=("B01", "B02"))
+        assert values == [1193, 846]
+
+        values = sentinel.point(-69.41, 48.25, assets="B01")
+        assert values == [1193]
+
+        values = sentinel.point(-69.41, 48.25, expression="B01/B02")
+        assert values[0] == 1193.0 / 846.0
+
+        with pytest.raises(MissingAssets):
+            sentinel.point(-69.41, 48.25)
+
+        with pytest.warns(ExpressionMixingWarning):
+            values = sentinel.point(-69.41, 48.25, assets="B01", expression="B01/B02")
+            assert values[0] == 1193.0 / 846.0
+
+        stats = sentinel.stats(assets="B01")
+        assert stats["B01"]["pc"] == [1094, 8170]
+
+        metadata = sentinel.metadata(assets="B01")
+        assert metadata["statistics"]["B01"]["pc"] == [1094, 8170]
+
+        tile_z = 8
+        tile_x = 78
+        tile_y = 89
+        data, mask = sentinel.tile(tile_x, tile_y, tile_z, assets=("B04", "B03", "B02"))
+        assert data.shape == (3, 256, 256)
+        assert mask.shape == (256, 256)
+
+
+L2A_TJSON_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "fixtures",
+    "sentinel-s2-l2a",
+    "tiles",
+    "19",
+    "U",
+    "DP",
+    "2017",
+    "7",
+    "29",
+    "0",
+    "tileInfo.json",
+)
+with open(L2A_TJSON_PATH, "rb") as f:
+    L2A_TILEJSON = f.read()
+
+
+@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_S2L2AReader(rio, get_object):
+    """Test AWSPDS_S2L2AReader."""
+    rio.open = mock_rasterio_open
+    get_object.return_value = L2A_TILEJSON
+
+    with pytest.raises(InvalidSentinelSceneId):
+        with S2L1CReader("S2A_tile_20170323_17SNC"):
+            pass
+
+    with S2L2AReader(SENTINEL_SCENE_L2) as sentinel:
+        assert sentinel.scene_params["scene"] == "S2A_19UDP_20170729_0_L2A"
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sentinel.assets == (
+            "B01",
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B09",
+            "B11",
+            "B12",
+            "B8A",
+            # "AOT",
+            # "SCL",
+            # "WVP",
+        )
+        with pytest.raises(InvalidAssetName):
+            sentinel.stats(assets="B1")
+
+        stats = sentinel.stats(assets="B01")
+        assert stats["B01"]["pc"] == [1094, 8170]
+
+        metadata = sentinel.metadata(assets="B01")
+        assert metadata["statistics"]["B01"]["pc"] == [1094, 8170]
+
+        tile_z = 8
+        tile_x = 78
+        tile_y = 89
+        data, mask = sentinel.tile(tile_x, tile_y, tile_z, assets=("B04", "B03", "B02"))
+        assert data.shape == (3, 256, 256)
+        assert mask.shape == (256, 256)
+
+        assert sentinel._get_resolution("B01") == "60"
+        assert sentinel._get_resolution("B02") == "10"
+        assert sentinel._get_resolution("B06") == "20"
+        assert sentinel._get_resolution("AOT") == "10"
+        assert sentinel._get_resolution("SCL") == "20"
+
+
+L2ACOG_TJSON_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "fixtures",
+    "sentinel-cogs",
+    "sentinel-s2-l2a-cogs",
+    "2020",
+    SENTINEL_COG_SCENE_L2,
+    f"{SENTINEL_COG_SCENE_L2}.json",
+)
+with open(L2ACOG_TJSON_PATH, "rb") as f:
+    L2ACOG_JSON = f.read()
+
+
+SENTINEL_COG_BUCKET = os.path.join(
+    os.path.dirname(__file__), "fixtures", "sentinel-cogs"
+)
+
+
+def mock_rasterio_open_cogs(asset):
+    """Mock rasterio Open for Sentinel2 dataset."""
+    assert asset.startswith("s3://sentinel-cogs")
+    asset = asset.replace("s3://sentinel-cogs", SENTINEL_COG_BUCKET)
+    return rasterio.open(asset)
+
+
+@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_S2COGReader(rio, get_object):
+    """Test AWSPDS_S2L2ACOGReader."""
+    rio.open = mock_rasterio_open_cogs
+    get_object.return_value = L2ACOG_JSON
+
+    with pytest.raises(InvalidSentinelSceneId):
+        with S2COGReader("S2A_tile_20170323_17SNC"):
+            pass
+
+    with S2COGReader(SENTINEL_COG_SCENE_L2) as sentinel:
+        assert sentinel.scene_params["scene"] == SENTINEL_COG_SCENE_L2
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sorted(sentinel.assets) == sorted(
+            (
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B11",
+                "B12",
+                "B8A",
+            )
+        )
+        with pytest.raises(InvalidAssetName):
+            sentinel.stats(assets="B1")
+
+        stats = sentinel.stats(assets="B01")
+        assert stats["B01"]["pc"] == [1029, 1929]
+
+        assert (
+            sentinel._get_asset_url("B01")
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
+        )
+
+    # Test with legacy Scene id format
+    with S2COGReader("S2A_L2A_20200219_29RKH_0") as sentinel:
+        assert sentinel.scene_params["scene"] == "S2A_29RKH_20200219_0_L2A"
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sorted(sentinel.assets) == sorted(
+            (
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B11",
+                "B12",
+                "B8A",
+            )
+        )
+        with pytest.raises(InvalidAssetName):
+            sentinel.stats(assets="B1")
+
+        stats = sentinel.stats(assets="B01")
+        assert stats["B01"]["pc"] == [1029, 1929]
+
+        assert (
+            sentinel._get_asset_url("B01")
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
+        )
 
 
 def test_sentinel_newid_valid():
@@ -134,44 +304,14 @@ def test_sentinel_newid_valid():
         "lat": "U",
         "sq": "DP",
         "num": "0",
-        "scene": "S2A_L1C_20170729_19UDP_0",
-        "scheme": "s3",
-        "bucket": "sentinel-s2-l1c",
-        "prefix": "tiles/19/U/DP/2017/7/29/0",
-        "preview_file": "preview.jp2",
-        "preview_prefix": "",
-        "bands": [
-            "02",
-            "03",
-            "04",
-            "08",
-            "05",
-            "06",
-            "07",
-            "11",
-            "12",
-            "8A",
-            "01",
-            "09",
-            "10",
-        ],
-        "valid_bands": [
-            "02",
-            "03",
-            "04",
-            "08",
-            "05",
-            "06",
-            "07",
-            "11",
-            "12",
-            "8A",
-            "01",
-            "09",
-            "10",
-        ],
+        "scene": "S2A_19UDP_20170729_0_L1C",
+        "date": "2017-07-29",
+        "_utm": "19",
+        "_month": "7",
+        "_day": "29",
+        "_levelLow": "l1c",
     }
-    assert sentinel2.sentinel2_parser(SENTINEL_SCENE) == expected_content
+    assert s2_sceneid_parser(SENTINEL_SCENE_L1) == expected_content
 
 
 def test_sentinel_newidl2a_valid():
@@ -187,89 +327,34 @@ def test_sentinel_newidl2a_valid():
         "lat": "U",
         "sq": "DP",
         "num": "0",
-        "scene": "S2A_L2A_20170729_19UDP_0",
-        "scheme": "s3",
-        "bucket": "sentinel-s2-l2a",
-        "prefix": "tiles/19/U/DP/2017/7/29/0",
-        "preview_file": "R60m/TCI.jp2",
-        "preview_prefix": "R60m",
-        "bands": [
-            "01",
-            "02",
-            "03",
-            "04",
-            "05",
-            "06",
-            "07",
-            "08",
-            "09",
-            "11",
-            "12",
-            "8A",
-        ],
-        "valid_bands": [
-            "01",
-            "02",
-            "03",
-            "04",
-            "05",
-            "06",
-            "07",
-            "08",
-            "09",
-            "11",
-            "12",
-            "8A",
-            "AOT",
-            "SCL",
-            "WVP",
-        ],
+        "scene": "S2A_19UDP_20170729_0_L2A",
+        "date": "2017-07-29",
+        "_utm": "19",
+        "_month": "7",
+        "_day": "29",
+        "_levelLow": "l2a",
     }
-    assert sentinel2.sentinel2_parser(SENTINEL_SCENE_L2) == expected_content
+    assert s2_sceneid_parser(SENTINEL_SCENE_L2) == expected_content
 
 
-@patch("rio_tiler_pds.sentinel2.rasterio")
-def test_boundsl2_valid(rio):
-    """Should work as expected (get bounds)."""
-    rio.open = mock_rasterio_open
-
-    meta = sentinel2.bounds(SENTINEL_SCENE_L2)
-    assert meta.get("sceneid") == "S2A_L2A_20170729_19UDP_0"
-    assert len(meta.get("bounds")) == 4
-
-
-@patch("rio_tiler.reader.rasterio")
-def test_metadatal2_valid_default(rio):
-    """Get bounds and get stats for all bands."""
-    rio.open = mock_rasterio_open
-
-    meta = sentinel2.metadata(SENTINEL_SCENE_L2)
-    assert meta["sceneid"] == SENTINEL_SCENE_L2
-    assert len(meta["bounds"]) == 4
-    assert len(meta["statistics"].items()) == 12
-    assert meta["statistics"]["01"]["pc"] == [1094, 8170]
-
-
-@patch("rio_tiler_pds.sentinel2.rasterio")
-@patch("rio_tiler.reader.rasterio")
-def test_tile_validl2_default(rio, srio):
-    """Should work as expected."""
-    rio.open = mock_rasterio_open
-    srio.open = mock_rasterio_open
-
-    tile_z = 8
-    tile_x = 77
-    tile_y = 89
-
-    data, mask = sentinel2.tile(SENTINEL_SCENE_L2, tile_x, tile_y, tile_z)
-    assert data.shape == (3, 256, 256)
-    assert mask.shape == (256, 256)
-
-
-def test_prefixed_bands():
-    """Should work as expected."""
-    assert sentinel2._l2_prefixed_band("01") == "R60m/B01"
-    assert sentinel2._l2_prefixed_band("02") == "R10m/B02"
-    assert sentinel2._l2_prefixed_band("06") == "R20m/B06"
-    assert sentinel2._l2_prefixed_band("AOT") == "R10m/AOT"
-    assert sentinel2._l2_prefixed_band("SCL") == "R20m/SCL"
+def test_sentinel_cogid_valid():
+    """Parse sentinel-2 COG id valid sceneid and return metadata."""
+    expected_content = {
+        "sensor": "2",
+        "satellite": "A",
+        "processingLevel": "L2A",
+        "acquisitionYear": "2020",
+        "acquisitionMonth": "02",
+        "acquisitionDay": "19",
+        "utm": "29",
+        "lat": "R",
+        "sq": "KH",
+        "num": "0",
+        "scene": "S2A_29RKH_20200219_0_L2A",
+        "date": "2020-02-19",
+        "_utm": "29",
+        "_month": "2",
+        "_day": "19",
+        "_levelLow": "l2a",
+    }
+    assert s2_sceneid_parser(SENTINEL_COG_SCENE_L2) == expected_content
