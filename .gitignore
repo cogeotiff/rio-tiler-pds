@@ -1,3 +1,6 @@
+# Auto-generated API docs
+docs/api/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -105,4 +108,4 @@ ENV/
 
 .benchmarks/
 tests/benchmarks/data/*
-tests/fixtures/mask* 
+tests/fixtures/mask*

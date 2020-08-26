@@ -11,7 +11,7 @@ inst_reqs = ["rio-tiler>=2.0b8", "rio-toa"]
 extra_reqs = {
     "test": ["pytest", "pytest-cov"],
     "dev": ["pytest", "pytest-cov", "pre-commit"],
-    "docs": ["mkdocs", "mkdocs-material"],
+    "docs": ["mkdocs", "mkdocs-material", "pygments", "mkapi"],
 }
 
 setup(
