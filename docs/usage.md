@@ -140,73 +140,90 @@ with S1L1CReader("S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A
 
 ## Landsat 8 - AWS
 
+Landsat 8 dataset hosted on AWS are not a proper Cloud Optimized GeoTIFF because they have external overviews. To make sure the performance is good enough and limit the number of LIST/GET requests from GDAL/Rasterio, we can set some environment variables:
+
+```bash
+# https://trac.osgeo.org/gdal/wiki/ConfigOptions#CPL_VSIL_CURL_ALLOWED_EXTENSIONS
+CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.TIF,.ovr  
+
+# https://trac.osgeo.org/gdal/wiki/ConfigOptions#GDAL_DISABLE_READDIR_ON_OPEN
+GDAL_DISABLE_READDIR_ON_OPEN=FALSE
+```
+
+You can either set those variables in your environment or within your code using `rasterio.Env()`.
+
 ```python
+import rasterio
 from rio_tiler_pds.landsat.aws import L8Reader
 
-with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
-    print(landsat.assets)
-    > ('B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'BQA'
-    assert landsat.minzoom == 7
-    assert landsat.minzoom == 12
+with rasterio.Env(
+    CPL_VSIL_CURL_ALLOWED_EXTENSIONS=".TIF,.ovr",
+    GDAL_DISABLE_READDIR_ON_OPEN="FALSE",
+):
+    with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
+        print(landsat.assets)
+        > ('B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'BQA'
+        assert landsat.minzoom == 7
+        assert landsat.minzoom == 12
 
-    print(landsat.spatial_info)
-    > {
-      'bounds': (-81.30836, 32.10539, -78.82045, 34.22818),
-      'center': (-80.064405, 33.166785000000004, 7),
-      'minzoom': 7,
-      'maxzoom': 12
-    }
-    
-    print(landsat.info(assets="B1"))
-    > {
-      'bounds': (-81.30836, 32.10539, -78.82045, 34.22818),
-      'center': (-80.064405, 33.166785000000004, 7),
-      'minzoom': 7,
-      'maxzoom': 12,
-      'band_metadata': [(1, {})],
-      'band_descriptions': [(1, 'B1')],
-      'dtype': 'uint16',
-      'colorinterp': ['gray'],
-      'nodata_type': 'None'
-    }
+        print(landsat.spatial_info)
+        > {
+          'bounds': (-81.30836, 32.10539, -78.82045, 34.22818),
+          'center': (-80.064405, 33.166785000000004, 7),
+          'minzoom': 7,
+          'maxzoom': 12
+        }
+        
+        print(landsat.info(assets="B1"))
+        > {
+          'bounds': (-81.30836, 32.10539, -78.82045, 34.22818),
+          'center': (-80.064405, 33.166785000000004, 7),
+          'minzoom': 7,
+          'maxzoom': 12,
+          'band_metadata': [(1, {})],
+          'band_descriptions': [(1, 'B1')],
+          'dtype': 'uint16',
+          'colorinterp': ['gray'],
+          'nodata_type': 'None'
+        }
 
-    print(landsat.stats(assets="B1"))
-    > {
-      'B1': {
-        'pc': [1207, 6989],
-        'min': 922,
-        'max': 13512,
-        'std': 297,
-        'histogram': [
-          [574527, 54320, 37316, 25318, 15086, 8101, 3145, 744, 160, 21],
-          [922, 2181, 3440, 4699, 5958, 7217, 8476, 9735, 10994, 12253, 13512]
-        ]
-      }
-    }
+        print(landsat.stats(assets="B1"))
+        > {
+          'B1': {
+            'pc': [1207, 6989],
+            'min': 922,
+            'max': 13512,
+            'std': 297,
+            'histogram': [
+              [574527, 54320, 37316, 25318, 15086, 8101, 3145, 744, 160, 21],
+              [922, 2181, 3440, 4699, 5958, 7217, 8476, 9735, 10994, 12253, 13512]
+            ]
+          }
+        }
 
-    tile_z = 8
-    tile_x = 71
-    tile_y = 102
-    tile, mask = landsat.tile(tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"))
-    assert tile.shape == (3, 256, 256)
+        tile_z = 8
+        tile_x = 71
+        tile_y = 102
+        tile, mask = landsat.tile(tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"))
+        assert tile.shape == (3, 256, 256)
 
-    data, mask = landsat.tile(tile_x, tile_y, tile_z, assets="B10")
-    assert data.shape == (1, 256, 256)
+        data, mask = landsat.tile(tile_x, tile_y, tile_z, assets="B10")
+        assert data.shape == (1, 256, 256)
 
-    tile, mask = landsat.tile(
-        tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"), pan=True
-    )
-    assert tile.shape == (3, 256, 256)
+        tile, mask = landsat.tile(
+            tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"), pan=True
+        )
+        assert tile.shape == (3, 256, 256)
 
-    tile, mask = landsat.tile(
-        tile_x, tile_y, tile_z, expression="B5*0.8, B4*1.1, B3*0.8"
-    )
-    assert tile.shape == (3, 256, 256)
+        tile, mask = landsat.tile(
+            tile_x, tile_y, tile_z, expression="B5*0.8, B4*1.1, B3*0.8"
+        )
+        assert tile.shape == (3, 256, 256)
 
-    data, mask = landsat.preview(
-        assets=("B4", "B3", "B2"), pan=True, width=256, height=256
-    )
-    assert data.shape == (3, 256, 256)
+        data, mask = landsat.preview(
+            assets=("B4", "B3", "B2"), pan=True, width=256, height=256
+        )
+        assert data.shape == (3, 256, 256)
 ```
 
 ## CBERS 4 - AWS
@@ -242,4 +259,19 @@ with CBERSReader("CBERS_4_PAN10M_20170427_161_109_L4") as cbers:
 with CBERSReader("CBERS_4_PAN5M_20170425_153_114_L4") as cbers:
     print(cbers.assets)
     > ('B1',)
+```
+
+## Requester-Pays
+
+Some data are stored on AWS requester-pays buckets (you are charged for LIST/GET requests and data transfer outside the bucket region). For those datasets you need to set `AWS_REQUEST_PAYER="requester"` environement variable to tell AWS S3 that you agree with requester-pays principle.
+
+You can either set those variables in your environment or within your code using `rasterio.Env()`.
+
+```python
+import rasterio
+from rio_tiler_pds.sentinel.aws import S2L1CReader
+
+with rasterio.Env(AWS_REQUEST_PAYER="requester"): 
+    with S2L1CReader("S2A_L1C_20170729_19UDP_0") as s2: 
+        print(s2.preview(assets="B01", width=64, height=64)) 
 ```

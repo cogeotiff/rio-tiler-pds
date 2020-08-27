@@ -1,7 +1,6 @@
 """AWS Sentinel 1 reader."""
 
 import json
-import os
 from typing import Dict, Tuple, Type
 
 import attr
@@ -52,12 +51,9 @@ class S1L1CReader(MultiBandReader):
         """Support using with Context Managers."""
         self.scene_params = s1_sceneid_parser(self.sceneid)
 
-        productinfo_key = os.path.join(
-            self._prefix.format(**self.scene_params), "productInfo.json"
-        )
-
+        prefix = self._prefix.format(**self.scene_params)
         self.productInfo = json.loads(
-            get_object(self._hostname, productinfo_key, request_pays=True)
+            get_object(self._hostname, f"{prefix}/productInfo.json", request_pays=True)
         )
         self.datageom = self.productInfo["footprint"]
         self.bounds = featureBounds(self.datageom)

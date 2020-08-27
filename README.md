@@ -54,14 +54,14 @@ $ pip install -e .
 
 ## Datasets
 
-Data | Level | Format | Owner | Bucket Type | Link
---- | --- | --- | --- | --- | ---
-Sentinel 2 | L1C | JPEG2000 | Sinergise / AWS | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
-Sentinel 2 | L2A | JPEG2000 | Sinergise / AWS | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
-Sentinel 2 | L2A | COG | Digital Earth Africa / AWS | Public | https://www.digitalearthafrica.org/news/operational-and-ready-use-satellite-data-now-available-across-africa
-Sentinel 1 | L1C | COG (Internal GCPS) | Sinergise / AWS | **Requester-pays** | https://registry.opendata.aws/sentinel-1/
-Landsat 8  | L1 | GTiff (External Overviews) | Planet / AWS | Public | https://registry.opendata.aws/landsat-8/
-CBERS 4 | L1 | COG | AMS Kepler / AWS | Public | https://registry.opendata.aws/cbers/
+Data | Level | Format | Owner | Region | Bucket Type | Link
+--- | --- | --- | --- | --- | --- | ---
+Sentinel 2 | L1C | JPEG2000 | Sinergise / AWS | eu-central-1 | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
+Sentinel 2 | L2A | JPEG2000 | Sinergise / AWS | eu-central-1  | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
+Sentinel 2 | L2A | COG | Digital Earth Africa / AWS | us-west-2  | Public | https://www.digitalearthafrica.org/news/operational-and-ready-use-satellite-data-now-available-across-africa
+Sentinel 1 | L1C | COG (Internal GCPS) | Sinergise / AWS | eu-central-1 | **Requester-pays** | https://registry.opendata.aws/sentinel-1/
+Landsat 8  | L1 | GTiff (External Overviews) | Planet / AWS | us-west-2 | Public | https://registry.opendata.aws/landsat-8/
+CBERS 4 | L1 | COG | AMS Kepler / AWS | us-east-1 | Public | https://registry.opendata.aws/cbers/
 
 **Adding more dataset**:
 
@@ -232,6 +232,9 @@ with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
     }
 ```
 
+## Changes
+
+See [CHANGES.md](https://github.com/cogeotiff/rio-tiler-pds/blob/master/CHANGES.md).
 
 ## Contribution & Development
 
@@ -246,7 +249,3 @@ See [LICENSE.txt](https://github.com/cogeotiff/rio-tiler-pds/blob/master/LICENSE
 The rio-tiler project was begun at Mapbox and has been transferred in January 2019.
 
 See [AUTHORS.txt](https://github.com/cogeotiff/rio-tiler-pds/blob/master/AUTHORS.txt) for a listing of individual contributors.
-
-## Changes
-
-See [CHANGES.md](https://github.com/cogeotiff/rio-tiler-pds/blob/master/CHANGES.md).

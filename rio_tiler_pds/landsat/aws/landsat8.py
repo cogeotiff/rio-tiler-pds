@@ -1,6 +1,5 @@
 """AWS Landsat 8 reader."""
 
-import os
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, Union
 
 import attr
@@ -68,11 +67,10 @@ class L8Reader(MultiBandReader):
     def __enter__(self):
         """Support using with Context Managers."""
         self.scene_params = sceneid_parser(self.sceneid)
-        mtl_file = os.path.join(
-            self._prefix.format(**self.scene_params), f"{self.sceneid}_MTL.txt"
-        )
+        prefix = self._prefix.format(**self.scene_params)
+        basename = f"{self.sceneid}_MTL.txt"
         self.mtl_metadata = toa_utils._parse_mtl_txt(
-            get_object(self._hostname, mtl_file).decode()
+            get_object(self._hostname, f"{prefix}/{basename}").decode()
         )
         self.bounds = tuple(
             toa_utils._get_bounds_from_metadata(

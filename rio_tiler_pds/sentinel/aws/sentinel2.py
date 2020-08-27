@@ -1,7 +1,6 @@
 """AWS Sentinel 2 readers."""
 
 import json
-import os
 import re
 from collections import OrderedDict
 from typing import Dict, Tuple, Type
@@ -73,12 +72,9 @@ class S2L1CReader(MultiBandReader):
         """Support using with Context Managers."""
         self.scene_params = s2_sceneid_parser(self.sceneid)
 
-        tileinfo_key = os.path.join(
-            self._prefix.format(**self.scene_params), "tileInfo.json"
-        )
-
+        prefix = self._prefix.format(**self.scene_params)
         self.tileInfo = json.loads(
-            get_object(self._hostname, tileinfo_key, request_pays=True)
+            get_object(self._hostname, f"{prefix}/tileInfo.json", request_pays=True)
         )
         input_geom = self.tileInfo["tileDataGeometry"]
         input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
@@ -227,12 +223,11 @@ class S2COGReader(MultiBandReader):
         self.scene_params = s2_sceneid_parser(self.sceneid)
 
         cog_sceneid = self.scene_params["scene"]
-        item_key = os.path.join(
-            self._prefix.format(**self.scene_params), f"{cog_sceneid}.json",
-        )
-
+        prefix = self._prefix.format(**self.scene_params)
         self.stac_item = json.loads(
-            get_object(self._hostname, item_key, request_pays=True)
+            get_object(
+                self._hostname, f"{prefix}/{cog_sceneid}.json", request_pays=True
+            )
         )
         self.assets = tuple(
             [

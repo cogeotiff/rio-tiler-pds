@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.0.1 (2020-08-26)
+## 0.1.0 (2020-08-27)
 
 Initial release.
 
@@ -27,6 +27,7 @@ from rio_tiler_pds.cbers.aws import CBERSReader
 
 #### Example
 ```python
+from rio_tiler_pds.landsat.aws import L8Reader
 
 with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat: 
     tile, data = landsat.tile(x, y, z, assets="B1")
