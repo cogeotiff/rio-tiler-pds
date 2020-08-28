@@ -100,6 +100,9 @@ def test_AWSPDS_L8Reader(rio, get_object):
         stats = landsat.stats(pmin=10, pmax=90, assets="B1")
         assert stats["B1"]["pc"] == [1274, 3964]
 
+        stats = landsat.stats(assets="BQA", nodata=0, resampling_method="bilinear")
+        assert stats["BQA"]["min"] == 2720
+
         with pytest.raises(MissingAssets):
             landsat.metadata()
 
@@ -111,6 +114,11 @@ def test_AWSPDS_L8Reader(rio, get_object):
         metadata = landsat.metadata(assets=("B1", "B2"))
         assert metadata["band_metadata"] == [(1, {}), (2, {})]
         assert metadata["band_descriptions"] == [(1, "B1"), (2, "B2")]
+
+        metadata = landsat.metadata(
+            assets="BQA", nodata=0, resampling_method="bilinear"
+        )
+        assert metadata["statistics"]["BQA"]["min"] == 2720
 
         tile_z = 8
         tile_x = 71
@@ -130,6 +138,12 @@ def test_AWSPDS_L8Reader(rio, get_object):
         assert data.shape == (1, 256, 256)
         assert data.dtype == numpy.float32
         assert mask.shape == (256, 256)
+
+        data, mask = landsat.tile(
+            tile_x, tile_y, tile_z, assets="BQA", nodata=0, resampling_method="bilinear"
+        )
+        assert data.shape == (1, 256, 256)
+        assert not mask.all()
 
         data, mask = landsat.tile(
             tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"), pan=True
@@ -181,11 +195,20 @@ def test_AWSPDS_L8Reader(rio, get_object):
         assert data.dtype == numpy.float64
         assert mask.shape == (259, 255)
 
+        data, mask = landsat.preview(
+            assets="BQA", nodata=0, resampling_method="bilinear"
+        )
+        assert data.shape == (1, 259, 255)
+        assert not mask.all()
+
         with pytest.raises(MissingAssets):
             landsat.point(-80.094, 33.2062)
 
         values = landsat.point(-80.094, 33.2062, assets="B7")
         assert values == [667]
+
+        values = landsat.point(-80.094, 33.2062, assets="BQA")
+        assert values[0] == 2800
 
         values = landsat.point(-80.094, 33.2062, assets=("B7", "B4"))
         assert len(values) == 2
@@ -201,6 +224,14 @@ def test_AWSPDS_L8Reader(rio, get_object):
         assert data.dtype == numpy.uint16
         assert mask.shape == (87, 104)
         assert mask.all()
+
+        data, _ = landsat.part(
+            (-80.593, 32.9134, -79.674, 33.6790),
+            assets="BQA",
+            nodata=0,
+            resampling_method="bilinear",
+        )
+        assert data.shape == (1, 87, 104)
 
         data, mask = landsat.part(
             (-80.593, 32.9134, -79.674, 33.6790), expression="B5*0.8, B4*1.1, B3*0.8"

@@ -134,9 +134,13 @@ class L8Reader(MultiBandReader):
 
         def _reader(asset: str, *args, **kwargs) -> Dict:
             url = self._get_asset_url(asset)
-            nodata = 1 if asset == "BQA" else 0
+            nodata = 0
+            if asset == "BQA":
+                nodata = 1
+                kwargs["resampling_method"] = "nearest"
+            kwargs.update({"nodata": nodata})
             with self.reader(url, **self.reader_options) as cog:
-                result = cog.stats(*args, nodata=nodata, **kwargs)[1]
+                result = cog.stats(*args, **kwargs)[1]
                 return self._convert_stats(result, asset)
 
         return multi_values(
@@ -159,9 +163,13 @@ class L8Reader(MultiBandReader):
 
         def _reader(asset: str, *args, **kwargs) -> Dict:
             url = self._get_asset_url(asset)
-            nodata = 1 if asset == "BQA" else 0
+            nodata = 0
+            if asset == "BQA":
+                nodata = 1
+                kwargs["resampling_method"] = "nearest"
+            kwargs.update({"nodata": nodata})
             with self.reader(url, **self.reader_options) as cog:
-                metadata = cog.metadata(*args, nodata=nodata, **kwargs)
+                metadata = cog.metadata(*args, **kwargs)
                 metadata["statistics"] = self._convert_stats(
                     metadata["statistics"][1], asset
                 )
@@ -216,9 +224,13 @@ class L8Reader(MultiBandReader):
             asset: str, *args: Any, **kwargs: Any
         ) -> Tuple[numpy.ndarray, numpy.ndarray]:
             url = self._get_asset_url(asset)
-            nodata = 1 if asset == "BQA" else 0
+            nodata = 0
+            if asset == "BQA":
+                nodata = 1
+                kwargs["resampling_method"] = "nearest"
+            kwargs.update({"nodata": nodata})
             with self.reader(url, **self.reader_options) as cog:
-                tile, mask = cog.tile(*args, nodata=nodata, **kwargs)
+                tile, mask = cog.tile(*args, **kwargs)
                 tile = dn_to_toa(tile, asset, self.mtl_metadata["L1_METADATA_FILE"])
             return tile, mask
 
@@ -273,9 +285,13 @@ class L8Reader(MultiBandReader):
             asset: str, *args: Any, **kwargs: Any
         ) -> Tuple[numpy.ndarray, numpy.ndarray]:
             url = self._get_asset_url(asset)
-            nodata = 1 if asset == "BQA" else 0
+            nodata = 0
+            if asset == "BQA":
+                nodata = 1
+                kwargs["resampling_method"] = "nearest"
+            kwargs.update({"nodata": nodata})
             with self.reader(url, **self.reader_options) as cog:
-                data, mask = cog.part(*args, nodata=nodata, **kwargs)
+                data, mask = cog.part(*args, **kwargs)
                 data = dn_to_toa(data, asset, self.mtl_metadata["L1_METADATA_FILE"])
             return data, mask
 
@@ -320,9 +336,13 @@ class L8Reader(MultiBandReader):
 
         def _reader(asset: str, **kwargs: Any) -> Tuple[numpy.ndarray, numpy.ndarray]:
             url = self._get_asset_url(asset)
-            nodata = 1 if asset == "BQA" else 0
+            nodata = 0
+            if asset == "BQA":
+                nodata = 1
+                kwargs["resampling_method"] = "nearest"
+            kwargs.update({"nodata": nodata})
             with self.reader(url, **self.reader_options) as cog:
-                data, mask = cog.preview(nodata=nodata, **kwargs)
+                data, mask = cog.preview(**kwargs)
                 data = dn_to_toa(data, asset, self.mtl_metadata["L1_METADATA_FILE"])
             return data, mask
 
@@ -366,8 +386,9 @@ class L8Reader(MultiBandReader):
         def _reader(asset: str, *args, **kwargs: Any) -> Dict:
             url = self._get_asset_url(asset)
             nodata = 1 if asset == "BQA" else 0
+            kwargs.update({"nodata": nodata})
             with self.reader(url, **self.reader_options) as cog:
-                data = numpy.array(cog.point(*args, nodata=nodata, **kwargs))
+                data = numpy.array(cog.point(*args, **kwargs))
                 data = dn_to_toa(data, asset, self.mtl_metadata["L1_METADATA_FILE"])
             return data.tolist()[0]
 

@@ -114,6 +114,12 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
         assert data.shape == (3, 256, 256)
         assert mask.shape == (256, 256)
 
+        # Check for kwargs colision
+        # If nodata=None is passed, it will overwrite the default nodata set in the reader
+        # https://github.com/cogeotiff/rio-tiler/blob/master/rio_tiler/io/cogeo.py#L277
+        data, mask = sentinel.preview(assets="B01", nodata=None)
+        assert mask.all()
+
 
 L2A_TJSON_PATH = os.path.join(
     os.path.dirname(__file__),
