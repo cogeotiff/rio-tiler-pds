@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.1.1 (2020-08-28)
+
+* avoid `nodata` options colision with kwargs in L8Reader
+
 ## 0.1.0 (2020-08-27)
 
 Initial release.
