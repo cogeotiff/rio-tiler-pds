@@ -4,7 +4,7 @@
   <img src="https://user-images.githubusercontent.com/10407788/91102350-ffa75400-e636-11ea-8374-3450a72745c9.png" style="max-width: 800px;" alt="rio-tiler-pds"></a>
 </p>
 <p align="center">
-  <em>A rio-tiler plugin to access and read Public hosted datasets.</em>
+  <em>A rio-tiler plugin to read from publicly-available datasets.</em>
 </p>
 <p align="center">
   <a href="https://github.com/cogeotiff/rio-tiler-pds/actions?query=workflow%3ACI" target="_blank">
@@ -45,11 +45,11 @@ $ pip install rio-tiler-pds
 
 or install from source:
 
+pip install git+https://github.com/tangentlabs/django-oscar-paypal.git@issue/34/oscar-0.6
+
 ```bash
-$ git clone https://github.com/cogeotiff/rio-tiler-pds.git
-$ cd rio-tiler-pds
 $ pip install -U pip
-$ pip install -e .
+$ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 ```
 
 ## Datasets
@@ -65,22 +65,34 @@ CBERS 4 | L1 | COG | AMS Kepler / AWS | us-east-1 | Public | https://registry.op
 
 **Adding more dataset**:
 
-If there is a dataset that can easily be described with a `scene id` please feel free to Open an Issue or a PR directly.
+If you know of another publicly-available dataset that can easily be described
+with a "scene id", please feel free to [open an
+issue](https://github.com/cogeotiff/rio-tiler-pds/issues/new).
 
 ## Warnings
 
 #### Requester-pays Buckets
 
-On AWS, `sentinel2`, `sentinel1`, and `cbers` dataset are stored in a `requester-pays` bucket, meaning the cost of GET, LIST requests will be charged to the users. For rio-tiler to work with those buckets, you'll need to set `AWS_REQUEST_PAYER="requester"` in your environement.
+On AWS, `sentinel2`, `sentinel1`, and `cbers` datasets are stored in [_requester
+pays_](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+buckets. This means that the cost of GET and LIST requests and egress fees for
+downloading files outside the AWS region will be charged to the _accessing
+users_, not the organization hosting the bucket. For `rio-tiler` and
+`rio-tiler-pds` to work with such buckets, you'll need to set
+`AWS_REQUEST_PAYER="requester"` in your shell environment.
 
 #### Partial reading on Cloud hosted dataset
 
-Rio-tiler perform partial reading on local or distant dataset, which is why it will perform best on Cloud Optimized GeoTIFF (COG).
-It's important to note that **Sentinel-2 scenes hosted on AWS are not in Cloud Optimized format but in JPEG2000**.
-When performing partial reading of JPEG2000 dataset GDAL (rasterio backend library) will need to make a lot of **GET requests** and transfer a lot of data.
+When reading data, `rio-tiler-pds` performs _partial_ reads when possible. Hence
+performance will be best on data stored as [Cloud Optimized GeoTIFF
+(COG)](http://cogeo.org). It's important to note that **Sentinel-2 scenes hosted
+on AWS are not in Cloud Optimized format but in JPEG2000**. Partial reads from
+JPEG2000 files are inefficient, and GDAL (the library underlying `rio-tiler-pds`
+and `rasterio`) will need to make **many GET requests** and transfer a lot of
+data. This will be both slow and expensive, since AWS's JPEG2000 collection of
+Sentinel 2 data is stored in a requester pays bucket.
 
 Ref: [Do you really want people using your data](https://medium.com/@_VincentS_/do-you-really-want-people-using-your-data-ec94cd94dc3f) blog post.
-
 
 ## Overview
 
@@ -159,7 +171,7 @@ with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
 > s3://landsat-pds/c1/L8/016/037/LC08_L1TP_016037_20170813_20170814_01_RT/LC08_L1TP_016037_20170813_20170814_01_RT_B1.TIF
 ```
 
-Each Dataset have their specific scene id format:
+Each dataset has a specific scene id format:
 
 <details>
 
@@ -173,7 +185,7 @@ Each Dataset have their specific scene id format:
   - regex: `^S1[AB]_(IW)|(EW)_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$`
   - example: `S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B`
 
-- Sentinel 2 JPEG200 and Sentinel 2 COG
+- Sentinel 2 JPEG2000 and Sentinel 2 COG
   - link: [rio_tiler_pds.sentinel.utils.s2_sceneid_parser](https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/sentinel/utils.py#L25-L60)
   - regex: `^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$` or `^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$`
   - example: `S2A_29RKH_20200219_0_L2A`, `S2A_L1C_20170729_19UDP_0`, `S2A_L2A_20170729_19UDP_0`
@@ -187,7 +199,7 @@ Each Dataset have their specific scene id format:
 
 ### File Per Band
 
-rio-tiler-pds Readers assume that assets (eo:band) are stored in separate files.
+`rio-tiler-pds` Readers assume that assets (eo:band) are stored in separate files.
 
 ```bash
 $ aws s3 ls landsat-pds/c1/L8/013/031/LC08_L1TP_013031_20130930_20170308_01_T1/
