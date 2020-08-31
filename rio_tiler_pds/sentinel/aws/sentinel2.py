@@ -11,13 +11,13 @@ from rasterio.features import bounds as featureBounds
 from rasterio.warp import transform_geom
 
 from rio_tiler import constants
-from rio_tiler.errors import InvalidAssetName
+from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import BaseReader, COGReader
 
 from ...reader import MultiBandReader, get_object
 from ..utils import s2_sceneid_parser
 
-default_l1c_assets = (
+default_l1c_bands = (
     "B01",
     "B02",
     "B03",
@@ -44,7 +44,7 @@ class S2L1CReader(MultiBandReader):
         minzoom (int): Dataset's Min Zoom level (default is 8).
         maxzoom (int): Dataset's Max Zoom level (default is 14).
         scene_params (dict): scene id parameters.
-        assets (tuple): list of available assets (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
+        bands (tuple): list of available bands (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
         tileInfo (dict): sentinel 2 tileInfo.json content.
         datageom (dict): sentinel 2 data geometry.
 
@@ -60,7 +60,7 @@ class S2L1CReader(MultiBandReader):
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
 
-    assets: Tuple = attr.ib(init=False, default=default_l1c_assets)
+    bands: Tuple = attr.ib(init=False, default=default_l1c_bands)
     tileInfo: Dict = attr.ib(init=False)
     datageom: Dict = attr.ib(init=False)
 
@@ -82,13 +82,13 @@ class S2L1CReader(MultiBandReader):
         self.bounds = featureBounds(self.datageom)
         return self
 
-    def _get_asset_url(self, asset: str) -> str:
-        """Validate band name and return asset's url."""
-        if asset not in self.assets:
-            raise InvalidAssetName(f"{asset} is not valid")
+    def _get_band_url(self, band: str) -> str:
+        """Validate band name and return band's url."""
+        if band not in self.bands:
+            raise InvalidBandName(f"{band} is not valid")
 
         prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{asset}.jp2"
+        return f"{self._scheme}://{self._hostname}/{prefix}/{band}.jp2"
 
 
 SENTINEL_L2_BANDS = OrderedDict(
@@ -123,7 +123,7 @@ SENTINEL_L2_PRODUCTS = OrderedDict(
     ]
 )
 
-default_l2a_assets = (
+default_l2a_bands = (
     "B01",
     "B02",
     "B03",
@@ -150,7 +150,7 @@ class S2L2AReader(S2L1CReader):
         sceneid (str): Sentinel-2 L2A sceneid.
 
     Attributes:
-        assets (tuple): list of available assets (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
+        bands (tuple): list of available bands (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
 
     Examples:
         >>> with S2L1CReader('S2A_L1C_20170729_19UDP_0') as scene:
@@ -158,31 +158,31 @@ class S2L2AReader(S2L1CReader):
 
     """
 
-    assets: tuple = attr.ib(init=False, default=default_l2a_assets)
+    bands: tuple = attr.ib(init=False, default=default_l2a_bands)
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-s2-l2a"
     _prefix: str = "tiles/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{_day}/{num}"
 
-    def _get_resolution(self, asset: str) -> str:
+    def _get_resolution(self, band: str) -> str:
         """Return L2A resolution prefix"""
-        if asset.startswith("B"):
+        if band.startswith("B"):
             for res, bands in SENTINEL_L2_BANDS.items():
-                if asset in bands:
+                if band in bands:
                     break
         else:
             for res, bands in SENTINEL_L2_PRODUCTS.items():
-                if asset in bands:
+                if band in bands:
                     break
         return res
 
-    def _get_asset_url(self, asset: str) -> str:
-        """Validate band name and return asset's url."""
-        if asset not in self.assets:
-            raise InvalidAssetName(f"{asset} is not valid")
+    def _get_band_url(self, band: str) -> str:
+        """Validate band name and return band's url."""
+        if band not in self.bands:
+            raise InvalidBandName(f"{band} is not valid")
         prefix = self._prefix.format(**self.scene_params)
-        res = self._get_resolution(asset)
-        return f"{self._scheme}://{self._hostname}/{prefix}/R{res}m/{asset}.jp2"
+        res = self._get_resolution(band)
+        return f"{self._scheme}://{self._hostname}/{prefix}/R{res}m/{band}.jp2"
 
 
 @attr.s
@@ -196,7 +196,7 @@ class S2COGReader(MultiBandReader):
         minzoom (int): Dataset's Min Zoom level (default is 8).
         maxzoom (int): Dataset's Max Zoom level (default is 14).
         scene_params (dict): scene id parameters.
-        assets (tuple): list of available assets (defined by the STAC item.json).
+        bands (tuple): list of available bands (defined by the STAC item.json).
         stac_item (dict): sentinel 2 COG STAC item content.
 
     Examples:
@@ -211,7 +211,7 @@ class S2COGReader(MultiBandReader):
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
 
-    assets: tuple = attr.ib(init=False)
+    bands: tuple = attr.ib(init=False)
     stac_item: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
@@ -229,21 +229,17 @@ class S2COGReader(MultiBandReader):
                 self._hostname, f"{prefix}/{cog_sceneid}.json", request_pays=True
             )
         )
-        self.assets = tuple(
-            [
-                asset
-                for asset in self.stac_item["assets"]
-                if re.match("B[0-9A]{2}", asset)
-            ]
+        self.bands = tuple(
+            [band for band in self.stac_item["assets"] if re.match("B[0-9A]{2}", band)]
         )
         self.bounds = self.stac_item["bbox"]
 
         return self
 
-    def _get_asset_url(self, asset: str) -> str:
-        """Validate band name and return asset's url."""
-        if asset not in self.assets:
-            raise InvalidAssetName(f"{asset} is not valid")
+    def _get_band_url(self, band: str) -> str:
+        """Validate band name and return band's url."""
+        if band not in self.bands:
+            raise InvalidBandName(f"{band} is not valid")
 
         prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{asset}.tif"
+        return f"{self._scheme}://{self._hostname}/{prefix}/{band}.tif"

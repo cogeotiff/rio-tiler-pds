@@ -6,8 +6,8 @@ from unittest.mock import patch
 import pytest
 import rasterio
 
-from rio_tiler.errors import ExpressionMixingWarning, InvalidAssetName, MissingAssets
-from rio_tiler_pds.errors import InvalidSentinelSceneId
+from rio_tiler.errors import ExpressionMixingWarning, InvalidBandName
+from rio_tiler_pds.errors import InvalidSentinelSceneId, MissingBands
 from rio_tiler_pds.sentinel.aws import S2COGReader, S2L1CReader, S2L2AReader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
@@ -45,11 +45,11 @@ def testing_env_var(monkeypatch):
     monkeypatch.setenv("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
 
 
-def mock_rasterio_open(asset):
+def mock_rasterio_open(band):
     """Mock rasterio Open for Sentinel2 dataset."""
-    assert asset.startswith("s3://sentinel-s2-l")
-    asset = asset.replace("s3://sentinel-s2", SENTINEL_BUCKET)
-    return rasterio.open(asset)
+    assert band.startswith("s3://sentinel-s2-l")
+    band = band.replace("s3://sentinel-s2", SENTINEL_BUCKET)
+    return rasterio.open(band)
 
 
 @patch("rio_tiler_pds.reader.aws_get_object")
@@ -68,7 +68,7 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
-        assert sentinel.assets == (
+        assert sentinel.bands == (
             "B01",
             "B02",
             "B03",
@@ -82,43 +82,83 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
             "B12",
             "B8A",
         )
-        with pytest.raises(InvalidAssetName):
-            sentinel.stats(assets="B1")
+        with pytest.raises(InvalidBandName):
+            sentinel.stats(bands="B1")
 
-        values = sentinel.point(-69.41, 48.25, assets=("B01", "B02"))
+        values = sentinel.point(-69.41, 48.25, bands=("B01", "B02"))
         assert values == [1193, 846]
 
-        values = sentinel.point(-69.41, 48.25, assets="B01")
+        values = sentinel.point(-69.41, 48.25, bands="B01")
         assert values == [1193]
 
         values = sentinel.point(-69.41, 48.25, expression="B01/B02")
         assert values[0] == 1193.0 / 846.0
 
-        with pytest.raises(MissingAssets):
+        with pytest.raises(MissingBands):
             sentinel.point(-69.41, 48.25)
 
         with pytest.warns(ExpressionMixingWarning):
-            values = sentinel.point(-69.41, 48.25, assets="B01", expression="B01/B02")
+            values = sentinel.point(-69.41, 48.25, bands="B01", expression="B01/B02")
             assert values[0] == 1193.0 / 846.0
 
-        stats = sentinel.stats(assets="B01")
+        stats = sentinel.stats(bands="B01")
         assert stats["B01"]["pc"] == [1094, 8170]
 
-        metadata = sentinel.metadata(assets="B01")
+        metadata = sentinel.metadata(bands="B01")
         assert metadata["statistics"]["B01"]["pc"] == [1094, 8170]
 
         tile_z = 8
         tile_x = 78
         tile_y = 89
-        data, mask = sentinel.tile(tile_x, tile_y, tile_z, assets=("B04", "B03", "B02"))
+        data, mask = sentinel.tile(tile_x, tile_y, tile_z, bands=("B04", "B03", "B02"))
         assert data.shape == (3, 256, 256)
         assert mask.shape == (256, 256)
+
+        with pytest.raises(MissingBands):
+            sentinel.tile(tile_x, tile_y, tile_z)
+
+        with pytest.warns(ExpressionMixingWarning):
+            data, _ = sentinel.tile(
+                tile_x,
+                tile_y,
+                tile_z,
+                bands=("B04", "B03", "B02"),
+                expression="B01/B02",
+            )
+            assert data.shape == (1, 256, 256)
+
+        bbox = (-69.8, 48.2, -69, 48.7)
+        data, mask = sentinel.part(bbox, bands="B04")
+        assert data.shape == (1, 49, 78)
+        assert mask.shape == (49, 78)
+
+        data, mask = sentinel.part(bbox, bands=("B04", "B03", "B02"))
+        assert data.shape == (3, 49, 78)
+        assert mask.shape == (49, 78)
+
+        with pytest.raises(MissingBands):
+            sentinel.part(bbox)
+
+        with pytest.warns(ExpressionMixingWarning):
+            data, _ = sentinel.part(
+                bbox, bands=("B04", "B03", "B02"), expression="B01/B02"
+            )
+            assert data.shape == (1, 49, 78)
 
         # Check for kwargs colision
         # If nodata=None is passed, it will overwrite the default nodata set in the reader
         # https://github.com/cogeotiff/rio-tiler/blob/master/rio_tiler/io/cogeo.py#L277
-        data, mask = sentinel.preview(assets="B01", nodata=None)
+        data, mask = sentinel.preview(bands="B01", nodata=None)
         assert mask.all()
+
+        with pytest.raises(MissingBands):
+            sentinel.preview()
+
+        with pytest.warns(ExpressionMixingWarning):
+            data, _ = sentinel.preview(
+                bands=("B04", "B03", "B02"), expression="B01/B02"
+            )
+            assert data.shape == (1, 122, 122)
 
 
 L2A_TJSON_PATH = os.path.join(
@@ -155,7 +195,7 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
-        assert sentinel.assets == (
+        assert sentinel.bands == (
             "B01",
             "B02",
             "B03",
@@ -172,19 +212,19 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
             # "SCL",
             # "WVP",
         )
-        with pytest.raises(InvalidAssetName):
-            sentinel.stats(assets="B1")
+        with pytest.raises(InvalidBandName):
+            sentinel.stats(bands="B1")
 
-        stats = sentinel.stats(assets="B01")
+        stats = sentinel.stats(bands="B01")
         assert stats["B01"]["pc"] == [1094, 8170]
 
-        metadata = sentinel.metadata(assets="B01")
+        metadata = sentinel.metadata(bands="B01")
         assert metadata["statistics"]["B01"]["pc"] == [1094, 8170]
 
         tile_z = 8
         tile_x = 78
         tile_y = 89
-        data, mask = sentinel.tile(tile_x, tile_y, tile_z, assets=("B04", "B03", "B02"))
+        data, mask = sentinel.tile(tile_x, tile_y, tile_z, bands=("B04", "B03", "B02"))
         assert data.shape == (3, 256, 256)
         assert mask.shape == (256, 256)
 
@@ -213,11 +253,11 @@ SENTINEL_COG_BUCKET = os.path.join(
 )
 
 
-def mock_rasterio_open_cogs(asset):
+def mock_rasterio_open_cogs(band):
     """Mock rasterio Open for Sentinel2 dataset."""
-    assert asset.startswith("s3://sentinel-cogs")
-    asset = asset.replace("s3://sentinel-cogs", SENTINEL_COG_BUCKET)
-    return rasterio.open(asset)
+    assert band.startswith("s3://sentinel-cogs")
+    band = band.replace("s3://sentinel-cogs", SENTINEL_COG_BUCKET)
+    return rasterio.open(band)
 
 
 @patch("rio_tiler_pds.reader.aws_get_object")
@@ -236,7 +276,7 @@ def test_AWSPDS_S2COGReader(rio, get_object):
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
-        assert sorted(sentinel.assets) == sorted(
+        assert sorted(sentinel.bands) == sorted(
             (
                 "B01",
                 "B02",
@@ -252,14 +292,14 @@ def test_AWSPDS_S2COGReader(rio, get_object):
                 "B8A",
             )
         )
-        with pytest.raises(InvalidAssetName):
-            sentinel.stats(assets="B1")
+        with pytest.raises(InvalidBandName):
+            sentinel.stats(bands="B1")
 
-        stats = sentinel.stats(assets="B01")
+        stats = sentinel.stats(bands="B01")
         assert stats["B01"]["pc"] == [1029, 1929]
 
         assert (
-            sentinel._get_asset_url("B01")
+            sentinel._get_band_url("B01")
             == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
         )
 
@@ -269,7 +309,7 @@ def test_AWSPDS_S2COGReader(rio, get_object):
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
-        assert sorted(sentinel.assets) == sorted(
+        assert sorted(sentinel.bands) == sorted(
             (
                 "B01",
                 "B02",
@@ -285,14 +325,14 @@ def test_AWSPDS_S2COGReader(rio, get_object):
                 "B8A",
             )
         )
-        with pytest.raises(InvalidAssetName):
-            sentinel.stats(assets="B1")
+        with pytest.raises(InvalidBandName):
+            sentinel.stats(bands="B1")
 
-        stats = sentinel.stats(assets="B01")
+        stats = sentinel.stats(bands="B01")
         assert stats["B01"]["pc"] == [1029, 1929]
 
         assert (
-            sentinel._get_asset_url("B01")
+            sentinel._get_band_url("B01")
             == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
         )
 

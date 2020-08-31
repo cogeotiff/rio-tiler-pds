@@ -6,7 +6,7 @@ from typing import Dict, Tuple, Type
 import attr
 from rasterio.features import bounds as featureBounds
 
-from rio_tiler.errors import InvalidAssetName
+from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import BaseReader
 
 from ...reader import GCPCOGReader, MultiBandReader, get_object
@@ -23,7 +23,7 @@ class S1L1CReader(MultiBandReader):
     Attributes:
         minzoom (int): Dataset's Min Zoom level (default is 8).
         maxzoom (int): Dataset's Max Zoom level (default is 14).
-        assets (tuple): list of available assets (default is ('vv', 'vh')).
+        bands (tuple): list of available bands (default is ('vv', 'vh')).
         productInfo (dict): sentinel 1 productInfo.json content.
         datageom (dict): sentinel 1 data geometry.
 
@@ -39,7 +39,7 @@ class S1L1CReader(MultiBandReader):
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
 
-    assets: Tuple = attr.ib(init=False, default=("vv", "vh"))
+    bands: Tuple = attr.ib(init=False, default=("vv", "vh"))
     productInfo: Dict = attr.ib(init=False)
     datageom: Dict = attr.ib(init=False)
 
@@ -59,10 +59,10 @@ class S1L1CReader(MultiBandReader):
         self.bounds = featureBounds(self.datageom)
         return self
 
-    def _get_asset_url(self, asset: str) -> str:
-        """Validate band name and return asset's url."""
-        if asset not in self.assets:
-            raise InvalidAssetName(f"{asset} is not valid")
+    def _get_band_url(self, band: str) -> str:
+        """Validate band name and return band's url."""
+        if band not in self.bands:
+            raise InvalidBandName(f"{band} is not valid")
 
         prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/measurement/{self.scene_params['beam'].lower()}-{asset}.tiff"
+        return f"{self._scheme}://{self._hostname}/{prefix}/measurement/{self.scene_params['beam'].lower()}-{band}.tiff"

@@ -1,5 +1,20 @@
 # Release Notes
 
+## 0.2.0 (2020-08-31)
+* Revert the use of `assets` options to `bands` (#12)
+
+```python
+from rio_tiler_pds.landsat.aws import L8Reader
+
+with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
+    # in 0.1.1 (PAST)
+    tile, data = landsat.tile(x, y, z, assets="B1")
+
+    # in 0.2.0 (NOW)
+    tile, data = landsat.tile(x, y, z, bands="B1")
+```
+
+
 ## 0.1.1 (2020-08-28)
 
 * avoid `nodata` options colision with kwargs in L8Reader

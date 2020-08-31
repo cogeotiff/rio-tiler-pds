@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 import rasterio
 
-from rio_tiler.errors import InvalidAssetName
+from rio_tiler.errors import InvalidBandName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 
@@ -33,11 +33,11 @@ def testing_env_var(monkeypatch):
     monkeypatch.setenv("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
 
 
-def mock_rasterio_open(asset):
+def mock_rasterio_open(band):
     """Mock rasterio Open."""
-    assert asset.startswith("s3://sentinel-s1-l1c")
-    asset = asset.replace("s3://sentinel-s1-l1c", SENTINEL_BUCKET)
-    return rasterio.open(asset)
+    assert band.startswith("s3://sentinel-s1-l1c")
+    band = band.replace("s3://sentinel-s1-l1c", SENTINEL_BUCKET)
+    return rasterio.open(band)
 
 
 @patch("rio_tiler_pds.reader.aws_get_object")
@@ -56,30 +56,30 @@ def test_AWSPDS_S1L1CReader(rio, get_object):
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
-        assert sentinel.assets == ("vv", "vh")
+        assert sentinel.bands == ("vv", "vh")
 
-        with pytest.raises(InvalidAssetName):
-            sentinel.info(assets="B1")
+        with pytest.raises(InvalidBandName):
+            sentinel.info(bands="B1")
 
-        metadata = sentinel.info(assets="vv")
+        metadata = sentinel.info(bands="vv")
         assert len(metadata["band_metadata"]) == 1
         assert metadata["band_descriptions"] == [(1, "vv")]
 
-        metadata = sentinel.stats(assets=("vv", "vh"))
+        metadata = sentinel.stats(bands=("vv", "vh"))
         assert metadata["vv"]["min"] == 4
         assert metadata["vh"]["max"] == 623
 
-        metadata = sentinel.metadata(assets=("vv", "vh"))
+        metadata = sentinel.metadata(bands=("vv", "vh"))
         assert metadata["statistics"]["vv"]["min"] == 4
         assert metadata["statistics"]["vh"]["max"] == 623
 
         tile_z = 8
         tile_x = 183
         tile_y = 120
-        data, mask = sentinel.tile(tile_x, tile_y, tile_z, assets="vv")
+        data, mask = sentinel.tile(tile_x, tile_y, tile_z, bands="vv")
         assert data.shape == (1, 256, 256)
         assert mask.shape == (256, 256)
 
-        data, mask = sentinel.tile(tile_x, tile_y, tile_z, assets=("vv", "vh"))
+        data, mask = sentinel.tile(tile_x, tile_y, tile_z, bands=("vv", "vh"))
         assert data.shape == (2, 256, 256)
         assert mask.shape == (256, 256)
