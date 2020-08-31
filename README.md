@@ -122,16 +122,16 @@ All Readers are subclass of [`rio_tiler.io.BaseReader`](https://github.com/cogeo
 
 #### Methods
 
-- **info**: Returns asset's (band) simple info (e.g nodata, band_descriptions, ....)
-- **stats**: Returns asset's statistics (percentile, histogram, ...)
+- **info**: Returns band's simple info (e.g nodata, band_descriptions, ....)
+- **stats**: Returns band's statistics (percentile, histogram, ...)
 - **metadata**: info + stats
-- **tile**: Read web mercator map tile from assets (bands)
-- **part**: Extract part of assets (bands)
-- **preview**: Returns a low resolution preview from assets (bands)
-- **point**: Returns asset's pixel value for a given lon,lat
+- **tile**: Read web mercator map tile from bands
+- **part**: Extract part of bands
+- **preview**: Returns a low resolution preview from bands
+- **point**: Returns band's pixel value for a given lon,lat
 
 #### Other
-- **assets**: List of available assets (bands) for each dataset
+- **bands** (property): List of available bands for each dataset
 
 ### Scene ID
 
@@ -139,7 +139,7 @@ All readers take scene id as main input. The **scene id** is used internaly by t
 
 e.g: Landsat on AWS
 
-Because the Landsat AWS PDS follows a regular schema to store the data (`s3://{bucket}/c1/L8/{path}/{row}/{scene}/{scene}_{asset}.TIF"`), we can easily reconstruct the full asset's path by parsing the scene id.
+Because the Landsat AWS PDS follows a regular schema to store the data (`s3://{bucket}/c1/L8/{path}/{row}/{scene}/{scene}_{band}.TIF"`), we can easily reconstruct the full band's path by parsing the scene id.
 
 ```python
 from rio_tiler_pds.landsat.aws import L8Reader
@@ -166,7 +166,7 @@ sceneid_parser("LC08_L1TP_016037_20170813_20170814_01_RT")
 }
 
 with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
-    print(landsat._get_asset_url("B1"))
+    print(landsat._get_band_url("B1"))
 
 > s3://landsat-pds/c1/L8/016/037/LC08_L1TP_016037_20170813_20170814_01_RT/LC08_L1TP_016037_20170813_20170814_01_RT_B1.TIF
 ```
@@ -197,9 +197,9 @@ Each dataset has a specific scene id format:
 
 </details>
 
-### File Per Band
+### Band Per Asset/File
 
-`rio-tiler-pds` Readers assume that assets (eo:band) are stored in separate files.
+`rio-tiler-pds` Readers assume that bands (e.g eo:band in STAC) are stored in separate files.
 
 ```bash
 $ aws s3 ls landsat-pds/c1/L8/013/031/LC08_L1TP_013031_20130930_20170308_01_T1/
@@ -223,10 +223,10 @@ When reading data or metadata, readers will merge them.
 e.g
 ```python
 with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
-    tile, mask = sentinel.tile(77, 89, 8, assets=("B01", "B02")
+    tile, mask = sentinel.tile(77, 89, 8, bands=("B01", "B02")
     assert tile.shape == (2, 256, 256)
 
-    print(sentinel.stats(assets=("B8A", "B02")))
+    print(sentinel.stats(bands=("B8A", "B02")))
     > {
       'B8A': {
         'pc': [106, 9322],

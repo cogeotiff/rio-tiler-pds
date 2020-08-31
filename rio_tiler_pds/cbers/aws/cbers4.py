@@ -4,7 +4,7 @@ from typing import Dict, Type
 
 import attr
 
-from rio_tiler.errors import InvalidAssetName
+from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import BaseReader, COGReader
 
 from ...reader import MultiBandReader
@@ -20,7 +20,7 @@ class CBERSReader(MultiBandReader):
 
     Attributes:
         scene_params (dict): scene id parameters.
-        assets (tuple): list of available assets (default is defined for each sensor).
+        bands (tuple): list of available bands (default is defined for each sensor).
 
     Examples:
         >>> with CBERSReader('CBERS_4_AWFI_20170420_146_129_L2') as scene:
@@ -39,9 +39,9 @@ class CBERSReader(MultiBandReader):
     def __enter__(self):
         """Support using with Context Managers."""
         self.scene_params = sceneid_parser(self.sceneid)
-        self.assets = self.scene_params["bands"]
+        self.bands = self.scene_params["bands"]
 
-        ref = self._get_asset_url(self.scene_params["reference_band"])
+        ref = self._get_band_url(self.scene_params["reference_band"])
 
         with self.reader(ref, **self.reader_options) as cog:
             self.bounds = cog.bounds
@@ -50,11 +50,11 @@ class CBERSReader(MultiBandReader):
 
         return self
 
-    def _get_asset_url(self, asset: str) -> str:
-        """Validate asset's name and return asset's url."""
-        if asset not in self.assets:
-            raise InvalidAssetName(f"{asset} is not valid")
+    def _get_band_url(self, band: str) -> str:
+        """Validate band's name and return band's url."""
+        if band not in self.bands:
+            raise InvalidBandName(f"{band} is not valid")
 
         prefix = self._prefix.format(**self.scene_params)
-        asset = asset.replace("B", "BAND")
-        return f"{self._scheme}://{self._hostname}/{prefix}/{self.sceneid}_{asset}.tif"
+        band = band.replace("B", "BAND")
+        return f"{self._scheme}://{self._hostname}/{prefix}/{self.sceneid}_{band}.tif"

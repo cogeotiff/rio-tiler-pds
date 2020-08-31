@@ -5,7 +5,7 @@
 
 ### L1C - JPEG2000
 
-assets: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
+bands: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
 ```python
 from rio_tiler_pds.sentinel.aws import S2L1CReader
@@ -24,7 +24,7 @@ with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
     print(sentinel.center)
     > (-69.4190338105916, 48.25699850457617, 8)
 
-    print(sentinel.info(assets="B01"))
+    print(sentinel.info(bands="B01"))
     > {
         'bounds': (-69.97083660271242, 47.761069480166974, -68.86723101847078, 48.75292752898536),
         'center': (-69.4190338105916, 48.25699850457617, 8),
@@ -37,7 +37,7 @@ with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
         'nodata_type': 'None'
       }
 
-    print(sentinel.stats(assets="B8A"))
+    print(sentinel.stats(bands="B8A"))
     > {
       'B8A': {
         'pc': [106, 9322],
@@ -51,14 +51,14 @@ with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
       }
     }
 
-    tile, mask = sentinel.tile(77, 89, 8, assets="B01")
+    tile, mask = sentinel.tile(77, 89, 8, bands="B01")
     assert tile.shape == (1, 256, 256)
 
-    print(sentinel.point(-69.41, 48.25, assets=("B01", "B02")))
+    print(sentinel.point(-69.41, 48.25, bands=("B01", "B02")))
     # Result is in form of 
     # [
-    #   value for band 1 in asset B01,
-    #   value for band 1 in asset B02
+    #   value for band 1 in band B01,
+    #   value for band 1 in band B02
     # ]
     > [1230, 875]
 
@@ -72,9 +72,9 @@ with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
 
 ### L2A - JPEG2000
 
-assets: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
+bands: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
-Note: `AOT, SCL, WVP` assets are not supported.
+Note: `AOT, SCL, WVP` bands are not supported.
 
 ```python
 from rio_tiler_pds.sentinel.aws import S2L2AReader
@@ -87,7 +87,7 @@ with S2L2AReader("S2A_L2A_20170729_19UDP_0") as sentinel:
     print(type(sentinel.datageom))
     > dict
 
-    print(sentinel.info(assets="B01"))
+    print(sentinel.info(bands="B01"))
     > {
         'bounds': (-69.96945818759949, 47.7610811323474, -68.86723101847078, 48.75292752898536),
         'center': (-69.41834460303514, 48.257004330666376, 8),
@@ -103,15 +103,15 @@ with S2L2AReader("S2A_L2A_20170729_19UDP_0") as sentinel:
 
 ### COG (Only L2A available for now)
 
-assets: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
+bands: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
-Note: `AOT, SCL, WVP` assets are not supported.
+Note: `AOT, SCL, WVP` STAC assets are not supported.
 
 ```python
 from rio_tiler_pds.sentinel.aws import S2COGReader  
 
 with S2COGReader("S2A_29RKH_20200219_0_L2A") as sentinel: 
-    print(sentinel.assets)
+    print(sentinel.bands)
     > ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')
 
     # bounds and metadata are derived from the STAC item stored with the COG
@@ -125,7 +125,7 @@ with S2COGReader("S2A_29RKH_20200219_0_L2A") as sentinel:
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 
 with S1L1CReader("S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B") as sentinel:
-    print(sentinel.assets)
+    print(sentinel.bands)
     > ('vv', 'vh')
 
     print(sentine.bounds)
@@ -134,7 +134,7 @@ with S1L1CReader("S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A
     print(type(sentinel.productInfo))
     > dict
 
-    print(sentinel._get_asset_url("vv"))
+    print(sentinel._get_band_url("vv"))
     > 's3://sentinel-s1-l1c/GRD/2018/7/16/IW/DV/S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B/measurement/iw-vv.tiff'
 ```
 
@@ -161,7 +161,7 @@ with rasterio.Env(
     GDAL_DISABLE_READDIR_ON_OPEN="FALSE",
 ):
     with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
-        print(landsat.assets)
+        print(landsat.bands)
         > ('B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'BQA'
         assert landsat.minzoom == 7
         assert landsat.minzoom == 12
@@ -174,7 +174,7 @@ with rasterio.Env(
           'maxzoom': 12
         }
         
-        print(landsat.info(assets="B1"))
+        print(landsat.info(bands="B1"))
         > {
           'bounds': (-81.30836, 32.10539, -78.82045, 34.22818),
           'center': (-80.064405, 33.166785000000004, 7),
@@ -187,7 +187,7 @@ with rasterio.Env(
           'nodata_type': 'None'
         }
 
-        print(landsat.stats(assets="B1"))
+        print(landsat.stats(bands="B1"))
         > {
           'B1': {
             'pc': [1207, 6989],
@@ -204,14 +204,14 @@ with rasterio.Env(
         tile_z = 8
         tile_x = 71
         tile_y = 102
-        tile, mask = landsat.tile(tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"))
+        tile, mask = landsat.tile(tile_x, tile_y, tile_z, bands=("B4", "B3", "B2"))
         assert tile.shape == (3, 256, 256)
 
-        data, mask = landsat.tile(tile_x, tile_y, tile_z, assets="B10")
+        data, mask = landsat.tile(tile_x, tile_y, tile_z, bands="B10")
         assert data.shape == (1, 256, 256)
 
         tile, mask = landsat.tile(
-            tile_x, tile_y, tile_z, assets=("B4", "B3", "B2"), pan=True
+            tile_x, tile_y, tile_z, bands=("B4", "B3", "B2"), pan=True
         )
         assert tile.shape == (3, 256, 256)
 
@@ -221,7 +221,7 @@ with rasterio.Env(
         assert tile.shape == (3, 256, 256)
 
         data, mask = landsat.preview(
-            assets=("B4", "B3", "B2"), pan=True, width=256, height=256
+            bands=("B4", "B3", "B2"), pan=True, width=256, height=256
         )
         assert data.shape == (3, 256, 256)
 ```
@@ -238,7 +238,7 @@ CBERS_PAN5M_SCENE = "CBERS_4_PAN5M_20170425_153_114_L4"
 
 
 with CBERSReader("CBERS_4_MUX_20171121_057_094_L2") as cbers:
-    print(cbers.assets)
+    print(cbers.bands)
     > ('B5', 'B6', 'B7', 'B8')
 
     print(cbers.bounds)
@@ -248,16 +248,16 @@ with CBERSReader("CBERS_4_MUX_20171121_057_094_L2") as cbers:
     assert cbers.maxzoom == 12
 
 with CBERSReader("CBERS_4_AWFI_20170420_146_129_L2") as cbers:
-    print(cbers.assets)
+    print(cbers.bands)
     > ('B13', 'B14', 'B15', 'B16')
 
 with CBERSReader("CBERS_4_PAN10M_20170427_161_109_L4") as cbers:
-    print(cbers.assets)
+    print(cbers.bands)
     > ('B2', 'B3', 'B4')
 
 
 with CBERSReader("CBERS_4_PAN5M_20170425_153_114_L4") as cbers:
-    print(cbers.assets)
+    print(cbers.bands)
     > ('B1',)
 ```
 
@@ -273,5 +273,5 @@ from rio_tiler_pds.sentinel.aws import S2L1CReader
 
 with rasterio.Env(AWS_REQUEST_PAYER="requester"): 
     with S2L1CReader("S2A_L1C_20170729_19UDP_0") as s2: 
-        print(s2.preview(assets="B01", width=64, height=64)) 
+        print(s2.preview(bands="B01", width=64, height=64)) 
 ```
