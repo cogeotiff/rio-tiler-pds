@@ -269,4 +269,81 @@ def test_cbers_id_valid():
         "rgb": ("B1", "B1", "B1"),
     }
 
+    scene = "CBERS_4A_MUX_20200808_201_137_L4"
+    expected_content = {
+        "satellite": "CBERS",
+        "mission": "4A",
+        "instrument": "MUX",
+        "acquisitionYear": "2020",
+        "acquisitionMonth": "08",
+        "acquisitionDay": "08",
+        "path": "201",
+        "row": "137",
+        "processingCorrectionLevel": "L4",
+        "scene": "CBERS_4A_MUX_20200808_201_137_L4",
+        "date": "2020-08-08",
+        "reference_band": "B6",
+        "bands": ("B5", "B6", "B7", "B8"),
+        "rgb": ("B7", "B6", "B5"),
+    }
+
+    # Same as above testing 2A and 2B levels
+    scene = "CBERS_4A_MUX_20200808_201_137_L2A"
+    expected_content = {
+        "satellite": "CBERS",
+        "mission": "4A",
+        "instrument": "MUX",
+        "acquisitionYear": "2020",
+        "acquisitionMonth": "08",
+        "acquisitionDay": "08",
+        "path": "201",
+        "row": "137",
+        "processingCorrectionLevel": "L2A",
+        "scene": "CBERS_4A_MUX_20200808_201_137_L2A",
+        "date": "2020-08-08",
+        "reference_band": "B6",
+        "bands": ("B5", "B6", "B7", "B8"),
+        "rgb": ("B7", "B6", "B5"),
+    }
+
+    assert sceneid_parser(scene) == expected_content
+
+    scene = "CBERS_4A_WFI_20200801_221_156_L4"
+    expected_content = {
+        "satellite": "CBERS",
+        "mission": "4A",
+        "instrument": "WFI",
+        "acquisitionYear": "2020",
+        "acquisitionMonth": "08",
+        "acquisitionDay": "01",
+        "path": "221",
+        "row": "156",
+        "processingCorrectionLevel": "L4",
+        "scene": "CBERS_4A_WFI_20200801_221_156_L4",
+        "date": "2020-08-01",
+        "reference_band": "B14",
+        "bands": ("B13", "B14", "B15", "B16"),
+        "rgb": ("B15", "B14", "B13"),
+    }
+
+    assert sceneid_parser(scene) == expected_content
+
+    scene = "CBERS_4A_WPM_20200730_209_139_L4"
+    expected_content = {
+        "satellite": "CBERS",
+        "mission": "4A",
+        "instrument": "WPM",
+        "acquisitionYear": "2020",
+        "acquisitionMonth": "07",
+        "acquisitionDay": "30",
+        "path": "209",
+        "row": "139",
+        "processingCorrectionLevel": "L4",
+        "scene": "CBERS_4A_WPM_20200730_209_139_L4",
+        "date": "2020-07-30",
+        "reference_band": "B2",
+        "bands": ("B0", "B1", "B2", "B3", "B4"),
+        "rgb": ("B3", "B2", "B1"),
+    }
+
     assert sceneid_parser(scene) == expected_content
