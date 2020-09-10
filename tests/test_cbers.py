@@ -12,14 +12,20 @@ from rio_tiler_pds.cbers.utils import sceneid_parser
 from rio_tiler_pds.errors import InvalidCBERSSceneId, MissingBands
 
 CBERS_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "cbers-pds")
+# CBERS4 test scenes
 CBERS_MUX_SCENE = "CBERS_4_MUX_20171121_057_094_L2"
 CBERS_AWFI_SCENE = "CBERS_4_AWFI_20170420_146_129_L2"
 CBERS_PAN10M_SCENE = "CBERS_4_PAN10M_20170427_161_109_L4"
 CBERS_PAN5M_SCENE = "CBERS_4_PAN5M_20170425_153_114_L4"
+# CBERS4A test scenes
+CBERS_4A_MUX_SCENE = "CBERS_4A_MUX_20200808_201_137_L4"
+CBERS_4A_WPM_SCENE = "CBERS_4A_WPM_20200730_209_139_L4"
+CBERS_4A_WFI_SCENE = "CBERS_4A_WFI_20200801_221_156_L4"
+
 # Currently not being used, not defining for new instruments
-CBERS_MUX_PATH = os.path.join(
-    CBERS_BUCKET, "CBERS4/MUX/057/094/CBERS_4_MUX_20171121_057_094_L2/"
-)
+# CBERS_MUX_PATH = os.path.join(
+#     CBERS_BUCKET, "CBERS4/MUX/057/094/CBERS_4_MUX_20171121_057_094_L2/"
+# )
 
 
 @pytest.fixture(autouse=True)
@@ -41,7 +47,7 @@ def mock_rasterio_open(band):
 
 
 @patch("rio_tiler.io.cogeo.rasterio")
-def test_AWSPDS_CBERSReader_MUX(rio):
+def test_AWSPDS_CBERSReader_CB4_MUX(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
 
@@ -127,7 +133,7 @@ def test_AWSPDS_CBERSReader_MUX(rio):
 
 
 @patch("rio_tiler.io.cogeo.rasterio")
-def test_AWSPDS_CBERSReader_AWFI(rio):
+def test_AWSPDS_CBERSReader_CB4_AWFI(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
 
@@ -148,7 +154,7 @@ def test_AWSPDS_CBERSReader_AWFI(rio):
 
 
 @patch("rio_tiler.io.cogeo.rasterio")
-def test_AWSPDS_CBERSReader_PAN10M(rio):
+def test_AWSPDS_CBERSReader_CB4_PAN10M(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
 
@@ -169,7 +175,7 @@ def test_AWSPDS_CBERSReader_PAN10M(rio):
 
 
 @patch("rio_tiler.io.cogeo.rasterio")
-def test_AWSPDS_CBERSReader_PAN5M(rio):
+def test_AWSPDS_CBERSReader_CB4_PAN5M(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
 
@@ -184,6 +190,129 @@ def test_AWSPDS_CBERSReader_PAN5M(rio):
         tile_z = 10
         tile_x = 390
         tile_y = 547
+        data, mask = cbers.tile(tile_x, tile_y, tile_z, bands=cbers.scene_params["rgb"])
+        assert data.shape == (3, 256, 256)
+        assert mask.shape == (256, 256)
+
+
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
+    """Should work as expected (get bounds)"""
+    rio.open = mock_rasterio_open
+
+    with CBERSReader(CBERS_4A_MUX_SCENE) as cbers:
+        bounds = cbers.bounds
+        assert cbers.scene_params.get("scene") == CBERS_4A_MUX_SCENE
+        assert len(bounds) == 4
+        assert cbers.minzoom
+        assert cbers.maxzoom
+        assert cbers.bands == ("B5", "B6", "B7", "B8")
+
+        with pytest.raises(MissingBands):
+            cbers.info()
+
+        with pytest.raises(InvalidBandName):
+            cbers.info(bands="BAND5")
+
+        metadata = cbers.info(bands="B5")
+        assert len(metadata["band_metadata"]) == 1
+        assert metadata["band_descriptions"] == [(1, "B5")]
+
+        metadata = cbers.info(bands=cbers.bands)
+        assert len(metadata["band_metadata"]) == 4
+        assert metadata["band_descriptions"] == [
+            (1, "B5"),
+            (2, "B6"),
+            (3, "B7"),
+            (4, "B8"),
+        ]
+
+        with pytest.raises(MissingBands):
+            cbers.stats()
+
+        stats = cbers.stats(bands="B5")
+        assert len(stats.items()) == 1
+        assert stats["B5"]["pc"] == [30, 52]
+
+        stats = cbers.stats(bands=cbers.bands, hist_options=dict(bins=20))
+        assert len(stats["B5"]["histogram"][0]) == 20
+
+        with pytest.raises(MissingBands):
+            cbers.metadata()
+
+        metadata = cbers.metadata(bands="B5")
+        assert metadata["statistics"]["B5"]["pc"] == [30, 52]
+
+        metadata = cbers.metadata(bands=cbers.bands)
+        assert metadata["statistics"]["B5"]["pc"] == [30, 52]
+        assert len(metadata["band_metadata"]) == 4
+        assert metadata["band_descriptions"] == [
+            (1, "B5"),
+            (2, "B6"),
+            (3, "B7"),
+            (4, "B8"),
+        ]
+
+        tile_z = 10
+        tile_x = 385
+        tile_y = 567
+        data, mask = cbers.tile(tile_x, tile_y, tile_z, bands=cbers.scene_params["rgb"])
+        assert data.shape == (3, 256, 256)
+        assert mask.shape == (256, 256)
+
+        tile_z = 10
+        tile_x = 694
+        tile_y = 495
+        with pytest.raises(TileOutsideBounds):
+            cbers.tile(tile_x, tile_y, tile_z, bands=cbers.scene_params["rgb"])
+
+        tile_z = 10
+        tile_x = 385
+        tile_y = 567
+        data, mask = cbers.tile(
+            tile_x, tile_y, tile_z, expression="B8*0.8, B7*1.1, B6*0.8"
+        )
+        assert data.shape == (3, 256, 256)
+        assert mask.shape == (256, 256)
+
+
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_CBERSReader_CB4A_WPM(rio):
+    """Should work as expected (get bounds)"""
+    rio.open = mock_rasterio_open
+
+    with CBERSReader(CBERS_4A_WPM_SCENE) as cbers:
+        bounds = cbers.bounds
+        assert cbers.scene_params.get("scene") == CBERS_4A_WPM_SCENE
+        assert len(bounds) == 4
+        assert cbers.minzoom
+        assert cbers.maxzoom
+        assert cbers.bands == ("B0", "B1", "B2", "B3", "B4")
+
+        tile_z = 10
+        tile_x = 366
+        tile_y = 572
+        data, mask = cbers.tile(tile_x, tile_y, tile_z, bands=cbers.scene_params["rgb"])
+        assert data.shape == (3, 256, 256)
+        assert mask.shape == (256, 256)
+
+
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_AWSPDS_CBERSReader_CB4A_WFI(rio):
+    """Should work as expected (get bounds)"""
+    rio.open = mock_rasterio_open
+
+    with CBERSReader(CBERS_4A_WFI_SCENE) as cbers:
+        bounds = cbers.bounds
+        assert cbers.scene_params.get("scene") == CBERS_4A_WFI_SCENE
+        assert len(bounds) == 4
+        assert cbers.minzoom
+        assert cbers.maxzoom
+        assert cbers.bands == ("B13", "B14", "B15", "B16")
+
+        tile_z = 10
+        tile_x = 316
+        tile_y = 614
         data, mask = cbers.tile(tile_x, tile_y, tile_z, bands=cbers.scene_params["rgb"])
         assert data.shape == (3, 256, 256)
         assert mask.shape == (256, 256)
