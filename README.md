@@ -61,7 +61,7 @@ Sentinel 2 | L2A | JPEG2000 | Sinergise / AWS | eu-central-1  | **Requester-pays
 Sentinel 2 | L2A | COG | Digital Earth Africa / AWS | us-west-2  | Public | https://www.digitalearthafrica.org/news/operational-and-ready-use-satellite-data-now-available-across-africa
 Sentinel 1 | L1C | COG (Internal GCPS) | Sinergise / AWS | eu-central-1 | **Requester-pays** | https://registry.opendata.aws/sentinel-1/
 Landsat 8  | L1 | GTiff (External Overviews) | Planet / AWS | us-west-2 | Public | https://registry.opendata.aws/landsat-8/
-CBERS 4 | L1 | COG | AMS Kepler / AWS | us-east-1 | Public | https://registry.opendata.aws/cbers/
+CBERS 4/4A | L2/L4 | COG | AMS Kepler / AWS | us-east-1 | **Requester-pays** | https://registry.opendata.aws/cbers/
 
 **Adding more dataset**:
 
@@ -191,9 +191,9 @@ Each dataset has a specific scene id format:
   - example: `S2A_29RKH_20200219_0_L2A`, `S2A_L1C_20170729_19UDP_0`, `S2A_L2A_20170729_19UDP_0`
 
 - CBERS
-  - link: [rio_tiler_pds.cbers.utils.sceneid_parser](https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/cbers/utils.py#L26-L41)
-  - regex: `^CBERS_4_\w+_[0-9]{8}_[0-9]{3}_[0-9]{3}_L[0-9]$`
-  - example: `CBERS_4_MUX_20171121_057_094_L2`, `CBERS_4_AWFI_20170420_146_129_L2`, `CBERS_4_PAN10M_20170427_161_109_L4`, `CBERS_4_PAN5M_20170425_153_114_L4`
+  - link: [rio_tiler_pds.cbers.utils.sceneid_parser](https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/cbers/utils.py#L28-L43)
+  - regex: `^CBERS_(4|4A)_\w+_[0-9]{8}_[0-9]{3}_[0-9]{3}_L\w+$`
+  - example: `CBERS_4_MUX_20171121_057_094_L2`, `CBERS_4_AWFI_20170420_146_129_L2`, `CBERS_4_PAN10M_20170427_161_109_L4`, `CBERS_4_PAN5M_20170425_153_114_L4`, `CBERS_4A_WPM_20200730_209_139_L4`
 
 </details>
 
