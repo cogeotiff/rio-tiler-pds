@@ -22,6 +22,7 @@ CBERS_4A_MUX_SCENE = "CBERS_4A_MUX_20200808_201_137_L4"
 CBERS_4A_WPM_SCENE = "CBERS_4A_WPM_20200730_209_139_L4"
 CBERS_4A_WFI_SCENE = "CBERS_4A_WFI_20200801_221_156_L4"
 
+
 @pytest.fixture(autouse=True)
 def testing_env_var(monkeypatch):
     """Set fake env to make sure we don't hit AWS services."""
