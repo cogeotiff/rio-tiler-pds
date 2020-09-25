@@ -34,7 +34,7 @@ class CBERSReader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "cbers-pds"
-    _prefix: str = "CBERS4/{instrument}/{path}/{row}/{scene}"
+    _prefix: str = "CBERS{mission}/{instrument}/{path}/{row}/{scene}"
 
     def __enter__(self):
         """Support using with Context Managers."""

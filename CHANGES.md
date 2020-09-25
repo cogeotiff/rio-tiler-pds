@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.2.1 (2020-09-25)
+
+* add support for CBERS-4A (author @fredliporace)
+
 ## 0.2.0 (2020-08-31)
 * Revert the use of `assets` options to `bands` (#12)
 
@@ -48,7 +52,7 @@ from rio_tiler_pds.cbers.aws import CBERSReader
 ```python
 from rio_tiler_pds.landsat.aws import L8Reader
 
-with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat: 
+with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
     tile, data = landsat.tile(x, y, z, assets="B1")
     tile, data = landsat.tile(x, y, z, expression="B1/B2")
 ```
