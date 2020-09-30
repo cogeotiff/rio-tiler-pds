@@ -32,6 +32,7 @@ nav:
     - cbers: API/cbers.md
     - sentinel: API/sentinel.md
     - landsat: API/landsat.md
+    - modis: API/modis.md
 
 # Theme
 theme:
