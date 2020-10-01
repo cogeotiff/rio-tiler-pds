@@ -52,7 +52,7 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 
 ## Datasets
 
-Data | Level | Format | Owner | Region | Bucket Type | Link
+Data | Level/Product | Format | Owner | Region | Bucket Type | Link
 --- | --- | --- | --- | --- | --- | ---
 Sentinel 2 | L1C | JPEG2000 | Sinergise / AWS | eu-central-1 | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
 Sentinel 2 | L2A | JPEG2000 | Sinergise / AWS | eu-central-1  | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
@@ -60,6 +60,8 @@ Sentinel 2 | L2A | COG | Digital Earth Africa / AWS | us-west-2  | Public | http
 Sentinel 1 | L1C | COG (Internal GCPS) | Sinergise / AWS | eu-central-1 | **Requester-pays** | https://registry.opendata.aws/sentinel-1/
 Landsat 8  | L1 | GTiff (External Overviews) | Planet / AWS | us-west-2 | Public | https://registry.opendata.aws/landsat-8/
 CBERS 4/4A | L2/L4 | COG | AMS Kepler / AWS | us-east-1 | **Requester-pays** | https://registry.opendata.aws/cbers/
+MODIS (modis-pds) | MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA | GTiff (External Overviews) | - | us-west-2 | Public | https://docs.opendata.aws/modis-pds/readme.html
+MODIS (astraea-opendata) | MCD43A4, MOD11A1, MOD13A1, MYD11A1 MYD13A1 | COG | Astraea / AWS | us-west-2 | **Requester-pays** | https://registry.opendata.aws/modis-astraea/
 
 **Adding more dataset**:
 
@@ -71,7 +73,7 @@ issue](https://github.com/cogeotiff/rio-tiler-pds/issues/new).
 
 #### Requester-pays Buckets
 
-On AWS, `sentinel2`, `sentinel1`, and `cbers` datasets are stored in [_requester
+On AWS, `sentinel2`, `sentinel1`, `cbers` and `modis` (in astraea-opendata) datasets are stored in [_requester
 pays_](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
 buckets. This means that the cost of GET and LIST requests and egress fees for
 downloading files outside the AWS region will be charged to the _accessing
@@ -107,6 +109,7 @@ from rio_tiler_pds.sentinel.aws import (
     S2L2ACOGReader,   # COG
 )
 from rio_tiler_pds.cbers.aws import CBERSReader
+from rio_tiler_pds.modis.aws import MODISPDSReader, MODISASTRAEAReader
 ```
 
 All Readers are subclass of [`rio_tiler.io.BaseReader`](https://github.com/cogeotiff/rio-tiler/blob/f917d0eaf27f8644f3bb18856a63fe45eeb4a2ef/rio_tiler/io/base.py#L17) and inherit its properties/methods.
@@ -193,6 +196,10 @@ Each dataset has a specific scene id format:
         - regex: `^CBERS_(4|4A)_\w+_[0-9]{8}_[0-9]{3}_[0-9]{3}_L\w+$`
         - example: `CBERS_4_MUX_20171121_057_094_L2`, `CBERS_4_AWFI_20170420_146_129_L2`, `CBERS_4_PAN10M_20170427_161_109_L4`, `CBERS_4_PAN5M_20170425_153_114_L4`, `CBERS_4A_WPM_20200730_209_139_L4`
 
+    - MODIS (PDS and Astraea)
+        - link: [rio_tiler_pds.modis.utils.sceneid_parser](https://github.com/cogeotiff/rio-tiler-pds/blob/c533d38330f46738c46cb9927dbe91b299dc643d/rio_tiler_pds/modis/utils.py#L29-L42)
+        - regex: `^M[COY]D[0-9]{2}[A-Z0-9]{2}\.A[0-9]{4}[0-9]{3}\.h[0-9]{2}v[0-9]{2}\.[0-9]{3}\.[0-9]{13}$`
+        - example: `MCD43A4.A2017006.h21v11.006.2017018074804`
 
 ### Band Per Asset/File
 

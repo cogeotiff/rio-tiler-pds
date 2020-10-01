@@ -15,5 +15,13 @@ class InvalidCBERSSceneId(RioTilerError):
     """Invalid CBERS scene id."""
 
 
+class InvalidMODISSceneId(RioTilerError):
+    """Invalid MODIS scene id."""
+
+
+class InvalidMODISProduct(RioTilerError):
+    """Invalid MODIS Product."""
+
+
 class MissingBands(RioTilerError):
     """Missing bands."""
