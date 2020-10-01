@@ -196,6 +196,10 @@ Each dataset has a specific scene id format:
         - regex: `^CBERS_(4|4A)_\w+_[0-9]{8}_[0-9]{3}_[0-9]{3}_L\w+$`
         - example: `CBERS_4_MUX_20171121_057_094_L2`, `CBERS_4_AWFI_20170420_146_129_L2`, `CBERS_4_PAN10M_20170427_161_109_L4`, `CBERS_4_PAN5M_20170425_153_114_L4`, `CBERS_4A_WPM_20200730_209_139_L4`
 
+    - MODIS (PDS and Astraea)
+        - link: [rio_tiler_pds.modis.utils.sceneid_parser](https://github.com/cogeotiff/rio-tiler-pds/blob/c533d38330f46738c46cb9927dbe91b299dc643d/rio_tiler_pds/modis/utils.py#L29-L42)
+        - regex: `^M[COY]D[0-9]{2}[A-Z0-9]{2}\.A[0-9]{4}[0-9]{3}\.h[0-9]{2}v[0-9]{2}\.[0-9]{3}\.[0-9]{13}$`
+        - example: `MCD43A4.A2017006.h21v11.006.2017018074804`
 
 ### Band Per Asset/File
 

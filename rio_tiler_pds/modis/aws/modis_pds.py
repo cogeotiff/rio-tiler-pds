@@ -61,6 +61,7 @@ MOD09GA_MYD09GA_BAND = (
     "solzen",
     "state",
 )
+
 modis_valid_bands = {
     "MCD43A4": MCD43A4_BANDS,
     "MOD09GQ": MOD09GQ_MYD09GQ_BANDS,
@@ -99,8 +100,8 @@ class MODISReader(MultiBandReader):
     _hostname: str = "modis-pds"
     _prefix: str = "{product}.{version}/{horizontal_grid}/{vertical_grid}/{date}"
 
-    def __enter__(self):
-        """Support using with Context Managers."""
+    def __attrs_post_init__(self):
+        """Parse Sceneid and get grid bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
         product = self.scene_params["product"]
         self.bands = modis_valid_bands[product]
@@ -108,6 +109,14 @@ class MODISReader(MultiBandReader):
             self.scene_params["horizontal_grid"], self.scene_params["vertical_grid"],
         )
         return self
+
+    def __enter__(self):
+        """Support using with Context Managers."""
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Support using with Context Managers."""
+        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band's name and return band's url."""
