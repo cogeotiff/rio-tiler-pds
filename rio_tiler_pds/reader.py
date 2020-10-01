@@ -48,15 +48,6 @@ class MultiBandReader(BaseReader, metaclass=abc.ABCMeta):
     maxzoom: int = attr.ib(init=False)
 
     @abc.abstractmethod
-    def __enter__(self):
-        """Support using with Context Managers."""
-        ...
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        pass
-
-    @abc.abstractmethod
     def _get_band_url(self, band: str) -> str:
         """Validate band name and construct url."""
         ...
@@ -372,8 +363,19 @@ class GCPCOGReader(COGReader):
 
     """
 
-    def __enter__(self):
-        """Open rasterio datasets."""
+    def __attrs_post_init__(self):
+        """Define _kwargs, open dataset and get info."""
+        if self.nodata is not None:
+            self._kwargs["nodata"] = self.nodata
+        if self.unscale is not None:
+            self._kwargs["unscale"] = self.unscale
+        if self.resampling_method is not None:
+            self._kwargs["resampling_method"] = self.resampling_method
+        if self.vrt_options is not None:
+            self._kwargs["vrt_options"] = self.vrt_options
+        if self.post_process is not None:
+            self._kwargs["post_process"] = self.post_process
+
         self.src_dataset = rasterio.open(self.filepath)
         self.dataset = WarpedVRT(
             self.src_dataset,
@@ -386,9 +388,15 @@ class GCPCOGReader(COGReader):
             self.dataset.crs, constants.WGS84_CRS, *self.dataset.bounds, densify_pts=21
         )
 
+        if self.minzoom is None or self.maxzoom is None:
+            self._get_zooms()
+
+        if self.colormap is None:
+            self._get_colormap()
+
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Close rasterio datasets."""
+    def close(self):
+        """Close rasterio dataset."""
         self.dataset.close()
         self.src_dataset.close()
