@@ -68,8 +68,8 @@ class S2L1CReader(MultiBandReader):
     _hostname: str = "sentinel-s2-l1c"
     _prefix: str = "tiles/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{_day}/{num}"
 
-    def __enter__(self):
-        """Support using with Context Managers."""
+    def __attrs_post_init__(self):
+        """Fetch productInfo and get bounds."""
         self.scene_params = s2_sceneid_parser(self.sceneid)
 
         prefix = self._prefix.format(**self.scene_params)
@@ -80,7 +80,14 @@ class S2L1CReader(MultiBandReader):
         input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
         self.datageom = transform_geom(input_crs, constants.WGS84_CRS, input_geom)
         self.bounds = featureBounds(self.datageom)
+
+    def __enter__(self):
+        """Support using with Context Managers."""
         return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Support using with Context Managers."""
+        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
@@ -216,10 +223,10 @@ class S2COGReader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-cogs"
-    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{acquisitionYear}/{scene}"
+    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{scene}"
 
-    def __enter__(self):
-        """Support using with Context Managers."""
+    def __attrs_post_init__(self):
+        """Fetch item.json and get bounds and bands."""
         self.scene_params = s2_sceneid_parser(self.sceneid)
 
         cog_sceneid = self.scene_params["scene"]
@@ -234,7 +241,13 @@ class S2COGReader(MultiBandReader):
         )
         self.bounds = self.stac_item["bbox"]
 
+    def __enter__(self):
+        """Support using with Context Managers."""
         return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Support using with Context Managers."""
+        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""

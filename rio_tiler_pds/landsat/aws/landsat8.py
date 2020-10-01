@@ -65,8 +65,8 @@ class L8Reader(MultiBandReader):
     _hostname: str = "landsat-pds"
     _prefix: str = "c1/L8/{path}/{row}/{scene}"
 
-    def __enter__(self):
-        """Support using with Context Managers."""
+    def __attrs_post_init__(self):
+        """Fetch MTL metadata and get bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
         prefix = self._prefix.format(**self.scene_params)
         basename = f"{self.sceneid}_MTL.txt"
@@ -78,7 +78,14 @@ class L8Reader(MultiBandReader):
                 self.mtl_metadata["L1_METADATA_FILE"]["PRODUCT_METADATA"]
             )
         )
+
+    def __enter__(self):
+        """Support using with Context Managers."""
         return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Support using with Context Managers."""
+        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""

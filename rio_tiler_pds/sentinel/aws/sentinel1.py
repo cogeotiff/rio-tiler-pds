@@ -47,8 +47,8 @@ class S1L1CReader(MultiBandReader):
     _hostname: str = "sentinel-s1-l1c"
     _prefix: str = "{product}/{acquisitionYear}/{_month}/{_day}/{beam}/{polarisation}/{scene}"
 
-    def __enter__(self):
-        """Support using with Context Managers."""
+    def __attrs_post_init__(self):
+        """Fetch productInfo and get bounds."""
         self.scene_params = s1_sceneid_parser(self.sceneid)
 
         prefix = self._prefix.format(**self.scene_params)
@@ -57,7 +57,14 @@ class S1L1CReader(MultiBandReader):
         )
         self.datageom = self.productInfo["footprint"]
         self.bounds = featureBounds(self.datageom)
+
+    def __enter__(self):
+        """Support using with Context Managers."""
         return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Support using with Context Managers."""
+        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""

@@ -36,19 +36,24 @@ class CBERSReader(MultiBandReader):
     _hostname: str = "cbers-pds"
     _prefix: str = "CBERS{mission}/{instrument}/{path}/{row}/{scene}"
 
-    def __enter__(self):
-        """Support using with Context Managers."""
+    def __attrs_post_init__(self):
+        """Fetch Reference band to get the bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
         self.bands = self.scene_params["bands"]
 
         ref = self._get_band_url(self.scene_params["reference_band"])
-
         with self.reader(ref, **self.reader_options) as cog:
             self.bounds = cog.bounds
             self.minzoom = cog.minzoom
             self.maxzoom = cog.maxzoom
 
+    def __enter__(self):
+        """Support using with Context Managers."""
         return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Support using with Context Managers."""
+        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band's name and return band's url."""
