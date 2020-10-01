@@ -240,7 +240,11 @@ L2ACOG_TJSON_PATH = os.path.join(
     "fixtures",
     "sentinel-cogs",
     "sentinel-s2-l2a-cogs",
+    "29",
+    "R",
+    "KH",
     "2020",
+    "2",
     SENTINEL_COG_SCENE_L2,
     f"{SENTINEL_COG_SCENE_L2}.json",
 )
@@ -300,7 +304,7 @@ def test_AWSPDS_S2COGReader(rio, get_object):
 
         assert (
             sentinel._get_band_url("B01")
-            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/29/R/KH/2020/2/S2A_29RKH_20200219_0_L2A/B01.tif"
         )
 
     # Test with legacy Scene id format
@@ -333,7 +337,7 @@ def test_AWSPDS_S2COGReader(rio, get_object):
 
         assert (
             sentinel._get_band_url("B01")
-            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/2020/S2A_29RKH_20200219_0_L2A/B01.tif"
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/29/R/KH/2020/2/S2A_29RKH_20200219_0_L2A/B01.tif"
         )
 
 
