@@ -7,7 +7,7 @@ import pytest
 import rasterio
 
 from rio_tiler.errors import InvalidBandName
-from rio_tiler_pds.errors import InvalidMODISSceneId
+from rio_tiler_pds.errors import InvalidMODISProduct, InvalidMODISSceneId
 from rio_tiler_pds.modis.aws import MODISPDSReader
 from rio_tiler_pds.modis.modland_grid import InvalidModlandGridID, tile_bbox
 from rio_tiler_pds.modis.utils import sceneid_parser
@@ -45,6 +45,10 @@ def test_AWS_MODISPDSReader(rio):
 
     with pytest.raises(InvalidMODISSceneId):
         with MODISPDSReader("D43A4.A2017006.h21v11.006.2017018074804"):
+            pass
+
+    with pytest.raises(InvalidMODISProduct):
+        with MODISPDSReader("MOD00A4.A2017006.h21v11.006.2017018074804"):
             pass
 
     with MODISPDSReader(MCD43A4_SCENE) as modis:

@@ -7,6 +7,7 @@ import pytest
 import rasterio
 
 from rio_tiler.errors import InvalidBandName
+from rio_tiler_pds.errors import InvalidMODISProduct
 from rio_tiler_pds.modis.aws import MODISASTRAEAReader
 
 MODIS_AST_BUCKET = os.path.join(
@@ -41,6 +42,10 @@ def mock_rasterio_open(band):
 def test_AWS_MODISASTRAEAReader(rio):
     """Test MODIS (ASTRAEA) Reader product."""
     rio.open = mock_rasterio_open
+
+    with pytest.raises(InvalidMODISProduct):
+        with MODISASTRAEAReader("MOD00A4.A2017006.h21v11.006.2017018074804"):
+            pass
 
     with MODISASTRAEAReader(MCD43A4_SCENE) as modis:
         assert modis.minzoom == 4

@@ -7,6 +7,7 @@ import attr
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import BaseReader, COGReader
 
+from ...errors import InvalidMODISProduct
 from ...reader import MultiBandReader
 from ..modland_grid import tile_bbox
 from ..utils import sceneid_parser
@@ -115,6 +116,9 @@ class MODISReader(MultiBandReader):
         """Parse Sceneid and get grid bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
         product = self.scene_params["product"]
+        if product not in modis_valid_bands:
+            raise InvalidMODISProduct(f"{product} is not supported.")
+
         self.bands = modis_valid_bands[product]
         self.bounds = tile_bbox(
             self.scene_params["horizontal_grid"], self.scene_params["vertical_grid"],
