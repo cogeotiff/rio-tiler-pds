@@ -216,7 +216,7 @@ class S2COGReader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-cogs"
-    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{acquisitionYear}/{scene}"
+    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{scene}"
 
     def __enter__(self):
         """Support using with Context Managers."""
