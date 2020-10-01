@@ -4,6 +4,7 @@
 
 * Update sentinel2-cogs image path (https://github.com/cogeotiff/rio-tiler-pds/pull/22).
 * Remove ContextManager requirement in base class and update for rio-tiler 2.0b13 (https://github.com/cogeotiff/rio-tiler/pull/265).
+* Add MODIS (PDS and Astraea) dataset ()
 
 ## 0.2.1 (2020-09-25)
 
