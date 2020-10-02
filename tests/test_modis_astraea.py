@@ -67,6 +67,8 @@ def test_AWS_MODISASTRAEAReader(rio):
             "B07qa",
         )
 
+        assert modis._get_band_url("B1") == modis._get_band_url("B01")
+
         assert modis._get_band_url("B01") == (
             "s3://astraea-opendata/MCD43A4.006/21/11/2017200/MCD43A4.A2017200.h21v11.006.2017209030811_B01.TIF"
         )
