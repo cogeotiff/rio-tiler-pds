@@ -5,10 +5,9 @@ from typing import Dict, Type
 import attr
 
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import BaseReader, COGReader
+from rio_tiler.io import BaseReader, COGReader, MultiBandReader
 
 from ...errors import InvalidMODISProduct
-from ...reader import MultiBandReader
 from ..modland_grid import tile_bbox
 from ..utils import sceneid_parser
 

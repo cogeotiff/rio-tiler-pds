@@ -6,10 +6,10 @@ from unittest.mock import patch
 import pytest
 import rasterio
 
-from rio_tiler.errors import InvalidBandName, TileOutsideBounds
+from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler_pds.cbers.aws import CBERSReader
 from rio_tiler_pds.cbers.utils import sceneid_parser
-from rio_tiler_pds.errors import InvalidCBERSSceneId, MissingBands
+from rio_tiler_pds.errors import InvalidCBERSSceneId
 
 CBERS_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "cbers-pds")
 # CBERS4 test scenes
@@ -85,7 +85,7 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
         assert len(stats.items()) == 1
         assert stats["B5"]["pc"] == [28, 98]
 
-        stats = cbers.stats(bands=cbers.bands, hist_options=dict(bins=20))
+        stats = cbers.stats(bands=cbers.bands, hist_options={"bins": 20})
         assert len(stats["B5"]["histogram"][0]) == 20
 
         with pytest.raises(MissingBands):

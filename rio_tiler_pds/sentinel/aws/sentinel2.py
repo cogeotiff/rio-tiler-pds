@@ -12,9 +12,9 @@ from rasterio.warp import transform_geom
 
 from rio_tiler import constants
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import BaseReader, COGReader
+from rio_tiler.io import BaseReader, COGReader, MultiBandReader
 
-from ...reader import MultiBandReader, get_object
+from ... import get_object
 from ..utils import s2_sceneid_parser
 
 default_l1c_bands = (
@@ -80,14 +80,6 @@ class S2L1CReader(MultiBandReader):
         input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
         self.datageom = transform_geom(input_crs, constants.WGS84_CRS, input_geom)
         self.bounds = featureBounds(self.datageom)
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
@@ -245,14 +237,6 @@ class S2COGReader(MultiBandReader):
             [band for band in self.stac_item["assets"] if re.match("B[0-9A]{2}", band)]
         )
         self.bounds = self.stac_item["bbox"]
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""

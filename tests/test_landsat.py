@@ -7,8 +7,8 @@ import numpy
 import pytest
 import rasterio
 
-from rio_tiler.errors import InvalidBandName, TileOutsideBounds
-from rio_tiler_pds.errors import InvalidLandsatSceneId, MissingBands
+from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
+from rio_tiler_pds.errors import InvalidLandsatSceneId
 from rio_tiler_pds.landsat.aws import L8Reader
 from rio_tiler_pds.landsat.utils import sceneid_parser
 
@@ -40,7 +40,7 @@ def mock_rasterio_open(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler_pds.landsat.aws.landsat8.get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_L8Reader(rio, get_object):
     """Should work as expected (get and parse metadata)."""

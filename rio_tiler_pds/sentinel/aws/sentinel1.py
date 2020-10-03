@@ -7,9 +7,9 @@ import attr
 from rasterio.features import bounds as featureBounds
 
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import BaseReader
+from rio_tiler.io import BaseReader, GCPCOGReader, MultiBandReader
 
-from ...reader import GCPCOGReader, MultiBandReader, get_object
+from ... import get_object
 from ..utils import s1_sceneid_parser
 
 
@@ -35,7 +35,7 @@ class S1L1CReader(MultiBandReader):
 
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=GCPCOGReader)
-    reader_options: Dict = attr.ib(factory=dict)
+    reader_options: Dict = attr.ib(default={"nodata": 0})
     minzoom: int = attr.ib(init=False, default=8)
     maxzoom: int = attr.ib(init=False, default=14)
 
