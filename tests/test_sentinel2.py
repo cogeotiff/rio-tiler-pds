@@ -6,8 +6,8 @@ from unittest.mock import patch
 import pytest
 import rasterio
 
-from rio_tiler.errors import ExpressionMixingWarning, InvalidBandName
-from rio_tiler_pds.errors import InvalidSentinelSceneId, MissingBands
+from rio_tiler.errors import ExpressionMixingWarning, InvalidBandName, MissingBands
+from rio_tiler_pds.errors import InvalidSentinelSceneId
 from rio_tiler_pds.sentinel.aws import S2COGReader, S2L1CReader, S2L2AReader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
@@ -52,7 +52,7 @@ def mock_rasterio_open(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2L1CReader(rio, get_object):
     """Test AWSPDS_S2L1CReader."""
@@ -179,7 +179,7 @@ with open(L2A_TJSON_PATH, "rb") as f:
     L2A_TILEJSON = f.read()
 
 
-@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2L2AReader(rio, get_object):
     """Test AWSPDS_S2L2AReader."""
@@ -264,7 +264,7 @@ def mock_rasterio_open_cogs(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler_pds.reader.aws_get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
 @patch("rio_tiler.io.cogeo.rasterio")
 def test_AWSPDS_S2COGReader(rio, get_object):
     """Test AWSPDS_S2L2ACOGReader."""

@@ -28,7 +28,6 @@ nav:
   - Development - Contributing: 'contributing.md'
   - Release: 'release-notes.md'
   - API:
-    - BaseClasses: API/baseclasses.md
     - cbers: API/cbers.md
     - sentinel: API/sentinel.md
     - landsat: API/landsat.md

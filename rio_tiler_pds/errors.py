@@ -21,7 +21,3 @@ class InvalidMODISSceneId(RioTilerError):
 
 class InvalidMODISProduct(RioTilerError):
     """Invalid MODIS Product."""
-
-
-class MissingBands(RioTilerError):
-    """Missing bands."""

@@ -6,14 +6,13 @@ import attr
 import numpy
 from rio_toa import toa_utils
 
-from rio_tiler.errors import InvalidBandName
+from rio_tiler.errors import InvalidBandName, MissingBands
 from rio_tiler.expression import apply_expression
-from rio_tiler.io import BaseReader, COGReader
+from rio_tiler.io import BaseReader, COGReader, MultiBandReader
 from rio_tiler.tasks import multi_arrays, multi_values
 from rio_tiler.utils import pansharpening_brovey
 
-from ...errors import MissingBands
-from ...reader import MultiBandReader, get_object
+from ... import get_object
 from ..utils import dn_to_toa, sceneid_parser
 
 landsat8_valid_bands = (
