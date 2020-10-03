@@ -83,7 +83,9 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
             "B8A",
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B1")
+            sentinel.stats(bands="B20")
+
+        assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
         values = sentinel.point(-69.41, 48.25, bands=("B01", "B02"))
         assert values == [1193, 846]
@@ -213,7 +215,9 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
             # "WVP",
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B1")
+            sentinel.stats(bands="B25")
+
+        assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
         stats = sentinel.stats(bands="B01")
         assert stats["B01"]["pc"] == [1094, 8170]
@@ -297,7 +301,9 @@ def test_AWSPDS_S2COGReader(rio, get_object):
             )
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B1")
+            sentinel.stats(bands="B30")
+
+        assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
         stats = sentinel.stats(bands="B01")
         assert stats["B01"]["pc"] == [1029, 1929]
@@ -330,7 +336,7 @@ def test_AWSPDS_S2COGReader(rio, get_object):
             )
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B1")
+            sentinel.stats(bands="B25")
 
         stats = sentinel.stats(bands="B01")
         assert stats["B01"]["pc"] == [1029, 1929]

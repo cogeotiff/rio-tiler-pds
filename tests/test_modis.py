@@ -76,6 +76,8 @@ def test_AWS_MODISPDSReader(rio):
         with pytest.raises(InvalidBandName):
             modis._get_band_url("granule")
 
+        assert modis._get_band_url("B1") == modis._get_band_url("B01")
+
         assert modis._get_band_url("B01") == (
             "s3://modis-pds/MCD43A4.006/21/11/2017006/MCD43A4.A2017006.h21v11.006.2017018074804_B01.TIF"
         )

@@ -134,6 +134,8 @@ class MODISReader(MultiBandReader):
 
     def _get_band_url(self, band: str) -> str:
         """Validate band's name and return band's url."""
+        band = f"B0{band[-1]}" if band.startswith("B") and len(band) < 3 else band
+
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")
 
