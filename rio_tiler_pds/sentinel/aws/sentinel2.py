@@ -83,7 +83,7 @@ class S2L1CReader(MultiBandReader):
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
-        band = band if len(band) == 3 else "B0{}".format(band[-1])
+        band = band if len(band) == 3 else f"B0{band[-1]}"
 
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")
@@ -179,7 +179,7 @@ class S2L2AReader(S2L1CReader):
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
-        band = band if len(band) == 3 else "B0{}".format(band[-1])
+        band = band if len(band) == 3 else f"B0{band[-1]}"
 
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")
@@ -240,7 +240,7 @@ class S2COGReader(MultiBandReader):
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
-        band = band if len(band) == 3 else "B0{}".format(band[-1])
+        band = band if len(band) == 3 else f"B0{band[-1]}"
 
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")

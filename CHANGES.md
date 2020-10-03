@@ -1,11 +1,13 @@
 # Release Notes
 
-## 0.2.2 (TBD)
+## 0.3.0 (2020-10-03)
 
 * Update sentinel2-cogs image path (https://github.com/cogeotiff/rio-tiler-pds/pull/22).
 * Remove ContextManager requirement in base class and update for rio-tiler 2.0b13 (https://github.com/cogeotiff/rio-tiler/pull/265).
 * Add MODIS (PDS and Astraea) dataset (https://github.com/cogeotiff/rio-tiler-pds/issues/18)
 * move reader base classes to rio-tiler (https://github.com/cogeotiff/rio-tiler-pds/issues/24)
+* add missing `0` (e.g "B1" -> "B01") when user forget it on sentinel and modis band names (https://github.com/cogeotiff/rio-tiler-pds/issues/25)
+
 
 ## 0.2.1 (2020-09-25)
 
