@@ -16,7 +16,7 @@ extra_reqs = {
 
 setup(
     name="rio-tiler-pds",
-    version="0.3.0",
+    version="0.3.1",
     python_requires=">=3",
     description=u"""Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS""",
     long_description=readme,
