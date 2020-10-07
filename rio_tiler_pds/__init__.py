@@ -2,11 +2,9 @@
 
 from functools import lru_cache
 
-import pkg_resources
-
 from rio_tiler.utils import aws_get_object
 
-version = pkg_resources.get_distribution(__package__).version
+__version__ = "0.3.0"
 
 
 @lru_cache(maxsize=512)

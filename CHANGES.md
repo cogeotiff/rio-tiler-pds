@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.3.1 (2020-10-07)
+
+* remove `pkg_resources` (https://github.com/pypa/setuptools/issues/510)
+
 ## 0.3.0 (2020-10-03)
 
 * Update sentinel2-cogs image path (https://github.com/cogeotiff/rio-tiler-pds/pull/22).
