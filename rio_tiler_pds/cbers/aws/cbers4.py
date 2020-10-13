@@ -3,7 +3,9 @@
 from typing import Dict, Type
 
 import attr
+from morecantile import TileMatrixSet
 
+from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import BaseReader, COGReader, MultiBandReader
 
@@ -30,6 +32,7 @@ class CBERSReader(MultiBandReader):
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
     _scheme: str = "s3"
     _hostname: str = "cbers-pds"
@@ -41,7 +44,7 @@ class CBERSReader(MultiBandReader):
         self.bands = self.scene_params["bands"]
 
         ref = self._get_band_url(self.scene_params["reference_band"])
-        with self.reader(ref, **self.reader_options) as cog:
+        with self.reader(ref, tms=self.tms, **self.reader_options) as cog:
             self.bounds = cog.bounds
             self.minzoom = cog.minzoom
             self.maxzoom = cog.maxzoom

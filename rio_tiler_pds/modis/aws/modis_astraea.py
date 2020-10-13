@@ -3,7 +3,9 @@
 from typing import Dict, Type
 
 import attr
+from morecantile import TileMatrixSet
 
+from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import BaseReader, COGReader, MultiBandReader
 
@@ -102,10 +104,11 @@ class MODISReader(MultiBandReader):
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
-    minzoom: int = attr.ib(init=False, default=4)
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+    minzoom: int = attr.ib(default=4)
     # Most of MODIS product are at 500m resolution (zoom = 8)
     # Some are at 250m (zoom = 10) (MOD09GQ & MYD09GQ) thus we use maxzoom = 9 by default
-    maxzoom: int = attr.ib(init=False, default=9)
+    maxzoom: int = attr.ib(default=9)
 
     _scheme: str = "s3"
     _hostname: str = "astraea-opendata"

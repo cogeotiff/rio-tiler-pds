@@ -4,13 +4,15 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, Union
 
 import attr
 import numpy
-from rio_toa import toa_utils
+from morecantile import TileMatrixSet
 
-from rio_tiler.errors import InvalidBandName, MissingBands
+from rio_tiler.constants import WEB_MERCATOR_TMS
+from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler.expression import apply_expression
 from rio_tiler.io import BaseReader, COGReader, MultiBandReader
 from rio_tiler.tasks import multi_arrays, multi_values
 from rio_tiler.utils import pansharpening_brovey
+from rio_toa import toa_utils
 
 from ... import get_object
 from ..utils import dn_to_toa, sceneid_parser
@@ -54,8 +56,9 @@ class L8Reader(MultiBandReader):
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
-    minzoom: int = attr.ib(init=False, default=7)
-    maxzoom: int = attr.ib(init=False, default=12)
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+    minzoom: int = attr.ib(default=7)
+    maxzoom: int = attr.ib(default=12)
 
     mtl_metadata: Dict = attr.ib(init=False)
     bands: Tuple = attr.ib(init=False, default=landsat8_valid_bands)
@@ -146,7 +149,7 @@ class L8Reader(MultiBandReader):
                 nodata = 1
                 kwargs["resampling_method"] = "nearest"
             kwargs.update({"nodata": nodata})
-            with self.reader(url, **self.reader_options) as cog:
+            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
                 result = cog.stats(*args, **kwargs)[1]
                 return self._convert_stats(result, band)
 
@@ -175,7 +178,7 @@ class L8Reader(MultiBandReader):
                 nodata = 1
                 kwargs["resampling_method"] = "nearest"
             kwargs.update({"nodata": nodata})
-            with self.reader(url, **self.reader_options) as cog:
+            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
                 metadata = cog.metadata(*args, **kwargs)
                 metadata["statistics"] = self._convert_stats(
                     metadata["statistics"][1], band
@@ -213,6 +216,11 @@ class L8Reader(MultiBandReader):
         **kwargs: Any,
     ) -> Tuple[numpy.ndarray, numpy.ndarray]:
         """Read a Mercator Map tile multiple bands."""
+        if not self.tile_exists(tile_z, tile_x, tile_y):
+            raise TileOutsideBounds(
+                f"Tile {tile_z}/{tile_x}/{tile_y} is outside image bounds"
+            )
+
         if isinstance(bands, str):
             bands = (bands,)
 
@@ -236,7 +244,7 @@ class L8Reader(MultiBandReader):
                 nodata = 1
                 kwargs["resampling_method"] = "nearest"
             kwargs.update({"nodata": nodata})
-            with self.reader(url, **self.reader_options) as cog:
+            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
                 tile, mask = cog.tile(*args, **kwargs)
                 tile = dn_to_toa(tile, band, self.mtl_metadata["L1_METADATA_FILE"])
             return tile, mask
@@ -296,7 +304,7 @@ class L8Reader(MultiBandReader):
                 nodata = 1
                 kwargs["resampling_method"] = "nearest"
             kwargs.update({"nodata": nodata})
-            with self.reader(url, **self.reader_options) as cog:
+            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
                 data, mask = cog.part(*args, **kwargs)
                 data = dn_to_toa(data, band, self.mtl_metadata["L1_METADATA_FILE"])
             return data, mask
@@ -347,7 +355,7 @@ class L8Reader(MultiBandReader):
                 nodata = 1
                 kwargs["resampling_method"] = "nearest"
             kwargs.update({"nodata": nodata})
-            with self.reader(url, **self.reader_options) as cog:
+            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
                 data, mask = cog.preview(**kwargs)
                 data = dn_to_toa(data, band, self.mtl_metadata["L1_METADATA_FILE"])
             return data, mask
@@ -391,7 +399,7 @@ class L8Reader(MultiBandReader):
             url = self._get_band_url(band)
             nodata = 1 if band == "BQA" else 0
             kwargs.update({"nodata": nodata})
-            with self.reader(url, **self.reader_options) as cog:
+            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
                 data = numpy.array(cog.point(*args, **kwargs))
                 data = dn_to_toa(data, band, self.mtl_metadata["L1_METADATA_FILE"])
             return data.tolist()[0]
