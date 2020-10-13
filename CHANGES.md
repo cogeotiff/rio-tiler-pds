@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.3.2 (2020-10-13)
+
+* add `TMS` options to adapt  for rio-tiler 2.0.0b17 (ref: https://github.com/cogeotiff/rio-tiler/pull/285)
+
 ## 0.3.1 (2020-10-07)
 
 * remove `pkg_resources` (https://github.com/pypa/setuptools/issues/510)

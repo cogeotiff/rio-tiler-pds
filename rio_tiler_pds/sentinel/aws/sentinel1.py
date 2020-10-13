@@ -4,8 +4,10 @@ import json
 from typing import Dict, Tuple, Type
 
 import attr
+from morecantile import TileMatrixSet
 from rasterio.features import bounds as featureBounds
 
+from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import BaseReader, GCPCOGReader, MultiBandReader
 
@@ -36,8 +38,9 @@ class S1L1CReader(MultiBandReader):
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=GCPCOGReader)
     reader_options: Dict = attr.ib(default={"nodata": 0})
-    minzoom: int = attr.ib(init=False, default=8)
-    maxzoom: int = attr.ib(init=False, default=14)
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+    minzoom: int = attr.ib(default=8)
+    maxzoom: int = attr.ib(default=14)
 
     bands: Tuple = attr.ib(init=False, default=("vv", "vh"))
     productInfo: Dict = attr.ib(init=False)

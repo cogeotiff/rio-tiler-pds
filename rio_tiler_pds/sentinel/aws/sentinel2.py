@@ -6,6 +6,7 @@ from collections import OrderedDict
 from typing import Dict, Tuple, Type
 
 import attr
+from morecantile import TileMatrixSet
 from rasterio.crs import CRS
 from rasterio.features import bounds as featureBounds
 from rasterio.warp import transform_geom
@@ -57,8 +58,9 @@ class S2L1CReader(MultiBandReader):
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(default={"nodata": 0})
-    minzoom: int = attr.ib(init=False, default=8)
-    maxzoom: int = attr.ib(init=False, default=14)
+    tms: TileMatrixSet = attr.ib(default=constants.WEB_MERCATOR_TMS)
+    minzoom: int = attr.ib(default=8)
+    maxzoom: int = attr.ib(default=14)
 
     bands: Tuple = attr.ib(init=False, default=default_l1c_bands)
     tileInfo: Dict = attr.ib(init=False)
@@ -212,8 +214,9 @@ class S2COGReader(MultiBandReader):
     sceneid: str = attr.ib()
     reader: Type[BaseReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
-    minzoom: int = attr.ib(init=False, default=8)
-    maxzoom: int = attr.ib(init=False, default=14)
+    tms: TileMatrixSet = attr.ib(default=constants.WEB_MERCATOR_TMS)
+    minzoom: int = attr.ib(default=8)
+    maxzoom: int = attr.ib(default=14)
 
     bands: tuple = attr.ib(init=False)
     stac_item: Dict = attr.ib(init=False)
