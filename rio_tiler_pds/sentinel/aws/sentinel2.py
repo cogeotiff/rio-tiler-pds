@@ -3,7 +3,7 @@
 import json
 import re
 from collections import OrderedDict
-from typing import Dict, Tuple, Type
+from typing import Any, Dict, Tuple, Type, Union
 
 import attr
 from morecantile import TileMatrixSet
@@ -192,8 +192,8 @@ class S2L2AReader(S2L1CReader):
 
 
 @attr.s
-class S2COGReader(MultiBandReader):
-    """AWS Public Dataset Sentinel 2 COGS reader.
+class S2L2ACOGReader(MultiBandReader):
+    """AWS Public Dataset Sentinel 2 L2A COGS reader.
 
     Args:
         sceneid (str): Sentinel-2 sceneid.
@@ -206,7 +206,7 @@ class S2COGReader(MultiBandReader):
         stac_item (dict): sentinel 2 COG STAC item content.
 
     Examples:
-        >>> with S2COGReader('S2A_29RKH_20200219_0_L2A') as scene:
+        >>> with S2L2ACOGReader('S2A_29RKH_20200219_0_L2A') as scene:
                 print(scene.bounds)
 
     """
@@ -250,3 +250,25 @@ class S2COGReader(MultiBandReader):
 
         prefix = self._prefix.format(**self.scene_params)
         return f"{self._scheme}://{self._hostname}/{prefix}/{band}.tif"
+
+
+def S2COGReader(sceneid: str, **kwargs: Any) -> S2L2ACOGReader:
+    """Sentinel-2 JPEG2000 readers."""
+    scene_params = s2_sceneid_parser(sceneid)
+    level = scene_params["processingLevel"]
+    if level == "L2A":
+        return S2L2ACOGReader(sceneid, **kwargs)
+    else:
+        raise Exception(f"{level} is not supported")
+
+
+def S2JP2Reader(sceneid: str, **kwargs: Any) -> Union[S2L2AReader, S2L1CReader]:
+    """Sentinel-2 COG readers."""
+    scene_params = s2_sceneid_parser(sceneid)
+    level = scene_params["processingLevel"]
+    if level == "L2A":
+        return S2L2AReader(sceneid, **kwargs)
+    elif level == "L1C":
+        return S2L1CReader(sceneid, **kwargs)
+    else:
+        raise Exception(f"{level} is not supported")
