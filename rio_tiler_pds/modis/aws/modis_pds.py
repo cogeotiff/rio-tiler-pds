@@ -7,7 +7,7 @@ from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import BaseReader, COGReader, MultiBandReader
+from rio_tiler.io import COGReader, MultiBandReader
 
 from ...errors import InvalidMODISProduct
 from ..modland_grid import tile_bbox
@@ -91,7 +91,7 @@ class MODISReader(MultiBandReader):
     """
 
     sceneid: str = attr.ib()
-    reader: Type[BaseReader] = attr.ib(default=COGReader)
+    reader: Type[COGReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib(default=4)
@@ -116,14 +116,6 @@ class MODISReader(MultiBandReader):
             self.scene_params["horizontal_grid"], self.scene_params["vertical_grid"],
         )
         return self
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band's name and return band's url."""

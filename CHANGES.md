@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.4.0 (TBD)
+
+* update for rio-tiler==2.0.0rc
+
 ## 0.3.2 (2020-10-13)
 
 * add `TMS` options to adapt  for rio-tiler 2.0.0b17 (ref: https://github.com/cogeotiff/rio-tiler/pull/285)

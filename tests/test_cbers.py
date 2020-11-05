@@ -67,15 +67,15 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
 
         metadata = cbers.info(bands="B5")
         assert len(metadata["band_metadata"]) == 1
-        assert metadata["band_descriptions"] == [(1, "B5")]
+        assert metadata["band_descriptions"] == [("B5", "")]
 
         metadata = cbers.info(bands=cbers.bands)
         assert len(metadata["band_metadata"]) == 4
         assert metadata["band_descriptions"] == [
-            (1, "B5"),
-            (2, "B6"),
-            (3, "B7"),
-            (4, "B8"),
+            ("B5", ""),
+            ("B6", ""),
+            ("B7", ""),
+            ("B8", ""),
         ]
 
         with pytest.raises(MissingBands):
@@ -83,7 +83,7 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
 
         stats = cbers.stats(bands="B5")
         assert len(stats.items()) == 1
-        assert stats["B5"]["pc"] == [28, 98]
+        assert stats["B5"]["percentiles"] == [28, 98]
 
         stats = cbers.stats(bands=cbers.bands, hist_options={"bins": 20})
         assert len(stats["B5"]["histogram"][0]) == 20
@@ -92,16 +92,16 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
             cbers.metadata()
 
         metadata = cbers.metadata(bands="B5")
-        assert metadata["statistics"]["B5"]["pc"] == [28, 98]
+        assert metadata["statistics"]["B5"]["percentiles"] == [28, 98]
 
         metadata = cbers.metadata(bands=cbers.bands)
-        assert metadata["statistics"]["B5"]["pc"] == [28, 98]
+        assert metadata["statistics"]["B5"]["percentiles"] == [28, 98]
         assert len(metadata["band_metadata"]) == 4
         assert metadata["band_descriptions"] == [
-            (1, "B5"),
-            (2, "B6"),
-            (3, "B7"),
-            (4, "B8"),
+            ("B5", ""),
+            ("B6", ""),
+            ("B7", ""),
+            ("B8", ""),
         ]
 
         tile_z = 10
@@ -211,15 +211,15 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
 
         metadata = cbers.info(bands="B5")
         assert len(metadata["band_metadata"]) == 1
-        assert metadata["band_descriptions"] == [(1, "B5")]
+        assert metadata["band_descriptions"] == [("B5", "")]
 
         metadata = cbers.info(bands=cbers.bands)
         assert len(metadata["band_metadata"]) == 4
         assert metadata["band_descriptions"] == [
-            (1, "B5"),
-            (2, "B6"),
-            (3, "B7"),
-            (4, "B8"),
+            ("B5", ""),
+            ("B6", ""),
+            ("B7", ""),
+            ("B8", ""),
         ]
 
         with pytest.raises(MissingBands):
@@ -227,7 +227,7 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
 
         stats = cbers.stats(bands="B5")
         assert len(stats.items()) == 1
-        assert stats["B5"]["pc"] == [30, 52]
+        assert stats["B5"]["percentiles"] == [30, 52]
 
         stats = cbers.stats(bands=cbers.bands, hist_options=dict(bins=20))
         assert len(stats["B5"]["histogram"][0]) == 20
@@ -236,16 +236,16 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
             cbers.metadata()
 
         metadata = cbers.metadata(bands="B5")
-        assert metadata["statistics"]["B5"]["pc"] == [30, 52]
+        assert metadata["statistics"]["B5"]["percentiles"] == [30, 52]
 
         metadata = cbers.metadata(bands=cbers.bands)
-        assert metadata["statistics"]["B5"]["pc"] == [30, 52]
+        assert metadata["statistics"]["B5"]["percentiles"] == [30, 52]
         assert len(metadata["band_metadata"]) == 4
         assert metadata["band_descriptions"] == [
-            (1, "B5"),
-            (2, "B6"),
-            (3, "B7"),
-            (4, "B8"),
+            ("B5", ""),
+            ("B6", ""),
+            ("B7", ""),
+            ("B8", ""),
         ]
 
         tile_z = 10

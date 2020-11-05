@@ -7,7 +7,7 @@ from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import BaseReader, COGReader, MultiBandReader
+from rio_tiler.io import COGReader, MultiBandReader
 
 from ..utils import sceneid_parser
 
@@ -30,7 +30,7 @@ class CBERSReader(MultiBandReader):
     """
 
     sceneid: str = attr.ib()
-    reader: Type[BaseReader] = attr.ib(default=COGReader)
+    reader: Type[COGReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
@@ -48,14 +48,6 @@ class CBERSReader(MultiBandReader):
             self.bounds = cog.bounds
             self.minzoom = cog.minzoom
             self.maxzoom = cog.maxzoom
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band's name and return band's url."""

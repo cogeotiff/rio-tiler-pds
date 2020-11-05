@@ -1,16 +1,20 @@
 """AWS Landsat 8 reader."""
 
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, Union
+import os
+from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Type, Union
 
 import attr
 import numpy
 from morecantile import TileMatrixSet
+from rasterio.enums import Resampling
+from rasterio.io import DatasetReader
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler.expression import apply_expression
-from rio_tiler.io import BaseReader, COGReader, MultiBandReader
-from rio_tiler.tasks import multi_arrays, multi_values
+from rio_tiler.io import COGReader, MultiBandReader
+from rio_tiler.models import ImageData
+from rio_tiler.tasks import multi_arrays
 from rio_tiler.utils import pansharpening_brovey
 from rio_toa import toa_utils
 
@@ -34,6 +38,51 @@ landsat8_valid_bands = (
 
 
 @attr.s
+class L8COGReader(COGReader):
+    """Landsat COG  Reader."""
+
+    filepath: str = attr.ib()
+    scene_metadata: Dict = attr.ib()
+    dataset: DatasetReader = attr.ib(default=None)
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+    minzoom: int = attr.ib(default=None)
+    maxzoom: int = attr.ib(default=None)
+    colormap: Dict = attr.ib(default=None)
+
+    # Define global options to be forwarded to functions reading the data (e.g rio_tiler.reader._read)
+    nodata: Optional[Union[float, int, str]] = attr.ib(default=None)
+    unscale: Optional[bool] = attr.ib(default=None)
+    resampling_method: Optional[Resampling] = attr.ib(default=None)
+    vrt_options: Optional[Dict] = attr.ib(default=None)
+    post_process: Optional[
+        Callable[[numpy.ndarray, numpy.ndarray], Tuple[numpy.ndarray, numpy.ndarray]]
+    ] = attr.ib(default=None)
+
+    _kwargs: Dict[str, Any] = attr.ib(init=False, factory=dict)
+
+    def __attrs_post_init__(self):
+        """Define _kwargs, open dataset and get info."""
+        basename = os.path.basename(self.filepath)
+        band = basename.split(".")[0].split("_")[-1]
+        if band == "BQA":
+            self.resampling_method = "nearest"
+            self.nodata = 1
+        else:
+            self.nodata = 0
+
+            def post_process(
+                arr: numpy.ndarray, mask: numpy.ndarray,
+            ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+                """Post Process function, Apply TOA translation."""
+                arr = dn_to_toa(arr, band, self.scene_metadata["L1_METADATA_FILE"])
+                return arr, mask
+
+            self.post_process = post_process
+
+        super().__attrs_post_init__()
+
+
+@attr.s
 class L8Reader(MultiBandReader):
     """AWS Public Dataset Landsat 8 reader.
 
@@ -54,7 +103,7 @@ class L8Reader(MultiBandReader):
     """
 
     sceneid: str = attr.ib()
-    reader: Type[BaseReader] = attr.ib(default=COGReader)
+    reader: Type[L8COGReader] = attr.ib(default=L8COGReader)
     reader_options: Dict = attr.ib(factory=dict)
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib(default=7)
@@ -80,14 +129,7 @@ class L8Reader(MultiBandReader):
                 self.mtl_metadata["L1_METADATA_FILE"]["PRODUCT_METADATA"]
             )
         )
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        pass
+        self.reader_options.update({"scene_metadata": self.mtl_metadata})
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
@@ -96,111 +138,6 @@ class L8Reader(MultiBandReader):
 
         prefix = self._prefix.format(**self.scene_params)
         return f"{self._scheme}://{self._hostname}/{prefix}/{self.sceneid}_{band}.TIF"
-
-    def _convert_stats(self, statistics: Dict, band: str):
-        statistics["pc"] = dn_to_toa(
-            numpy.array(statistics["pc"]), band, self.mtl_metadata["L1_METADATA_FILE"]
-        ).tolist()
-
-        statistics["min"] = dn_to_toa(
-            numpy.array([statistics["min"]]),
-            band,
-            self.mtl_metadata["L1_METADATA_FILE"],
-        )[0]
-
-        statistics["max"] = dn_to_toa(
-            numpy.array([statistics["max"]]),
-            band,
-            self.mtl_metadata["L1_METADATA_FILE"],
-        )[0]
-
-        statistics["std"] = dn_to_toa(
-            numpy.array([statistics["std"]]),
-            band,
-            self.mtl_metadata["L1_METADATA_FILE"],
-        )[0]
-
-        statistics["histogram"][1] = dn_to_toa(
-            numpy.array(statistics["histogram"][1]),
-            band,
-            self.mtl_metadata["L1_METADATA_FILE"],
-        ).tolist()
-        return statistics
-
-    def stats(
-        self,
-        pmin: float = 2.0,
-        pmax: float = 98.0,
-        hist_options: Optional[Dict] = None,
-        bands: Union[Sequence[str], str] = None,
-        **kwargs: Any,
-    ) -> Dict:
-        """Return array statistics from multiple bands"""
-        if not bands:
-            raise MissingBands("Missing 'bands' option")
-
-        if isinstance(bands, str):
-            bands = (bands,)
-
-        def _reader(band: str, *args, **kwargs) -> Dict:
-            url = self._get_band_url(band)
-            nodata = 0
-            if band == "BQA":
-                nodata = 1
-                kwargs["resampling_method"] = "nearest"
-            kwargs.update({"nodata": nodata})
-            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                result = cog.stats(*args, **kwargs)[1]
-                return self._convert_stats(result, band)
-
-        return multi_values(
-            bands, _reader, pmin, pmax, hist_options=hist_options, **kwargs,
-        )
-
-    def metadata(
-        self,
-        pmin: float = 2.0,
-        pmax: float = 98.0,
-        bands: Union[Sequence[str], str] = None,
-        **kwargs: Any,
-    ) -> Dict:
-        """Return metadata from multiple bands"""
-        if not bands:
-            raise MissingBands("Missing 'bands' option")
-
-        if isinstance(bands, str):
-            bands = (bands,)
-
-        def _reader(band: str, *args, **kwargs) -> Dict:
-            url = self._get_band_url(band)
-            nodata = 0
-            if band == "BQA":
-                nodata = 1
-                kwargs["resampling_method"] = "nearest"
-            kwargs.update({"nodata": nodata})
-            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                metadata = cog.metadata(*args, **kwargs)
-                metadata["statistics"] = self._convert_stats(
-                    metadata["statistics"][1], band
-                )
-                return metadata
-
-        bands_metadata = multi_values(bands, _reader, pmin, pmax, **kwargs)
-        meta = self.spatial_info
-        meta["band_metadata"] = [
-            (ix + 1, bands_metadata[band]["band_metadata"][0][1])
-            for ix, band in enumerate(bands)
-        ]
-        meta["band_descriptions"] = [(ix + 1, band) for ix, band in enumerate(bands)]
-        meta["dtype"] = bands_metadata[bands[0]]["dtype"]
-        meta["colorinterp"] = [
-            bands_metadata[band]["colorinterp"][0] for _, band in enumerate(bands)
-        ]
-        meta["nodata_type"] = bands_metadata[bands[0]]["nodata_type"]
-        meta["statistics"] = {
-            band: bands_metadata[band]["statistics"] for _, band in enumerate(bands)
-        }
-        return meta
 
     def tile(
         self,
@@ -214,7 +151,7 @@ class L8Reader(MultiBandReader):
         ] = "",  # Expression for each band based on index names
         pan: bool = False,
         **kwargs: Any,
-    ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    ) -> ImageData:
         """Read a Mercator Map tile multiple bands."""
         if not self.tile_exists(tile_z, tile_x, tile_y):
             raise TileOutsideBounds(
@@ -235,21 +172,12 @@ class L8Reader(MultiBandReader):
         if pan:
             bands = tuple(bands) + ("B8",)
 
-        def _reader(
-            band: str, *args: Any, **kwargs: Any
-        ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+        def _reader(band: str, *args: Any, **kwargs: Any) -> ImageData:
             url = self._get_band_url(band)
-            nodata = 0
-            if band == "BQA":
-                nodata = 1
-                kwargs["resampling_method"] = "nearest"
-            kwargs.update({"nodata": nodata})
             with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                tile, mask = cog.tile(*args, **kwargs)
-                tile = dn_to_toa(tile, band, self.mtl_metadata["L1_METADATA_FILE"])
-            return tile, mask
+                return cog.tile(*args, **kwargs)
 
-        data, mask = multi_arrays(
+        output = multi_arrays(
             bands,
             _reader,
             tile_x,
@@ -261,13 +189,15 @@ class L8Reader(MultiBandReader):
 
         if pan:
             bands = bands[:-1]
-            data = pansharpening_brovey(data[:-1], data[-1], 0.2, data.dtype)
+            output.data = pansharpening_brovey(
+                output.data[:-1], output.data[-1], 0.2, output.data.dtype
+            )
 
         if expression:
             blocks = expression.split(",")
-            data = apply_expression(blocks, bands, data)
+            output.data = apply_expression(blocks, bands, output.data)
 
-        return data, mask
+        return output
 
     def part(
         self,
@@ -279,7 +209,7 @@ class L8Reader(MultiBandReader):
         ] = "",  # Expression for each band based on index names
         pan: bool = False,
         **kwargs: Any,
-    ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    ) -> ImageData:
         """Read part of multiple bands."""
         if isinstance(bands, str):
             bands = (bands,)
@@ -295,33 +225,26 @@ class L8Reader(MultiBandReader):
         if pan:
             bands = tuple(bands) + ("B8",)
 
-        def _reader(
-            band: str, *args: Any, **kwargs: Any
-        ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+        def _reader(band: str, *args: Any, **kwargs: Any) -> ImageData:
             url = self._get_band_url(band)
-            nodata = 0
-            if band == "BQA":
-                nodata = 1
-                kwargs["resampling_method"] = "nearest"
-            kwargs.update({"nodata": nodata})
             with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                data, mask = cog.part(*args, **kwargs)
-                data = dn_to_toa(data, band, self.mtl_metadata["L1_METADATA_FILE"])
-            return data, mask
+                return cog.part(*args, **kwargs)
 
-        data, mask = multi_arrays(
+        output = multi_arrays(
             bands, _reader, bbox, expression=band_expression, **kwargs,
         )
 
         if pan:
             bands = bands[:-1]
-            data = pansharpening_brovey(data[:-1], data[-1], 0.2, data.dtype)
+            output.data = pansharpening_brovey(
+                output.data[:-1], output.data[-1], 0.2, output.data.dtype
+            )
 
         if expression:
             blocks = expression.split(",")
-            data = apply_expression(blocks, bands, data)
+            output.data = apply_expression(blocks, bands, output.data)
 
-        return data, mask
+        return output
 
     def preview(
         self,
@@ -332,7 +255,7 @@ class L8Reader(MultiBandReader):
         ] = "",  # Expression for each band based on index names
         pan: bool = False,
         **kwargs: Any,
-    ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    ) -> ImageData:
         """Return a preview from multiple bands."""
         if isinstance(bands, str):
             bands = (bands,)
@@ -348,69 +271,21 @@ class L8Reader(MultiBandReader):
         if pan:
             bands = tuple(bands) + ("B8",)
 
-        def _reader(band: str, **kwargs: Any) -> Tuple[numpy.ndarray, numpy.ndarray]:
+        def _reader(band: str, **kwargs: Any) -> ImageData:
             url = self._get_band_url(band)
-            nodata = 0
-            if band == "BQA":
-                nodata = 1
-                kwargs["resampling_method"] = "nearest"
-            kwargs.update({"nodata": nodata})
             with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                data, mask = cog.preview(**kwargs)
-                data = dn_to_toa(data, band, self.mtl_metadata["L1_METADATA_FILE"])
-            return data, mask
+                return cog.preview(**kwargs)
 
-        data, mask = multi_arrays(bands, _reader, expression=band_expression, **kwargs)
+        output = multi_arrays(bands, _reader, expression=band_expression, **kwargs)
 
         if pan:
             bands = bands[:-1]
-            data = pansharpening_brovey(data[:-1], data[-1], 0.2, data.dtype)
-
-        if expression:
-            blocks = expression.split(",")
-            data = apply_expression(blocks, bands, data)
-
-        return data, mask
-
-    def point(
-        self,
-        lon: float,
-        lat: float,
-        bands: Union[Sequence[str], str] = None,
-        expression: Optional[str] = "",
-        band_expression: Optional[
-            str
-        ] = "",  # Expression for each band based on index names
-        **kwargs: Any,
-    ) -> List:
-        """Read a value from COGs."""
-        if isinstance(bands, str):
-            bands = (bands,)
-
-        if expression:
-            bands = self.parse_expression(expression)
-
-        if not bands:
-            raise MissingBands(
-                "bands must be passed either via expression or bands options."
+            output.data = pansharpening_brovey(
+                output.data[:-1], output.data[-1], 0.2, output.data.dtype
             )
 
-        def _reader(band: str, *args, **kwargs: Any) -> Dict:
-            url = self._get_band_url(band)
-            nodata = 1 if band == "BQA" else 0
-            kwargs.update({"nodata": nodata})
-            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                data = numpy.array(cog.point(*args, **kwargs))
-                data = dn_to_toa(data, band, self.mtl_metadata["L1_METADATA_FILE"])
-            return data.tolist()[0]
-
-        data = multi_values(
-            bands, _reader, lon, lat, expression=band_expression, **kwargs,
-        )
-
-        values = [d for _, d in data.items()]
         if expression:
             blocks = expression.split(",")
-            values = apply_expression(blocks, bands, values).tolist()
+            output.data = apply_expression(blocks, bands, output.data)
 
-        return values
+        return output

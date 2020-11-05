@@ -13,7 +13,7 @@ from rasterio.warp import transform_geom
 
 from rio_tiler import constants
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import BaseReader, COGReader, MultiBandReader
+from rio_tiler.io import COGReader, MultiBandReader
 
 from ... import get_object
 from ..utils import s2_sceneid_parser
@@ -56,7 +56,7 @@ class S2L1CReader(MultiBandReader):
     """
 
     sceneid: str = attr.ib()
-    reader: Type[BaseReader] = attr.ib(default=COGReader)
+    reader: Type[COGReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(default={"nodata": 0})
     tms: TileMatrixSet = attr.ib(default=constants.WEB_MERCATOR_TMS)
     minzoom: int = attr.ib(default=8)
@@ -212,7 +212,7 @@ class S2COGReader(MultiBandReader):
     """
 
     sceneid: str = attr.ib()
-    reader: Type[BaseReader] = attr.ib(default=COGReader)
+    reader: Type[COGReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
     tms: TileMatrixSet = attr.ib(default=constants.WEB_MERCATOR_TMS)
     minzoom: int = attr.ib(default=8)

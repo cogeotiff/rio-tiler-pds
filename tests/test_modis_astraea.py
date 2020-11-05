@@ -167,14 +167,17 @@ def test_AWS_MODISASTRAEAReader(rio):
         )
 
         metadata = modis.info(bands="B01")
-        assert metadata["band_descriptions"] == [(1, "B01")]
+        assert metadata["band_descriptions"] == [("B01", "500m 16 days NDVI")]
 
         metadata = modis.metadata(bands=("B01", "B02"))
-        assert metadata["band_descriptions"] == [(1, "B01"), (2, "B02")]
+        assert metadata["band_descriptions"] == [
+            ("B01", "500m 16 days NDVI"),
+            ("B02", "500m 16 days EVI"),
+        ]
 
         stats = modis.stats(bands="B05")
         assert len(stats.items()) == 1
-        assert stats["B05"]["pc"]
+        assert stats["B05"]["percentiles"]
 
         tile_z = 8
         tile_x = 219
