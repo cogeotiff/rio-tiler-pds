@@ -83,14 +83,17 @@ def test_AWS_MODISPDSReader(rio):
         )
 
         metadata = modis.info(bands="B01")
-        assert metadata["band_descriptions"] == [(1, "B01")]
+        assert metadata["band_descriptions"] == [("B01", "Nadir_Reflectance_Band1")]
 
         metadata = modis.metadata(bands=("B01", "B02"))
-        assert metadata["band_descriptions"] == [(1, "B01"), (2, "B02")]
+        assert metadata["band_descriptions"] == [
+            ("B01", "Nadir_Reflectance_Band1"),
+            ("B02", "Nadir_Reflectance_Band2"),
+        ]
 
         stats = modis.stats(bands="B05")
         assert len(stats.items()) == 1
-        assert stats["B05"]["pc"]
+        assert stats["B05"]["percentiles"]
 
         tile_z = 7
         tile_x = 76

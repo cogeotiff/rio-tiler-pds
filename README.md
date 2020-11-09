@@ -104,10 +104,10 @@ Each dataset has its own submodule (e.g sentinel2: `rio_tiler_pds.sentinel.aws`)
 from rio_tiler_pds.landsat.aws import L8Reader
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 from rio_tiler_pds.sentinel.aws import (
-    S2L1CReader,  # JPEG2000
-    S2L2AReader,  # JPEG2000
-    S2L2ACOGReader,   # COG
+    S2JP2Reader,  # JPEG2000
+    S2COGReader,   # COG
 )
+
 from rio_tiler_pds.cbers.aws import CBERSReader
 from rio_tiler_pds.modis.aws import MODISPDSReader, MODISASTRAEAReader
 ```
@@ -226,24 +226,36 @@ When reading data or metadata, readers will merge them.
 
 e.g
 ```python
-with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
-    tile, mask = sentinel.tile(77, 89, 8, bands=("B01", "B02")
-    assert tile.shape == (2, 256, 256)
+with S2COGReader("S2A_L1C_20170729_19UDP_0") as sentinel:
+    img = sentinel.tile(77, 89, 8, bands=("B01", "B02")
+    assert img.data.shape == (2, 256, 256)
 
-    print(sentinel.stats(bands=("B8A", "B02")))
+    print(sentinel.metadata(bands=("B01", "B02")).dict(exclude_none=True) )
     > {
-      'B8A': {
-        'pc': [106, 9322],
-        'min': 1,
-        'max': 13659,
-        'std': 2682.6511198930048,
-        'histogram': [
-          [261631, 52188, 137746, 98039, 41066, 30818, 21095, 8631, 1442, 105],
-          [1.0, 1366.8, 2732.6, 4098.4, 5464.2, 6830.0, 8195.8, 9561.6, 10927.4, 12293.199999999999, 13659.0]
-        ]
-      },
-      'B02': {
-        ...
+      'bounds': (-11.97923472537954, 24.29633060395354, -10.8745567866346, 25.3046147384797),
+      'center': (-11.42689575600707, 24.800472671216617, 8),
+      'minzoom': 8,
+      'maxzoom': 14,
+      'band_metadata': [('B01', {}), ('B02', {})],
+      'band_descriptions': [('B01', ''), ('B02', '')],
+      'dtype': 'uint16',
+      'nodata_type': 'Nodata',
+      'colorinterp': ['gray', 'gray'],
+      'statistics': {
+        'B01': {
+          'percentiles': [999.0, 1958.0],
+          'min': 351.0,
+          'max': 7436.0,
+          'std': 308.61305419228694,
+          'histogram': [[...],[...]]
+        },
+        'B02': {
+          'percentiles': [1215.0, 2294.0],
+          'min': 350.0,
+          'max': 7335.0,
+          'std': 321.2007321982642,
+          'histogram': [[...], [...]]
+        }
       }
     }
 ```

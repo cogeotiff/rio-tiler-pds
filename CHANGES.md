@@ -1,5 +1,28 @@
 # Release Notes
 
+## 0.4.0 (2020-11-09)
+
+* update for rio-tiler==2.0.0rc
+* internal refactor of the Landsat8 reader
+* add `sentinel.aws.sentinel2.S2JP2Reader` and `aws.sentinel2.S2COGReader` proxies to readers.
+
+```python
+from rio_tiler_pds.sentinel.aws import S2COGReader, S2JP2Reader
+
+with S2JP2Reader("S2A_L2A_20170729_19UDP_0") as scene:
+    print(type(scene))
+>>> <class 'rio_tiler_pds.sentinel.aws.sentinel2.S2L2AReader'>
+
+with S2JP2Reader("S2A_L1C_20170729_19UDP_0") as scene:
+    print(type(scene))
+>>> <class 'rio_tiler_pds.sentinel.aws.sentinel2.S2L1CReader'>
+
+
+with S2COGReader("S2A_29RKH_20200219_0_L2A") as scene:
+    print(type(scene))
+>>> <class 'rio_tiler_pds.sentinel.aws.sentinel2.S2L2ACOGReader'>
+```
+
 ## 0.3.2 (2020-10-13)
 
 * add `TMS` options to adapt  for rio-tiler 2.0.0b17 (ref: https://github.com/cogeotiff/rio-tiler/pull/285)

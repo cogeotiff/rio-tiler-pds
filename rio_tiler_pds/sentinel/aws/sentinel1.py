@@ -9,7 +9,7 @@ from rasterio.features import bounds as featureBounds
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import BaseReader, GCPCOGReader, MultiBandReader
+from rio_tiler.io import GCPCOGReader, MultiBandReader
 
 from ... import get_object
 from ..utils import s1_sceneid_parser
@@ -36,7 +36,7 @@ class S1L1CReader(MultiBandReader):
     """
 
     sceneid: str = attr.ib()
-    reader: Type[BaseReader] = attr.ib(default=GCPCOGReader)
+    reader: Type[GCPCOGReader] = attr.ib(default=GCPCOGReader)
     reader_options: Dict = attr.ib(default={"nodata": 0})
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib(default=8)
@@ -60,14 +60,6 @@ class S1L1CReader(MultiBandReader):
         )
         self.datageom = self.productInfo["footprint"]
         self.bounds = featureBounds(self.datageom)
-
-    def __enter__(self):
-        """Support using with Context Managers."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """Support using with Context Managers."""
-        pass
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""

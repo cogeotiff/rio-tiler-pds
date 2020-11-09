@@ -1,3 +1,3 @@
 
-rio-tiler>=2.0b7
+rio-tiler>=2.0.0rc1
 rio-toa
