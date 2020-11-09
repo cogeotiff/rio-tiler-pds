@@ -4,7 +4,7 @@ from functools import lru_cache
 
 from rio_tiler.utils import aws_get_object
 
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 
 
 @lru_cache(maxsize=512)
