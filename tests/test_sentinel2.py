@@ -8,7 +8,13 @@ import rasterio
 
 from rio_tiler.errors import ExpressionMixingWarning, InvalidBandName, MissingBands
 from rio_tiler_pds.errors import InvalidSentinelSceneId
-from rio_tiler_pds.sentinel.aws import S2COGReader, S2L1CReader, S2L2AReader
+from rio_tiler_pds.sentinel.aws import (
+    S2COGReader,
+    S2JP2Reader,
+    S2L1CReader,
+    S2L2ACOGReader,
+    S2L2AReader,
+)
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
@@ -62,6 +68,9 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
     with pytest.raises(InvalidSentinelSceneId):
         with S2L1CReader("S2A_tile_20170323_17SNC"):
             pass
+
+    with S2JP2Reader(SENTINEL_SCENE_L1) as sentinel:
+        assert isinstance(sentinel, S2L1CReader)
 
     with S2L1CReader(SENTINEL_SCENE_L1) as sentinel:
         assert sentinel.scene_params["scene"] == "S2A_19UDP_20170729_0_L1C"
@@ -192,6 +201,9 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
         with S2L1CReader("S2A_tile_20170323_17SNC"):
             pass
 
+    with S2JP2Reader(SENTINEL_SCENE_L2) as sentinel:
+        assert isinstance(sentinel, S2L2AReader)
+
     with S2L2AReader(SENTINEL_SCENE_L2) as sentinel:
         assert sentinel.scene_params["scene"] == "S2A_19UDP_20170729_0_L2A"
         assert sentinel.minzoom == 8
@@ -280,6 +292,7 @@ def test_AWSPDS_S2COGReader(rio, get_object):
             pass
 
     with S2COGReader(SENTINEL_COG_SCENE_L2) as sentinel:
+        assert isinstance(sentinel, S2L2ACOGReader)
         assert sentinel.scene_params["scene"] == SENTINEL_COG_SCENE_L2
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
@@ -414,3 +427,15 @@ def test_sentinel_cogid_valid():
         "_levelLow": "l2a",
     }
     assert s2_sceneid_parser(SENTINEL_COG_SCENE_L2) == expected_content
+
+
+def test_no_readers():
+    """Test no reader found for level."""
+    with pytest.raises(Exception):
+        S2JP2Reader("S2B_L1B_20170729_19UDP_0")
+
+    with pytest.raises(Exception):
+        S2JP2Reader("S2A_L2C_20170729_19UDP_0")
+
+    with pytest.raises(Exception):
+        S2COGReader("S2A_29RKH_20200219_0_L2C")
