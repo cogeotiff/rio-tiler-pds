@@ -104,8 +104,7 @@ Each dataset has its own submodule (e.g sentinel2: `rio_tiler_pds.sentinel.aws`)
 from rio_tiler_pds.landsat.aws import L8Reader
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 from rio_tiler_pds.sentinel.aws import (
-    S2L1CReader,  # JPEG2000
-    S2L2AReader,  # JPEG2000
+    S2JP2Reader,  # JPEG2000
     S2COGReader,   # COG
 )
 

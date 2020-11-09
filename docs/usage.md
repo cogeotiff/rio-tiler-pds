@@ -9,14 +9,17 @@ bands: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
 ```python
 import rasterio
-from rio_tiler_pds.sentinel.aws import S2L1CReader
+from rio_tiler_pds.sentinel.aws import S2JP2Reader
 
 # We use __enter__ context manager for the Reader.
 # When creating the instance of `sentinel` the Reader will fetch the sentinel 2 TileInfo.json
 # to retrieve the bounds of the dataset and other metadata available at `sentinel.tileInfo`.
 with rasterio.Env(AWS_REQUEST_PAYER="requester"):
-    with S2L1CReader("S2A_L1C_20170729_19UDP_0") as sentinel:
+    with S2JP2Reader("S2A_L1C_20170729_19UDP_0") as sentinel:
         # bounds and metadata are derived from the tileInfo.json file stored with the JPEG2000
+        print(type(sentinel))
+        >>> <class 'rio_tiler_pds.sentinel.aws.sentinel2.S2L1CReader'>
+
         print(type(sentinel.tileInfo))
         >>> dict
 
@@ -78,11 +81,14 @@ Note: `AOT, SCL, WVP` bands are not supported.
 
 ```python
 import rasterio
-from rio_tiler_pds.sentinel.aws import S2L2AReader
+from rio_tiler_pds.sentinel.aws import S2JP2Reader
 
 with rasterio.Env(AWS_REQUEST_PAYER="requester"):
-    with S2L2AReader("S2A_L2A_20170729_19UDP_0") as sentinel:
+    with S2JP2Reader("S2A_L2A_20170729_19UDP_0") as sentinel:
         # bounds and metadata are derived from the tileInfo.json file stored with the JPEG2000
+        print(type(sentinel))
+        >>> <class 'rio_tiler_pds.sentinel.aws.sentinel2.S2L2AReader'>
+
         print(type(sentinel.tileInfo))
         >>> dict
 
@@ -113,6 +119,9 @@ Note: `AOT, SCL, WVP` STAC assets are not supported.
 from rio_tiler_pds.sentinel.aws import S2COGReader
 
 with S2COGReader("S2A_29RKH_20200219_0_L2A") as sentinel:
+    print(type(sentinel))
+    >>> <class 'rio_tiler_pds.sentinel.aws.sentinel2.S2L2ACOGReader'>
+
     print(sentinel.bands)
     >>> ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')
 
@@ -331,9 +340,9 @@ You can either set those variables in your environment or within your code using
 
 ```python
 import rasterio
-from rio_tiler_pds.sentinel.aws import S2L1CReader
+from rio_tiler_pds.sentinel.aws import S2JP2Reader
 
 with rasterio.Env(AWS_REQUEST_PAYER="requester"):
-    with S2L1CReader("S2A_L1C_20170729_19UDP_0") as s2:
+    with S2JP2Reader("S2A_L1C_20170729_19UDP_0") as s2:
         print(s2.preview(bands="B01", width=64, height=64))
 ```
