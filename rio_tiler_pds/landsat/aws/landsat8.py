@@ -289,3 +289,50 @@ class L8Reader(MultiBandReader):
             output.data = apply_expression(blocks, bands, output.data)
 
         return output
+
+    def feature(
+        self,
+        shape: Dict,
+        bands: Union[Sequence[str], str] = None,
+        expression: Optional[str] = "",
+        band_expression: Optional[
+            str
+        ] = "",  # Expression for each band based on index names
+        pan: bool = False,
+        **kwargs: Any,
+    ) -> ImageData:
+        """Read multiple bands for a GeoJSON feature."""
+        if isinstance(bands, str):
+            bands = (bands,)
+
+        if expression:
+            bands = self.parse_expression(expression)
+
+        if not bands:
+            raise MissingBands(
+                "bands must be passed either via expression or bands options."
+            )
+
+        if pan:
+            bands = tuple(bands) + ("B8",)
+
+        def _reader(band: str, *args: Any, **kwargs: Any) -> ImageData:
+            url = self._get_band_url(band)
+            with self.reader(url, tms=self.tms, **self.reader_options) as cog:
+                return cog.feature(*args, **kwargs)
+
+        output = multi_arrays(
+            bands, _reader, shape, expression=band_expression, **kwargs,
+        )
+
+        if pan:
+            bands = bands[:-1]
+            output.data = pansharpening_brovey(
+                output.data[:-1], output.data[-1], 0.2, output.data.dtype
+            )
+
+        if expression:
+            blocks = expression.split(",")
+            output.data = apply_expression(blocks, bands, output.data)
+
+        return output

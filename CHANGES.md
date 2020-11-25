@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.4.1 (2020-11-24)
+
+* update for rio-tiler 2.0.0rc3
+
 ## 0.4.0 (2020-11-09)
 
 * update for rio-tiler==2.0.0rc

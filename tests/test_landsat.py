@@ -260,6 +260,47 @@ def test_AWSPDS_L8Reader(rio, get_object):
         assert data.dtype == numpy.uint16
         assert mask.shape == (80, 80)
 
+        feat = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [-80.1397705078125, 32.63937487360669],
+                        [-79.6453857421875, 32.63937487360669],
+                        [-79.6453857421875, 32.94875863715422],
+                        [-80.1397705078125, 32.94875863715422],
+                        [-80.1397705078125, 32.63937487360669],
+                    ]
+                ],
+            },
+        }
+        with pytest.raises(MissingBands):
+            landsat.feature(feat)
+
+        data, mask = landsat.feature(feat, bands="B7")
+        assert data.shape == (1, 35, 56)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (35, 56)
+
+        data, _ = landsat.feature(
+            feat, bands="BQA", nodata=0, resampling_method="bilinear",
+        )
+        assert data.shape == (1, 35, 56)
+
+        data, mask = landsat.feature(feat, expression="B5*0.8, B4*1.1, B3*0.8")
+        assert data.shape == (3, 35, 56)
+        assert data.dtype == numpy.float64
+        assert mask.shape == (35, 56)
+
+        data, mask = landsat.feature(
+            feat, bands=("B4", "B3", "B2"), pan=True, width=80, height=80,
+        )
+        assert data.shape == (3, 80, 80)
+        assert data.dtype == numpy.uint16
+        assert mask.shape == (80, 80)
+
 
 def test_landsat_id_c1_valid():
     """Parse landsat valid collection1 sceneid and return metadata."""
