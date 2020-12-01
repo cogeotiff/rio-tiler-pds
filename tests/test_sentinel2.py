@@ -403,7 +403,7 @@ def test_sentinel_newid_valid_single_digit_utm():
         "_day": "2",
         "_levelLow": "l2a",
     }
-    assert s2_sceneid_parser('S2B_2CMA_20181002_0_L2A') == expected_content
+    assert s2_sceneid_parser("S2B_2CMA_20181002_0_L2A") == expected_content
 
 
 def test_sentinel_newidl2a_valid():
