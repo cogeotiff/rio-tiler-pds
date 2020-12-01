@@ -20,6 +20,7 @@ from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
 SENTINEL_SCENE_L2 = "S2A_L2A_20170729_19UDP_0"
 SENTINEL_COG_SCENE_L2 = "S2A_29RKH_20200219_0_L2A"
+SENTINEL_COG_PRODUCT = "S2A_MSIL2A_20200219T013442_N0204_R031_T29RKH_20200219T013443"
 SENTINEL_PRODUCT = "S2A_MSIL1C_20170105T013442_N0204_R031_T53NMJ_20170105T013443"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s2")
 
@@ -360,6 +361,14 @@ def test_AWSPDS_S2COGReader(rio, get_object):
             == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/29/R/KH/2020/2/S2A_29RKH_20200219_0_L2A/B01.tif"
         )
 
+    # Test with product ID
+    with S2COGReader(SENTINEL_COG_PRODUCT) as sentinel:
+        assert sentinel.scene_params["scene"] == SENTINEL_COG_PRODUCT
+        assert (
+            sentinel._get_band_url("B01")
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/29/R/KH/2020/2/S2A_29RKH_20200219_0_L2A/B01.tif"
+        )
+
 
 def test_sentinel_newid_valid():
     """Parse sentinel-2 valid sceneid and return metadata."""
@@ -384,6 +393,29 @@ def test_sentinel_newid_valid():
     assert s2_sceneid_parser(SENTINEL_SCENE_L1) == expected_content
 
 
+def test_sentinel_newid_valid_single_digit_utm():
+    """Parse sentinel-2 valid sceneid and return metadata for single-digit UTM zone."""
+    expected_content = {
+        "sensor": "2",
+        "satellite": "B",
+        "processingLevel": "L2A",
+        "acquisitionYear": "2018",
+        "acquisitionMonth": "10",
+        "acquisitionDay": "02",
+        "utm": "2",
+        "lat": "C",
+        "sq": "MA",
+        "num": "0",
+        "scene": "S2B_2CMA_20181002_0_L2A",
+        "date": "2018-10-02",
+        "_utm": "2",
+        "_month": "10",
+        "_day": "2",
+        "_levelLow": "l2a",
+    }
+    assert s2_sceneid_parser("S2B_2CMA_20181002_0_L2A") == expected_content
+
+
 def test_sentinel_newidl2a_valid():
     """Parse sentinel-2 valid sceneid and return metadata."""
     expected_content = {
@@ -405,6 +437,29 @@ def test_sentinel_newidl2a_valid():
         "_levelLow": "l2a",
     }
     assert s2_sceneid_parser(SENTINEL_SCENE_L2) == expected_content
+
+
+def test_sentinel_newidl2a_valid_double_digit_revisit():
+    """Parse sentinel-2 valid sceneid and return metadata."""
+    expected_content = {
+        "sensor": "2",
+        "satellite": "B",
+        "processingLevel": "L2A",
+        "acquisitionYear": "2019",
+        "acquisitionMonth": "05",
+        "acquisitionDay": "07",
+        "utm": "22",
+        "lat": "X",
+        "sq": "DL",
+        "num": "10",
+        "scene": "S2B_22XDL_20190507_10_L2A",
+        "date": "2019-05-07",
+        "_utm": "22",
+        "_month": "5",
+        "_day": "7",
+        "_levelLow": "l2a",
+    }
+    assert s2_sceneid_parser("S2B_22XDL_20190507_10_L2A") == expected_content
 
 
 def test_sentinel_cogid_valid():

@@ -29,7 +29,7 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
 
     """
     if re.match(
-        "^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$", sceneid
+        "^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{1,2}[A-Z]{3}_[0-9]{1,2}$", sceneid
     ):  # Legacy sceneid format
         pattern = (
             r"^S"
@@ -42,22 +42,22 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
             r"(?P<acquisitionMonth>[0-9]{2})"
             r"(?P<acquisitionDay>[0-9]{2})"
             r"_"
-            r"(?P<utm>[0-9]{2})"
+            r"(?P<utm>[0-9]{1,2})"
             r"(?P<lat>\w{1})"
             r"(?P<sq>\w{2})"
             r"_"
-            r"(?P<num>[0-9]{1})$"
+            r"(?P<num>[0-9]{1,2})$"
         )
 
     elif re.match(
-        "^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$", sceneid
+        "^S2[AB]_[0-9]{1,2}[A-Z]{3}_[0-9]{8}_[0-9]{1,2}_L[0-2][A-C]$", sceneid
     ):  # New sceneid format
         pattern = (
             r"^S"
             r"(?P<sensor>\w{1})"
             r"(?P<satellite>[AB]{1})"
             r"_"
-            r"(?P<utm>[0-9]{2})"
+            r"(?P<utm>[0-9]{1,2})"
             r"(?P<lat>\w{1})"
             r"(?P<sq>\w{2})"
             r"_"
@@ -65,7 +65,7 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
             r"(?P<acquisitionMonth>[0-9]{2})"
             r"(?P<acquisitionDay>[0-9]{2})"
             r"_"
-            r"(?P<num>[0-9]{1})"
+            r"(?P<num>[0-9]{1,2})"
             r"_"
             r"(?P<processingLevel>L[0-2][ABC])$"
         )

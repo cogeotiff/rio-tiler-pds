@@ -223,13 +223,15 @@ class S2L2ACOGReader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-cogs"
-    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/S{sensor}{satellite}_{utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}"
+    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/S{sensor}{satellite}_{_utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}"
 
     def __attrs_post_init__(self):
         """Fetch item.json and get bounds and bands."""
         self.scene_params = s2_sceneid_parser(self.sceneid)
 
-        cog_sceneid = self.scene_params["scene"]
+        cog_sceneid = "S{sensor}{satellite}_{_utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}".format(
+            **self.scene_params
+        )
         prefix = self._prefix.format(**self.scene_params)
         self.stac_item = json.loads(
             get_object(
