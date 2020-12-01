@@ -1,5 +1,9 @@
 # Release Notes
 
+## Next (TBD)
+
+* fix issue where the sequence number of a sentinel scene id can be two digit (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/35)
+
 ## 0.4.1 (2020-11-24)
 
 * update for rio-tiler 2.0.0rc3
