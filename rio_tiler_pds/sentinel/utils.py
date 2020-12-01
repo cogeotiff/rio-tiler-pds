@@ -48,14 +48,14 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
         )
 
     elif re.match(
-        "^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$", sceneid
+        "^S2[AB]_[0-9]{1,2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$", sceneid
     ):  # New sceneid format
         pattern = (
             r"^S"
             r"(?P<sensor>\w{1})"
             r"(?P<satellite>[AB]{1})"
             r"_"
-            r"(?P<utm>[0-9]{2})"
+            r"(?P<utm>[0-9]{1,2})"
             r"(?P<lat>\w{1})"
             r"(?P<sq>\w{2})"
             r"_"
