@@ -383,6 +383,29 @@ def test_sentinel_newid_valid():
     assert s2_sceneid_parser(SENTINEL_SCENE_L1) == expected_content
 
 
+def test_sentinel_newid_valid_single_digit_utm():
+    """Parse sentinel-2 valid sceneid and return metadata for single-digit UTM zone."""
+    expected_content = {
+        "sensor": "2",
+        "satellite": "B",
+        "processingLevel": "L2A",
+        "acquisitionYear": "2018",
+        "acquisitionMonth": "10",
+        "acquisitionDay": "02",
+        "utm": "2",
+        "lat": "C",
+        "sq": "MA",
+        "num": "0",
+        "scene": "S2B_2CMA_20181002_0_L2A",
+        "date": "2018-10-02",
+        "_utm": "2",
+        "_month": "10",
+        "_day": "2",
+        "_levelLow": "l2a",
+    }
+    assert s2_sceneid_parser("S2B_2CMA_20181002_0_L2A") == expected_content
+
+
 def test_sentinel_newidl2a_valid():
     """Parse sentinel-2 valid sceneid and return metadata."""
     expected_content = {
