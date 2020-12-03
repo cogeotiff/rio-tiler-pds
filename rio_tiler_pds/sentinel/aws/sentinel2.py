@@ -88,7 +88,7 @@ class S2L1CReader(MultiBandReader):
         band = band if len(band) == 3 else f"B0{band[-1]}"
 
         if band not in self.bands:
-            raise InvalidBandName(f"{band} is not valid")
+            raise InvalidBandName(f"{band} is not valid.\nValid bands: {self.bands}")
 
         prefix = self._prefix.format(**self.scene_params)
         return f"{self._scheme}://{self._hostname}/{prefix}/{band}.jp2"
@@ -184,7 +184,7 @@ class S2L2AReader(S2L1CReader):
         band = band if len(band) == 3 else f"B0{band[-1]}"
 
         if band not in self.bands:
-            raise InvalidBandName(f"{band} is not valid")
+            raise InvalidBandName(f"{band} is not valid.\nValid bands: {self.bands}")
 
         prefix = self._prefix.format(**self.scene_params)
         res = self._get_resolution(band)
@@ -246,14 +246,14 @@ class S2L2ACOGReader(MultiBandReader):
         band = band if len(band) == 3 else f"B0{band[-1]}"
 
         if band not in self.bands:
-            raise InvalidBandName(f"{band} is not valid")
+            raise InvalidBandName(f"{band} is not valid.\nValid bands: {self.bands}")
 
         prefix = self._prefix.format(**self.scene_params)
         return f"{self._scheme}://{self._hostname}/{prefix}/{band}.tif"
 
 
 def S2COGReader(sceneid: str, **kwargs: Any) -> S2L2ACOGReader:
-    """Sentinel-2 JPEG2000 readers."""
+    """Sentinel-2 COG readers."""
     scene_params = s2_sceneid_parser(sceneid)
     level = scene_params["processingLevel"]
     if level == "L2A":
@@ -263,7 +263,7 @@ def S2COGReader(sceneid: str, **kwargs: Any) -> S2L2ACOGReader:
 
 
 def S2JP2Reader(sceneid: str, **kwargs: Any) -> Union[S2L2AReader, S2L1CReader]:
-    """Sentinel-2 COG readers."""
+    """Sentinel-2 JPEG2000 readers."""
     scene_params = s2_sceneid_parser(sceneid)
     level = scene_params["processingLevel"]
     if level == "L2A":
