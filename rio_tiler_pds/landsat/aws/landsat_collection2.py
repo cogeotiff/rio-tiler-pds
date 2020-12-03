@@ -21,7 +21,7 @@ from rio_toa import toa_utils
 from ... import get_object
 from ..utils import dn_to_toa, sceneid_parser
 
-DEFAULT_L8_BANDS = (
+DEFAULT_L8SR_BANDS = (
   "QA_PIXEL",
   "QA_RADSAT",
   "SR_B1",
@@ -34,6 +34,17 @@ DEFAULT_L8_BANDS = (
   "SR_QA_AEROSOL",
 )
 
+DEFAULT_L8ST_BANDS = (
+  "ST_ATRAN",
+  "ST_B10",
+  "ST_CDIST",
+  "ST_DRAD",
+  "ST_EMIS",
+  "ST_EMSD",
+  "ST_QA",
+  "ST_TRAD",
+  "ST_URAD",
+)
 
 @attr.s
 class L8L2SRReader(MultiBandReader):
@@ -46,7 +57,7 @@ class L8L2SRReader(MultiBandReader):
         minzoom (int): Dataset's Min Zoom level (default is 5).
         maxzoom (int): Dataset's Max Zoom level (default is 12).
         scene_params (dict): scene id parameters.
-        bands (tuple): list of available bands (default is ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "BQA")).
+        bands (tuple): list of available bands.
 
     Examples:
         >>> with L8C2COGReader('LC08_L2SR_093106_20200207_20201016_02_T2') as scene:
@@ -61,7 +72,7 @@ class L8L2SRReader(MultiBandReader):
     minzoom: int = attr.ib(default=5)
     maxzoom: int = attr.ib(default=12)
 
-    bands: Tuple = attr.ib(init=False, default=DEFAULT_L8_BANDS)
+    bands: Tuple = attr.ib(init=False)
 
     _scheme: str = "s3"
     _hostname: str = "usgs-landsat"
@@ -70,6 +81,12 @@ class L8L2SRReader(MultiBandReader):
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
+
+        if not self.bands:
+            if self.scene_params['processingCorrectionLevel'] == 'L2SR':
+                self.bands = DEFAULT_L8SR_BANDS
+            elif self.scene_params['processingCorrectionLevel'] == 'L2SP':
+                self.bands = DEFAULT_L8SR_BANDS + DEFAULT_L8ST_BANDS
 
         # TODO: fetch STAC to get bounds (self.bounds must be set)
         # Allow custom function for users who want to use the WRS2 grid and
