@@ -28,8 +28,8 @@ def sceneid_parser(sceneid: str) -> Dict:
         >>> sceneid_parser('LC08_L1TP_016037_20170813_20170814_01_RT')
 
     """
-    collection_1 = r"^L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
-    if not re.match(collection_1, sceneid):
+    collection_1_2 = r"^L[COTEM]0[0-9]_L[12]{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
+    if not re.match(collection_1_2, sceneid):
         raise InvalidLandsatSceneId("Could not match {}".format(sceneid))
 
     collection_pattern = (
@@ -63,6 +63,7 @@ def sceneid_parser(sceneid: str) -> Dict:
     meta["date"] = "{}-{}-{}".format(
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
     )
+    meta["processingLevel"] = meta["processingCorrectionLevel"][1]
 
     return meta
 
