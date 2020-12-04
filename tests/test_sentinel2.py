@@ -20,6 +20,8 @@ from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
 SENTINEL_SCENE_L2 = "S2A_L2A_20170729_19UDP_0"
 SENTINEL_COG_SCENE_L2 = "S2A_29RKH_20200219_0_L2A"
+SENTINEL_COG_PRODUCT = "S2A_MSIL2A_20200219T013442_N0204_R031_T29RKH_20200219T013443"
+SENTINEL_PRODUCT = "S2A_MSIL1C_20170105T013442_N0204_R031_T53NMJ_20170105T013443"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s2")
 
 L1C_TJSON_PATH = os.path.join(
@@ -73,7 +75,7 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
         assert isinstance(sentinel, S2L1CReader)
 
     with S2L1CReader(SENTINEL_SCENE_L1) as sentinel:
-        assert sentinel.scene_params["scene"] == "S2A_19UDP_20170729_0_L1C"
+        assert sentinel.scene_params["scene"] == SENTINEL_SCENE_L1
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
@@ -205,7 +207,7 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
         assert isinstance(sentinel, S2L2AReader)
 
     with S2L2AReader(SENTINEL_SCENE_L2) as sentinel:
-        assert sentinel.scene_params["scene"] == "S2A_19UDP_20170729_0_L2A"
+        assert sentinel.scene_params["scene"] == SENTINEL_SCENE_L2
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
@@ -328,7 +330,7 @@ def test_AWSPDS_S2COGReader(rio, get_object):
 
     # Test with legacy Scene id format
     with S2COGReader("S2A_L2A_20200219_29RKH_0") as sentinel:
-        assert sentinel.scene_params["scene"] == "S2A_29RKH_20200219_0_L2A"
+        assert sentinel.scene_params["scene"] == "S2A_L2A_20200219_29RKH_0"
         assert sentinel.minzoom == 8
         assert sentinel.maxzoom == 14
         assert len(sentinel.bounds) == 4
@@ -359,6 +361,14 @@ def test_AWSPDS_S2COGReader(rio, get_object):
             == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/29/R/KH/2020/2/S2A_29RKH_20200219_0_L2A/B01.tif"
         )
 
+    # Test with product ID
+    with S2COGReader(SENTINEL_COG_PRODUCT) as sentinel:
+        assert sentinel.scene_params["scene"] == SENTINEL_COG_PRODUCT
+        assert (
+            sentinel._get_band_url("B01")
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/29/R/KH/2020/2/S2A_29RKH_20200219_0_L2A/B01.tif"
+        )
+
 
 def test_sentinel_newid_valid():
     """Parse sentinel-2 valid sceneid and return metadata."""
@@ -373,7 +383,7 @@ def test_sentinel_newid_valid():
         "lat": "U",
         "sq": "DP",
         "num": "0",
-        "scene": "S2A_19UDP_20170729_0_L1C",
+        "scene": SENTINEL_SCENE_L1,
         "date": "2017-07-29",
         "_utm": "19",
         "_month": "7",
@@ -419,7 +429,7 @@ def test_sentinel_newidl2a_valid():
         "lat": "U",
         "sq": "DP",
         "num": "0",
-        "scene": "S2A_19UDP_20170729_0_L2A",
+        "scene": SENTINEL_SCENE_L2,
         "date": "2017-07-29",
         "_utm": "19",
         "_month": "7",
@@ -465,7 +475,7 @@ def test_sentinel_cogid_valid():
         "lat": "R",
         "sq": "KH",
         "num": "0",
-        "scene": "S2A_29RKH_20200219_0_L2A",
+        "scene": SENTINEL_COG_SCENE_L2,
         "date": "2020-02-19",
         "_utm": "29",
         "_month": "2",
@@ -473,6 +483,33 @@ def test_sentinel_cogid_valid():
         "_levelLow": "l2a",
     }
     assert s2_sceneid_parser(SENTINEL_COG_SCENE_L2) == expected_content
+
+
+def test_sentinel_productid_valid():
+    """Parse sentinel-2 product id valid sceneid and return metadata."""
+    expected_content = {
+        "sensor": "2",
+        "satellite": "A",
+        "processingLevel": "L1C",
+        "acquisitionYear": "2017",
+        "acquisitionMonth": "01",
+        "acquisitionDay": "05",
+        "acquisitionHMS": "013442",
+        "baseline_number": "0204",
+        "relative_orbit": "031",
+        "utm": "53",
+        "lat": "N",
+        "sq": "MJ",
+        "stopDateTime": "20170105T013443",
+        "num": "0",
+        "scene": SENTINEL_PRODUCT,
+        "date": "2017-01-05",
+        "_utm": "53",
+        "_month": "1",
+        "_day": "5",
+        "_levelLow": "l1c",
+    }
+    assert s2_sceneid_parser(SENTINEL_PRODUCT) == expected_content
 
 
 def test_no_readers():
