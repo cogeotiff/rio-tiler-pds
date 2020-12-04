@@ -9,6 +9,14 @@ from rio_toa import brightness_temp, reflectance
 
 from ..errors import InvalidLandsatSceneId
 
+SENSOR_NAMES = {
+    'C': 'oli-tirs',
+    'E': 'etm',
+    'T': 'tm',
+    'M': 'mss'
+}
+
+
 
 def sceneid_parser(sceneid: str) -> Dict:
     """Parse Landsat 8 scene id.
@@ -64,6 +72,7 @@ def sceneid_parser(sceneid: str) -> Dict:
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
     )
     meta["processingLevel"] = meta["processingCorrectionLevel"][1]
+    meta["_sensor"] = SENSOR_NAMES[meta['sensor']]
 
     return meta
 
