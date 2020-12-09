@@ -82,7 +82,7 @@ class LandsatC2Reader(MultiBandReader):
 
     sceneid: str = attr.ib()
     reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(default={"nodata": 0})
+    reader_options: Dict = attr.ib(default={})
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib(default=5)
     maxzoom: int = attr.ib(default=12)
