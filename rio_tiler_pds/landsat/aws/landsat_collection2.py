@@ -93,25 +93,6 @@ TM_ST_BANDS = (
   "ST_URAD",
 )
 
-DEFAULT_L8L1_BANDS = (
-    "B1",
-    "B10",
-    "B11",
-    "B2",
-    "B3",
-    "B4",
-    "B5",
-    "B6",
-    "B7",
-    "B8",
-    "B9",
-    "QA_PIXEL",
-    "QA_RADSAT",
-    "SAA",
-    "SZA",
-    "VAA",
-    "VZA",
-)
 
 @attr.s
 class LandsatC2L2Reader(MultiBandReader):
@@ -146,7 +127,7 @@ class LandsatC2L2Reader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "usgs-landsat"
-    _prefix: str = "tiles/level-{processingLevel}/standard/{_sensor}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
+    _prefix: str = "collection02/level-{processingLevel}/standard/{_sensor}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
@@ -155,24 +136,23 @@ class LandsatC2L2Reader(MultiBandReader):
         processing_level = self.scene_params['processingCorrectionLevel']
         sensor = self.scene_params['_sensor']
 
-        if not self.bands:
-            if processing_level == 'L2SR':
-                if sensor == 'oli-tirs':
-                    self.bands = OLI_TIRS_SR_BANDS
-                elif sensor == 'tm':
-                    self.bands = TM_SR_BANDS
-                elif sensor == 'etm':
-                    self.bands = ETM_SR_BANDS
-            else:
-                if sensor == 'oli-tirs':
-                    self.bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
-                elif sensor == 'tm':
-                    self.bands = TM_SR_BANDS + TM_ST_BANDS
-                elif sensor == 'etm':
-                    self.bands = ETM_SR_BANDS + ETM_ST_BANDS
-            # TODO: add separate level 1 reader with TOA reflectances
-            # elif self.scene_params['processingCorrectionLevel'] in ['L1TP', 'L1GT', 'L1GS']:
-            #     self.bands = DEFAULT_L8L1_BANDS
+        if processing_level == 'L2SR':
+            if sensor == 'oli-tirs':
+                self.bands = OLI_TIRS_SR_BANDS
+            elif sensor == 'tm':
+                self.bands = TM_SR_BANDS
+            elif sensor == 'etm':
+                self.bands = ETM_SR_BANDS
+        else:
+            if sensor == 'oli-tirs':
+                self.bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
+            elif sensor == 'tm':
+                self.bands = TM_SR_BANDS + TM_ST_BANDS
+            elif sensor == 'etm':
+                self.bands = ETM_SR_BANDS + ETM_ST_BANDS
+        # TODO: add separate level 1 reader with TOA reflectances
+        # elif self.scene_params['processingCorrectionLevel'] in ['L1TP', 'L1GT', 'L1GS']:
+        #     self.bands = DEFAULT_L8L1_BANDS
 
         self._get_geometry()
 
@@ -181,9 +161,14 @@ class LandsatC2L2Reader(MultiBandReader):
         # Allow custom function for users who want to use the WRS2 grid and
         # avoid this GET request.
         prefix = self._prefix.format(**self.scene_params)
+
+        # This fetches the Surface Reflectance (SR) STAC item.
+        # There are separate STAC items for Surface Reflectance and Surface
+        # Temperature (ST), but they have the same geometry. The SR should
+        # always exist, the ST might not exist based on the scene.
         self.stac_item = json.loads(
             get_object(
-                self._hostname, f"{prefix}_stac.json", request_pays=True
+                self._hostname, f"{prefix}_SR_stac.json", request_pays=True
             )
         )
         self.bounds = self.stac_item["bbox"]
