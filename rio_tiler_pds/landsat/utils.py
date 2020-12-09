@@ -9,13 +9,6 @@ from rio_toa import brightness_temp, reflectance
 
 from ..errors import InvalidLandsatSceneId
 
-SENSOR_NAMES = {
-    'C': 'oli-tirs',
-    'E': 'etm',
-    'T': 'tm',
-    'M': 'mss'
-}
-
 
 
 def sceneid_parser(sceneid: str) -> Dict:
@@ -72,7 +65,19 @@ def sceneid_parser(sceneid: str) -> Dict:
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
     )
     meta["processingLevel"] = meta["processingCorrectionLevel"][1]
-    meta["_sensor"] = SENSOR_NAMES[meta['sensor']]
+
+    if meta['sensor'] == "C":
+        meta['_sensor'] = 'oli-tirs'
+    elif meta['sensor'] == "O":
+        meta['_sensor'] = 'oli'
+    elif meta['sensor'] == "T" and int(meta['satellite']) >= 8:
+        meta['_sensor'] = 'tirs'
+    elif meta['sensor'] == "E":
+        meta['_sensor'] = 'etm'
+    elif meta['sensor'] == "T" and int(meta['satellite']) < 8:
+        meta['_sensor'] = 'tm'
+    elif meta['sensor'] == "M":
+        meta['_sensor'] = 'mss'
 
     return meta
 
