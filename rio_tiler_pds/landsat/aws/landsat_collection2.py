@@ -127,7 +127,7 @@ class LandsatC2L2Reader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "usgs-landsat"
-    _prefix: str = "collection02/level-{processingLevel}/standard/{_sensor}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
+    _prefix: str = "collection02/level-{_processingLevelNum}/standard/{_sensor}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
@@ -188,7 +188,7 @@ class LandsatC2L2Reader(MultiBandReader):
 def LandsatC2Reader(sceneid: str, **kwargs: Any) -> LandsatC2L2Reader:
     """Landsat Collection 2 COG readers."""
     scene_params = sceneid_parser(sceneid)
-    level = scene_params["processingLevel"]
+    level = scene_params["_processingLevelNum"]
     if level == "2":
         return LandsatC2L2Reader(sceneid, **kwargs)
     else:

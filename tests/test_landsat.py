@@ -321,6 +321,8 @@ def test_landsat_id_c1_valid():
         "collectionCategory": "T1",
         "scene": "LC08_L1TP_005004_20170410_20170414_01_T1",
         "date": "2017-04-10",
+        "_processingLevelNum": "1",
+        "_sensor": "oli-tirs"
     }
 
     assert sceneid_parser(scene) == expected_content
