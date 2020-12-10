@@ -64,7 +64,7 @@ def sceneid_parser(sceneid: str) -> Dict:
     meta["date"] = "{}-{}-{}".format(
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
     )
-    meta["processingLevel"] = meta["processingCorrectionLevel"][1]
+    meta["_processingLevelNum"] = meta["processingCorrectionLevel"][1]
 
     if meta['sensor'] == "C":
         meta['_sensor'] = 'oli-tirs'
