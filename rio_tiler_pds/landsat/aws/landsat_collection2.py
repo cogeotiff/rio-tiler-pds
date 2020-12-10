@@ -1,7 +1,7 @@
 """AWS Landsat Collection 2 reader."""
 
 import json
-from typing import Dict, Tuple, Type, Any
+from typing import Any, Dict, Tuple, Type
 
 import attr
 from morecantile import TileMatrixSet
