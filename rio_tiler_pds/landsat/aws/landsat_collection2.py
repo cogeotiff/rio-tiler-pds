@@ -38,34 +38,7 @@ OLI_TIRS_ST_BANDS = (
     "ST_URAD",
 )
 
-# TODO: ETM and TM appear to have the same level 2 bands? Deduplicate?
-ETM_SR_BANDS = (
-    "QA_PIXEL",
-    "QA_RADSAT",
-    "SR_ATMOS_OPACITY",
-    "SR_B1",
-    "SR_B2",
-    "SR_B3",
-    "SR_B4",
-    "SR_B5",
-    "SR_B7",
-    "SR_CLOUD_QA",
-)
-
-ETM_ST_BANDS = (
-    "QA_PIXEL",
-    "QA_RADSAT",
-    "ST_ATRAN",
-    "ST_B6",
-    "ST_CDIST",
-    "ST_DRAD",
-    "ST_EMIS",
-    "ST_EMSD",
-    "ST_QA",
-    "ST_TRAD",
-    "ST_URAD",
-)
-
+# For collection 2, level 2, ETM and TM have the same bands
 TM_SR_BANDS = (
     "QA_PIXEL",
     "QA_RADSAT",
@@ -136,20 +109,21 @@ class LandsatC2L2Reader(MultiBandReader):
         processing_level = self.scene_params["processingCorrectionLevel"]
         sensor = self.scene_params["_sensor"]
 
+        # For collection 2, level 2, ETM and TM have the same bands
         if processing_level == "L2SR":
             if sensor == "oli-tirs":
                 self.bands = OLI_TIRS_SR_BANDS
             elif sensor == "tm":
                 self.bands = TM_SR_BANDS
             elif sensor == "etm":
-                self.bands = ETM_SR_BANDS
+                self.bands = TM_SR_BANDS
         else:
             if sensor == "oli-tirs":
                 self.bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
             elif sensor == "tm":
                 self.bands = TM_SR_BANDS + TM_ST_BANDS
             elif sensor == "etm":
-                self.bands = ETM_SR_BANDS + ETM_ST_BANDS
+                self.bands = TM_SR_BANDS + TM_ST_BANDS
         # TODO: add separate level 1 reader with TOA reflectances
         # elif self.scene_params['processingCorrectionLevel'] in ['L1TP', 'L1GT', 'L1GS']:
         #     self.bands = DEFAULT_L8L1_BANDS

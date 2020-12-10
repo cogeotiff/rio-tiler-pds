@@ -11,6 +11,8 @@ from rio_tiler_pds.landsat.aws import LandsatC2Reader
 from rio_tiler_pds.landsat.aws.landsat_collection2 import (
     OLI_TIRS_SR_BANDS,
     OLI_TIRS_ST_BANDS,
+    TM_SR_BANDS,
+    TM_ST_BANDS,
 )
 from rio_tiler_pds.landsat.utils import sceneid_parser
 
@@ -452,3 +454,35 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert data.shape == (3, 80, 80)
         assert data.dtype == numpy.uint16
         assert mask.shape == (80, 80)
+
+
+C2_SENSOR_TEST_CASES = [
+    # Collection 2 Level 2 OLI-TIRS 8 SP (both SR and ST)
+    ("LC08_L2SP_001062_20201031_20201106_02_T2", OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS),
+    # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
+    ("LC08_L2SR_122108_20201031_20201106_02_T2", OLI_TIRS_SR_BANDS),
+    # Collection 2 Level 2 TM SP (both SR and ST)
+    ("LT05_L2SP_014032_20111018_20200820_02_T1", TM_SR_BANDS + TM_ST_BANDS),
+    # Collection 2 Level 2 TM SR (no ST)
+    ("LT05_L2SR_089076_20110929_20200820_02_T2", TM_SR_BANDS),
+    # Collection 2 Level 2 ETM SP (both SR and ST)
+    ("LE07_L2SP_175066_20201026_20201121_02_T1", TM_SR_BANDS + TM_ST_BANDS),
+    # Collection 2 Level 2 ETM SR (no ST)
+    ("LE07_L2SR_123067_20201030_20201126_02_T1", TM_SR_BANDS),
+]
+
+
+@patch("rio_tiler_pds.landsat.aws.landsat_collection2.get_object")
+@patch("rio_tiler.io.cogeo.rasterio")
+def test_LandsatC2L2Reader_bands(rio, get_object):
+    """Should work as expected (get and parse metadata)."""
+    rio.open = mock_rasterio_open
+    get_object.return_value = LANDSAT_METADATA
+
+    with pytest.raises(InvalidLandsatSceneId):
+        with LandsatC2Reader(INVALID_LANDSAT_SCENE_C2):
+            pass
+
+    for sceneid, expected_bands in C2_SENSOR_TEST_CASES:
+        with LandsatC2Reader(sceneid) as landsat:
+            assert landsat.bands == expected_bands
