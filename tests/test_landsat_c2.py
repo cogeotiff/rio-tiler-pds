@@ -7,7 +7,7 @@ import rasterio
 
 from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler_pds.errors import InvalidLandsatSceneId
-from rio_tiler_pds.landsat.aws import LandsatC2L2Reader
+from rio_tiler_pds.landsat.aws import LandsatC2Reader
 from rio_tiler_pds.landsat.aws.landsat_collection2 import (
     OLI_TIRS_SR_BANDS,
     OLI_TIRS_ST_BANDS,
@@ -208,10 +208,10 @@ def test_LandsatC2L2Reader(rio, get_object):
     get_object.return_value = LANDSAT_METADATA
 
     with pytest.raises(InvalidLandsatSceneId):
-        with LandsatC2L2Reader(INVALID_LANDSAT_SCENE_C2):
+        with LandsatC2Reader(INVALID_LANDSAT_SCENE_C2):
             pass
 
-    with LandsatC2L2Reader(LANDSAT_SCENE_C2) as landsat:
+    with LandsatC2Reader(LANDSAT_SCENE_C2) as landsat:
         assert landsat.scene_params["scene"] == LANDSAT_SCENE_C2
         assert landsat.minzoom == 5
         assert landsat.maxzoom == 12
