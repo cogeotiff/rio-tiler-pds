@@ -29,7 +29,9 @@ def sceneid_parser(sceneid: str) -> Dict:
         >>> sceneid_parser('LC08_L1TP_016037_20170813_20170814_01_RT')
 
     """
-    collection_1_2 = r"^L[COTEM]0[0-9]_L[12]{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
+    collection_1_2 = (
+        r"^L[COTEM]0[0-9]_L[12]{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
+    )
     if not re.match(collection_1_2, sceneid):
         raise InvalidLandsatSceneId("Could not match {}".format(sceneid))
 
@@ -66,18 +68,18 @@ def sceneid_parser(sceneid: str) -> Dict:
     )
     meta["_processingLevelNum"] = meta["processingCorrectionLevel"][1]
 
-    if meta['sensor'] == "C":
-        meta['_sensor'] = 'oli-tirs'
-    elif meta['sensor'] == "O":
-        meta['_sensor'] = 'oli'
-    elif meta['sensor'] == "T" and int(meta['satellite']) >= 8:
-        meta['_sensor'] = 'tirs'
-    elif meta['sensor'] == "E":
-        meta['_sensor'] = 'etm'
-    elif meta['sensor'] == "T" and int(meta['satellite']) < 8:
-        meta['_sensor'] = 'tm'
-    elif meta['sensor'] == "M":
-        meta['_sensor'] = 'mss'
+    if meta["sensor"] == "C":
+        meta["_sensor"] = "oli-tirs"
+    elif meta["sensor"] == "O":
+        meta["_sensor"] = "oli"
+    elif meta["sensor"] == "T" and int(meta["satellite"]) >= 8:
+        meta["_sensor"] = "tirs"
+    elif meta["sensor"] == "E":
+        meta["_sensor"] = "etm"
+    elif meta["sensor"] == "T" and int(meta["satellite"]) < 8:
+        meta["_sensor"] = "tm"
+    elif meta["sensor"] == "M":
+        meta["_sensor"] = "mss"
 
     return meta
 

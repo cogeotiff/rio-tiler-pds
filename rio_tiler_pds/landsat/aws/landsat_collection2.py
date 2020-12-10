@@ -40,57 +40,57 @@ OLI_TIRS_ST_BANDS = (
 
 # TODO: ETM and TM appear to have the same level 2 bands? Deduplicate?
 ETM_SR_BANDS = (
-  "QA_PIXEL",
-  "QA_RADSAT",
-  "SR_ATMOS_OPACITY",
-  "SR_B1",
-  "SR_B2",
-  "SR_B3",
-  "SR_B4",
-  "SR_B5",
-  "SR_B7",
-  "SR_CLOUD_QA",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SR_ATMOS_OPACITY",
+    "SR_B1",
+    "SR_B2",
+    "SR_B3",
+    "SR_B4",
+    "SR_B5",
+    "SR_B7",
+    "SR_CLOUD_QA",
 )
 
 ETM_ST_BANDS = (
-  "QA_PIXEL",
-  "QA_RADSAT",
-  "ST_ATRAN",
-  "ST_B6",
-  "ST_CDIST",
-  "ST_DRAD",
-  "ST_EMIS",
-  "ST_EMSD",
-  "ST_QA",
-  "ST_TRAD",
-  "ST_URAD",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "ST_ATRAN",
+    "ST_B6",
+    "ST_CDIST",
+    "ST_DRAD",
+    "ST_EMIS",
+    "ST_EMSD",
+    "ST_QA",
+    "ST_TRAD",
+    "ST_URAD",
 )
 
 TM_SR_BANDS = (
-  "QA_PIXEL",
-  "QA_RADSAT",
-  "SR_ATMOS_OPACITY",
-  "SR_B1",
-  "SR_B2",
-  "SR_B3",
-  "SR_B4",
-  "SR_B5",
-  "SR_B7",
-  "SR_CLOUD_QA",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SR_ATMOS_OPACITY",
+    "SR_B1",
+    "SR_B2",
+    "SR_B3",
+    "SR_B4",
+    "SR_B5",
+    "SR_B7",
+    "SR_CLOUD_QA",
 )
 
 TM_ST_BANDS = (
-  "QA_PIXEL",
-  "QA_RADSAT",
-  "ST_ATRAN",
-  "ST_B6",
-  "ST_CDIST",
-  "ST_DRAD",
-  "ST_EMIS",
-  "ST_EMSD",
-  "ST_QA",
-  "ST_TRAD",
-  "ST_URAD",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "ST_ATRAN",
+    "ST_B6",
+    "ST_CDIST",
+    "ST_DRAD",
+    "ST_EMIS",
+    "ST_EMSD",
+    "ST_QA",
+    "ST_TRAD",
+    "ST_URAD",
 )
 
 
@@ -133,22 +133,22 @@ class LandsatC2L2Reader(MultiBandReader):
         """Fetch productInfo and get bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
 
-        processing_level = self.scene_params['processingCorrectionLevel']
-        sensor = self.scene_params['_sensor']
+        processing_level = self.scene_params["processingCorrectionLevel"]
+        sensor = self.scene_params["_sensor"]
 
-        if processing_level == 'L2SR':
-            if sensor == 'oli-tirs':
+        if processing_level == "L2SR":
+            if sensor == "oli-tirs":
                 self.bands = OLI_TIRS_SR_BANDS
-            elif sensor == 'tm':
+            elif sensor == "tm":
                 self.bands = TM_SR_BANDS
-            elif sensor == 'etm':
+            elif sensor == "etm":
                 self.bands = ETM_SR_BANDS
         else:
-            if sensor == 'oli-tirs':
+            if sensor == "oli-tirs":
                 self.bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
-            elif sensor == 'tm':
+            elif sensor == "tm":
                 self.bands = TM_SR_BANDS + TM_ST_BANDS
-            elif sensor == 'etm':
+            elif sensor == "etm":
                 self.bands = ETM_SR_BANDS + ETM_ST_BANDS
         # TODO: add separate level 1 reader with TOA reflectances
         # elif self.scene_params['processingCorrectionLevel'] in ['L1TP', 'L1GT', 'L1GS']:
@@ -167,12 +167,9 @@ class LandsatC2L2Reader(MultiBandReader):
         # Temperature (ST), but they have the same geometry. The SR should
         # always exist, the ST might not exist based on the scene.
         self.stac_item = json.loads(
-            get_object(
-                self._hostname, f"{prefix}_SR_stac.json", request_pays=True
-            )
+            get_object(self._hostname, f"{prefix}_SR_stac.json", request_pays=True)
         )
         self.bounds = self.stac_item["bbox"]
-
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
