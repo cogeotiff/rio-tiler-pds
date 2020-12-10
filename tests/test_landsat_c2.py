@@ -8,8 +8,10 @@ import rasterio
 from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler_pds.errors import InvalidLandsatSceneId
 from rio_tiler_pds.landsat.aws import LandsatC2L2Reader
-from rio_tiler_pds.landsat.aws.landsat_collection2 import (OLI_TIRS_SR_BANDS,
-                                                           OLI_TIRS_ST_BANDS)
+from rio_tiler_pds.landsat.aws.landsat_collection2 import (
+    OLI_TIRS_SR_BANDS,
+    OLI_TIRS_ST_BANDS,
+)
 from rio_tiler_pds.landsat.utils import sceneid_parser
 
 # sceneid,expected_content
@@ -160,23 +162,25 @@ def test_landsat_sceneid_parser(sceneid, expected_content):
     """Parse landsat valid collection1 sceneid and return metadata."""
     assert sceneid_parser(sceneid) == expected_content
 
-# __file__ = '.'
-# LANDSAT_PATH = Path('/Users/kyle/github/mapping/rio-tiler-pds/tests/fixtures/usgs-landsat/collection02/level-2/standard/oli-tirs/2020/001/062/LC08_L2SP_001062_20201031_20201106_02_T2')
+
 LANDSAT_SCENE_C2 = "LC08_L2SP_001062_20201031_20201106_02_T2"
-LANDSAT_BUCKET = Path(__file__).resolve().parent / 'fixtures' / 'usgs-landsat'
-LANDSAT_PATH = (LANDSAT_BUCKET / "collection02" / "level-2" / "standard" / "oli-tirs" / "2020" / "001" / "062" / LANDSAT_SCENE_C2)
-INVALID_LANDSAT_SCENE_C2 = 'LC08_001062_20201031_20201106_02_T2'
+LANDSAT_BUCKET = Path(__file__).resolve().parent / "fixtures" / "usgs-landsat"
+LANDSAT_PATH = (
+    LANDSAT_BUCKET
+    / "collection02"
+    / "level-2"
+    / "standard"
+    / "oli-tirs"
+    / "2020"
+    / "001"
+    / "062"
+    / LANDSAT_SCENE_C2
+)
+INVALID_LANDSAT_SCENE_C2 = "LC08_001062_20201031_20201106_02_T2"
 
 with open(LANDSAT_PATH / f"{LANDSAT_SCENE_C2}_SR_stac.json", "r") as f:
     LANDSAT_METADATA = f.read().encode("utf-8")
 
-# landsat = LandsatC2L2Reader(LANDSAT_SCENE_C2)
-#
-# file =
-# COGReader
-# import mercantile
-# x, y, z = list(mercantile.tiles(*landsat.bounds, 8))[3]
-# landsat.bounds
 
 @pytest.fixture(autouse=True)
 def testing_env_var(monkeypatch):
@@ -225,7 +229,9 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert metadata["band_descriptions"] == [("SR_B5", "")]
 
         metadata = landsat.info(bands=landsat.bands)
-        assert len(metadata["band_metadata"]) == len(OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS)
+        assert len(metadata["band_metadata"]) == len(
+            OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
+        )
 
         with pytest.raises(MissingBands):
             landsat.stats()
@@ -263,7 +269,9 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert metadata["band_descriptions"] == [("SR_B1", ""), ("SR_B2", "")]
 
         # nodata and resampling_method are set at reader level an shouldn't be set
-        metadata = landsat.metadata(bands="QA_PIXEL", nodata=0, resampling_method="bilinear")
+        metadata = landsat.metadata(
+            bands="QA_PIXEL", nodata=0, resampling_method="bilinear"
+        )
         assert metadata["statistics"]["QA_PIXEL"]["min"] == 1
 
         tile_z = 8
@@ -273,7 +281,9 @@ def test_LandsatC2L2Reader(rio, get_object):
         with pytest.raises(MissingBands):
             landsat.tile(tile_x, tile_y, tile_z)
 
-        data, mask = landsat.tile(tile_x, tile_y, tile_z, bands=("SR_B4", "SR_B3", "SR_B2"))
+        data, mask = landsat.tile(
+            tile_x, tile_y, tile_z, bands=("SR_B4", "SR_B3", "SR_B2")
+        )
         assert data.shape == (3, 256, 256)
         assert data.dtype == numpy.uint16
         assert mask.shape == (256, 256)
@@ -286,7 +296,12 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert mask.shape == (256, 256)
 
         data, mask = landsat.tile(
-            tile_x, tile_y, tile_z, bands="QA_PIXEL", nodata=0, resampling_method="bilinear"
+            tile_x,
+            tile_y,
+            tile_z,
+            bands="QA_PIXEL",
+            nodata=0,
+            resampling_method="bilinear",
         )
         assert data.shape == (1, 256, 256)
         assert not mask.all()
@@ -364,7 +379,9 @@ def test_LandsatC2L2Reader(rio, get_object):
         values = landsat.point(point_x, point_y, bands=("SR_B7", "SR_B4"))
         assert len(values) == 2
 
-        values = landsat.point(point_x, point_y, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8")
+        values = landsat.point(
+            point_x, point_y, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8"
+        )
         assert len(values) == 3
 
         bbox = landsat.bounds
@@ -384,26 +401,18 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert not mask.all()
 
         data, _ = landsat.part(
-            part,
-            bands="QA_PIXEL",
-            nodata=0,
-            resampling_method="bilinear",
+            part, bands="QA_PIXEL", nodata=0, resampling_method="bilinear",
         )
         assert data.shape == (1, 46, 1024)
 
-        data, mask = landsat.part(
-            part, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8"
-        )
+        data, mask = landsat.part(part, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8")
         assert data.shape == (3, 46, 1024)
         assert data.dtype == numpy.float64
         assert mask.shape == (46, 1024)
         assert not mask.all()
 
         data, mask = landsat.part(
-            part,
-            bands=("SR_B4", "SR_B3", "SR_B2"),
-            width=80,
-            height=80,
+            part, bands=("SR_B4", "SR_B3", "SR_B2"), width=80, height=80,
         )
         assert data.shape == (3, 80, 80)
         assert data.dtype == numpy.uint16
@@ -417,18 +426,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         feat = {
             "type": "Feature",
             "properties": {},
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        ll,
-                        lr,
-                        ur,
-                        ul,
-                        ll,
-                    ]
-                ],
-            },
+            "geometry": {"type": "Polygon", "coordinates": [[ll, lr, ur, ul, ll]]},
         }
         with pytest.raises(MissingBands):
             landsat.feature(feat)
