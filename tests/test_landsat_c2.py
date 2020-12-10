@@ -160,7 +160,8 @@ def test_landsat_sceneid_parser(sceneid, expected_content):
     """Parse landsat valid collection1 sceneid and return metadata."""
     assert sceneid_parser(sceneid) == expected_content
 
-
+# __file__ = '.'
+# LANDSAT_PATH = Path('/Users/kyle/github/mapping/rio-tiler-pds/tests/fixtures/usgs-landsat/collection02/level-2/standard/oli-tirs/2020/001/062/LC08_L2SP_001062_20201031_20201106_02_T2')
 LANDSAT_SCENE_C2 = "LC08_L2SP_001062_20201031_20201106_02_T2"
 LANDSAT_BUCKET = Path(__file__).resolve().parent / 'fixtures' / 'usgs-landsat'
 LANDSAT_PATH = (LANDSAT_BUCKET / "collection02" / "level-2" / "standard" / "oli-tirs" / "2020" / "001" / "062" / LANDSAT_SCENE_C2)
@@ -168,6 +169,14 @@ INVALID_LANDSAT_SCENE_C2 = 'LC08_001062_20201031_20201106_02_T2'
 
 with open(LANDSAT_PATH / f"{LANDSAT_SCENE_C2}_SR_stac.json", "r") as f:
     LANDSAT_METADATA = f.read().encode("utf-8")
+
+# landsat = LandsatC2L2Reader(LANDSAT_SCENE_C2)
+#
+# file =
+# COGReader
+# import mercantile
+# x, y, z = list(mercantile.tiles(*landsat.bounds, 8))[3]
+# landsat.bounds
 
 @pytest.fixture(autouse=True)
 def testing_env_var(monkeypatch):
@@ -258,8 +267,8 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert metadata["statistics"]["QA_PIXEL"]["min"] == 1
 
         tile_z = 8
-        tile_x = 71
-        tile_y = 102
+        tile_x = 81
+        tile_y = 130
 
         with pytest.raises(MissingBands):
             landsat.tile(tile_x, tile_y, tile_z)
@@ -270,10 +279,10 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert mask.shape == (256, 256)
         assert not mask.all()
 
-        # Temp are float32
-        data, mask = landsat.tile(tile_x, tile_y, tile_z, bands="SR_B10")
+        # Level 2 collection 2 temperatures are uint16
+        data, mask = landsat.tile(tile_x, tile_y, tile_z, bands="ST_B10")
         assert data.shape == (1, 256, 256)
-        assert data.dtype == numpy.float32
+        assert data.dtype == numpy.uint16
         assert mask.shape == (256, 256)
 
         data, mask = landsat.tile(
@@ -282,22 +291,17 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert data.shape == (1, 256, 256)
         assert not mask.all()
 
-        data, mask = landsat.tile(
-            tile_x, tile_y, tile_z, bands=("SR_B4", "SR_B3", "SR_B2"), pan=True
-        )
-        assert data.shape == (3, 256, 256)
-        assert data.dtype == numpy.uint16
-        assert mask.shape == (256, 256)
+        # Pansharpening not yet implemented
+        # data, mask = landsat.tile(
+        #     tile_x, tile_y, tile_z, bands=("SR_B4", "SR_B3", "SR_B2"), pan=True
+        # )
+        # assert data.shape == (3, 256, 256)
+        # assert data.dtype == numpy.uint16
+        # assert mask.shape == (256, 256)
 
-        tile_z = 8
-        tile_x = 701
-        tile_y = 102
         with pytest.raises(TileOutsideBounds):
-            landsat.tile(tile_x, tile_y, tile_z, bands=("SR_B4", "SR_B3", "SR_B2"))
+            landsat.tile(701, 102, 8, bands=("SR_B4", "SR_B3", "SR_B2"))
 
-        tile_z = 8
-        tile_x = 71
-        tile_y = 102
         data, mask = landsat.tile(
             tile_x, tile_y, tile_z, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8"
         )
@@ -309,90 +313,106 @@ def test_LandsatC2L2Reader(rio, get_object):
             landsat.preview()
 
         data, mask = landsat.preview(bands=("SR_B4", "SR_B3", "SR_B2"))
-        assert data.shape == (3, 259, 255)
+        assert data.shape == (3, 386, 379)
         assert data.dtype == numpy.uint16
-        assert mask.shape == (259, 255)
+        assert mask.shape == (386, 379)
         assert not mask.all()
 
-        # Temp are float32
-        data, mask = landsat.preview(bands="SR_B10")
-        assert data.shape == (1, 259, 255)
-        assert data.dtype == numpy.float32
-        assert mask.shape == (259, 255)
-
-        data, mask = landsat.preview(
-            bands=("SR_B4", "SR_B3", "SR_B2"), pan=True, width=256, height=256
-        )
-        assert data.shape == (3, 256, 256)
+        # Level 2 collection 2 temperatures are uint16
+        data, mask = landsat.preview(bands="ST_B10")
+        assert data.shape == (1, 386, 379)
         assert data.dtype == numpy.uint16
-        assert mask.shape == (256, 256)
+        assert mask.shape == (386, 379)
+
+        # Pansharpening not yet implemented
+        # data, mask = landsat.preview(
+        #     bands=("SR_B4", "SR_B3", "SR_B2"), pan=True, width=256, height=256
+        # )
+        # assert data.shape == (3, 256, 256)
+        # assert data.dtype == numpy.uint16
+        # assert mask.shape == (256, 256)
 
         data, mask = landsat.preview(expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8")
-        assert data.shape == (3, 259, 255)
+        assert data.shape == (3, 386, 379)
         assert data.dtype == numpy.float64
-        assert mask.shape == (259, 255)
+        assert mask.shape == (386, 379)
 
         data, mask = landsat.preview(bands="QA_PIXEL")
-        assert data.shape == (1, 259, 255)
-        assert not mask.all()
+        assert data.shape == (1, 386, 379)
+        assert mask.all()
 
         # nodata and resampling_method are set at reader level an shouldn't be set
         data, mask = landsat.preview(
             bands="QA_PIXEL", nodata=0, resampling_method="bilinear"
         )
-        assert data.shape == (1, 259, 255)
+        assert data.shape == (1, 386, 379)
         assert mask.all()
 
+        bbox = landsat.bounds
+        point_x = (bbox[0] + bbox[2]) / 2
+        point_y = (bbox[1] + bbox[3]) / 2
+
         with pytest.raises(MissingBands):
-            landsat.point(-80.094, 33.2062)
+            landsat.point(point_x, point_y)
 
-        values = landsat.point(-80.094, 33.2062, bands="SR_B7")
-        assert values == [667]
+        values = landsat.point(point_x, point_y, bands="SR_B7")
+        assert values == [16414]
 
-        values = landsat.point(-80.094, 33.2062, bands="QA_PIXEL")
-        assert values[0] == 2800
+        values = landsat.point(point_x, point_y, bands="QA_PIXEL")
+        assert values[0] == 22280
 
-        values = landsat.point(-80.094, 33.2062, bands=("SR_B7", "SR_B4"))
+        values = landsat.point(point_x, point_y, bands=("SR_B7", "SR_B4"))
         assert len(values) == 2
 
-        values = landsat.point(-80.094, 33.2062, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8")
+        values = landsat.point(point_x, point_y, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8")
         assert len(values) == 3
 
-        with pytest.raises(MissingBands):
-            landsat.part((-80.593, 32.9134, -79.674, 33.6790))
+        bbox = landsat.bounds
+        minx = (bbox[0] + bbox[2]) * 0.25
+        miny = (bbox[1] + bbox[3]) * 0.25
+        maxx = (bbox[0] + bbox[2]) * 0.75
+        maxy = (bbox[1] + bbox[3]) * 0.75
+        part = (minx, miny, maxx, maxy)
 
-        data, mask = landsat.part((-80.593, 32.9134, -79.674, 33.6790), bands="SR_B7")
-        assert data.shape == (1, 87, 104)
+        with pytest.raises(MissingBands):
+            landsat.part(part)
+
+        data, mask = landsat.part(part, bands="SR_B7")
+        assert data.shape == (1, 46, 1024)
         assert data.dtype == numpy.uint16
-        assert mask.shape == (87, 104)
-        assert mask.all()
+        assert mask.shape == (46, 1024)
+        assert not mask.all()
 
         data, _ = landsat.part(
-            (-80.593, 32.9134, -79.674, 33.6790),
+            part,
             bands="QA_PIXEL",
             nodata=0,
             resampling_method="bilinear",
         )
-        assert data.shape == (1, 87, 104)
+        assert data.shape == (1, 46, 1024)
 
         data, mask = landsat.part(
-            (-80.593, 32.9134, -79.674, 33.6790), expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8"
+            part, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8"
         )
-        assert data.shape == (3, 87, 104)
+        assert data.shape == (3, 46, 1024)
         assert data.dtype == numpy.float64
-        assert mask.shape == (87, 104)
-        assert mask.all()
+        assert mask.shape == (46, 1024)
+        assert not mask.all()
 
         data, mask = landsat.part(
-            (-80.593, 32.9134, -79.674, 33.6790),
+            part,
             bands=("SR_B4", "SR_B3", "SR_B2"),
-            pan=True,
             width=80,
             height=80,
         )
         assert data.shape == (3, 80, 80)
         assert data.dtype == numpy.uint16
         assert mask.shape == (80, 80)
+
+        ll = (minx, miny)
+        lr = (maxx, miny)
+        ul = (minx, maxy)
+        ur = (maxx, maxy)
 
         feat = {
             "type": "Feature",
@@ -401,11 +421,11 @@ def test_LandsatC2L2Reader(rio, get_object):
                 "type": "Polygon",
                 "coordinates": [
                     [
-                        [-80.1397705078125, 32.63937487360669],
-                        [-79.6453857421875, 32.63937487360669],
-                        [-79.6453857421875, 32.94875863715422],
-                        [-80.1397705078125, 32.94875863715422],
-                        [-80.1397705078125, 32.63937487360669],
+                        ll,
+                        lr,
+                        ur,
+                        ul,
+                        ll,
                     ]
                 ],
             },
@@ -414,22 +434,22 @@ def test_LandsatC2L2Reader(rio, get_object):
             landsat.feature(feat)
 
         data, mask = landsat.feature(feat, bands="SR_B7")
-        assert data.shape == (1, 35, 56)
+        assert data.shape == (1, 46, 1024)
         assert data.dtype == numpy.uint16
-        assert mask.shape == (35, 56)
+        assert mask.shape == (46, 1024)
 
         data, _ = landsat.feature(
             feat, bands="QA_PIXEL", nodata=0, resampling_method="bilinear",
         )
-        assert data.shape == (1, 35, 56)
+        assert data.shape == (1, 46, 1024)
 
         data, mask = landsat.feature(feat, expression="SR_B5*0.8, SR_B4*1.1, SR_B3*0.8")
-        assert data.shape == (3, 35, 56)
+        assert data.shape == (3, 46, 1024)
         assert data.dtype == numpy.float64
-        assert mask.shape == (35, 56)
+        assert mask.shape == (46, 1024)
 
         data, mask = landsat.feature(
-            feat, bands=("SR_B4", "SR_B3", "SR_B2"), pan=True, width=80, height=80,
+            feat, bands=("SR_B4", "SR_B3", "SR_B2"), width=80, height=80,
         )
         assert data.shape == (3, 80, 80)
         assert data.dtype == numpy.uint16
