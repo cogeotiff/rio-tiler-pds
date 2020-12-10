@@ -10,7 +10,6 @@ from rio_toa import brightness_temp, reflectance
 from ..errors import InvalidLandsatSceneId
 
 
-
 def sceneid_parser(sceneid: str) -> Dict:
     """Parse Landsat 8 scene id.
 
