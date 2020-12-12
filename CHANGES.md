@@ -2,6 +2,7 @@
 
 ## Next (TBD)
 
+* add sentinel-2 product ID parsing (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/33).
 * fix issue where the sequence number of a sentinel scene id can be two digit (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/35)
 * fix issue where `utm` is only one sigle digit (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/34)
 
