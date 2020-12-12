@@ -11,12 +11,12 @@ from ..errors import InvalidLandsatSceneId
 
 
 def sceneid_parser(sceneid: str) -> Dict:
-    """Parse Landsat 8 scene id.
+    """Parse Landsat id.
 
     Author @perrygeo - http://www.perrygeo.com
 
     Args:
-        sceneid (str): Landsat 8 sceneid.
+        sceneid (str): Landsat sceneid.
 
     Returns:
         dict: dictionary with metadata constructed from the sceneid.
@@ -28,10 +28,9 @@ def sceneid_parser(sceneid: str) -> Dict:
         >>> sceneid_parser('LC08_L1TP_016037_20170813_20170814_01_RT')
 
     """
-    collection_1_2 = (
-        r"^L[COTEM]0[0-9]_L[12]{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
-    )
-    if not re.match(collection_1_2, sceneid):
+    if not re.match(
+        r"^L[COTEM]0[0-9]_L[12]{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$", sceneid
+    ):
         raise InvalidLandsatSceneId("Could not match {}".format(sceneid))
 
     collection_pattern = (
@@ -68,17 +67,18 @@ def sceneid_parser(sceneid: str) -> Dict:
     meta["_processingLevelNum"] = meta["processingCorrectionLevel"][1]
 
     if meta["sensor"] == "C":
-        meta["_sensor"] = "oli-tirs"
+        sensor_name = "oli-tirs"
     elif meta["sensor"] == "O":
-        meta["_sensor"] = "oli"
+        sensor_name = "oli"
     elif meta["sensor"] == "T" and int(meta["satellite"]) >= 8:
-        meta["_sensor"] = "tirs"
+        sensor_name = "tirs"
     elif meta["sensor"] == "E":
-        meta["_sensor"] = "etm"
+        sensor_name = "etm"
     elif meta["sensor"] == "T" and int(meta["satellite"]) < 8:
-        meta["_sensor"] = "tm"
+        sensor_name = "tm"
     elif meta["sensor"] == "M":
-        meta["_sensor"] = "mss"
+        sensor_name = "mss"
+    meta["sensor_name"] = sensor_name
 
     return meta
 
