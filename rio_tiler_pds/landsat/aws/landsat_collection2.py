@@ -21,7 +21,7 @@ Links:
 """
 
 import json
-from typing import Any, Dict, Tuple, Type
+from typing import Dict, Tuple, Type
 
 import attr
 from morecantile import TileMatrixSet
@@ -35,8 +35,8 @@ from ..utils import sceneid_parser
 
 
 @attr.s
-class LandsatC2L2Reader(MultiBandReader):
-    """AWS Public Dataset Landsat Collection 2 Level 2 COG Reader.
+class LandsatC2Reader(MultiBandReader):
+    """AWS Public Dataset Landsat Collection 2 COG Reader.
 
     Args:
         sceneid (str): Landsat 8 sceneid.
@@ -99,13 +99,3 @@ class LandsatC2L2Reader(MultiBandReader):
 
         prefix = self._prefix.format(**self.scene_params)
         return f"{self._scheme}://{self._hostname}/{prefix}_{band}.TIF"
-
-
-def LandsatC2Reader(sceneid: str, **kwargs: Any) -> LandsatC2L2Reader:
-    """Landsat Collection 2 COG readers."""
-    scene_params = sceneid_parser(sceneid)
-    level = scene_params["_processingLevelNum"]
-    if level == "2":
-        return LandsatC2L2Reader(sceneid, **kwargs)
-    else:
-        raise NotImplementedError(f"Level-{level} is not yet implemented")
