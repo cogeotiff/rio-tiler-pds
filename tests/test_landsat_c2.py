@@ -456,7 +456,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert mask.shape == (80, 80)
 
 
-C2sensor_name_TEST_CASES = [
+C2_SENSOR_TEST_CASES = [
     # Collection 2 Level 2 OLI-TIRS 8 SP (both SR and ST)
     ("LC08_L2SP_001062_20201031_20201106_02_T2", OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS),
     # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
@@ -483,6 +483,6 @@ def test_LandsatC2L2Reader_bands(rio, get_object):
         with LandsatC2Reader(INVALID_LANDSAT_SCENE_C2):
             pass
 
-    for sceneid, expected_bands in C2sensor_name_TEST_CASES:
+    for sceneid, expected_bands in C2_SENSOR_TEST_CASES:
         with LandsatC2Reader(sceneid) as landsat:
             assert landsat.bands == expected_bands

@@ -16,7 +16,7 @@ Notes:
     - Quality Assessment (QA) Band.
 
 Links:
-  - https://www.usgs.gov/core-science-systems/nli/landsat/landsat-collection-2?qt-science_support_page_related_con=1#qt-science_support_page_related_con
+  - https://www.usgs.gov/core-science-systems/nli/landsat/landsat-collection-2
 
 """
 
@@ -145,7 +145,6 @@ class LandsatC2L2Reader(MultiBandReader):
 
     def get_geometry(self):
         """Fetch geometry info for the scene."""
-        # TODO: fetch STAC to get bounds (self.bounds must be set)
         # Allow custom function for users who want to use the WRS2 grid and
         # avoid this GET request.
         prefix = self._prefix.format(**self.scene_params)
