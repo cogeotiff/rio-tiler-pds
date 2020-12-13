@@ -12,8 +12,10 @@ from rio_tiler_pds.landsat.utils import (
     ETM_L1_BANDS,
     MSS_L1_BANDS,
     OLI_L1_BANDS,
+    OLI_L1_QA_BANDS,
     OLI_SR_BANDS,
     TIRS_L1_BANDS,
+    TIRS_L1_QA_BANDS,
     TIRS_ST_BANDS,
     TM_L1_BANDS,
     TM_SR_BANDS,
@@ -195,7 +197,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "_processingLevelNum": "1",
             "sensor_name": "oli",
             "_sensor_name": "oli-tirs",
-            "bands": OLI_L1_BANDS,
+            "bands": OLI_L1_BANDS + OLI_L1_QA_BANDS,
         },
     ),
     # Collection 2 Level 1 OLI, L1TP
@@ -220,7 +222,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "_processingLevelNum": "1",
             "sensor_name": "oli",
             "_sensor_name": "oli-tirs",
-            "bands": OLI_L1_BANDS,
+            "bands": OLI_L1_BANDS + OLI_L1_QA_BANDS,
         },
     ),
     # Collection 2 Level 1 OLI-TIRS, L1GT
@@ -245,7 +247,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "_processingLevelNum": "1",
             "sensor_name": "oli-tirs",
             "_sensor_name": "oli-tirs",
-            "bands": OLI_L1_BANDS + TIRS_L1_BANDS,
+            "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
         },
     ),
     # Collection 2 Level 1 OLI-TIRS, L1TP
@@ -270,7 +272,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "_processingLevelNum": "1",
             "sensor_name": "oli-tirs",
             "_sensor_name": "oli-tirs",
-            "bands": OLI_L1_BANDS + TIRS_L1_BANDS,
+            "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
         },
     ),
     # Collection 2 Level 1 TIRS, L1GT
@@ -295,7 +297,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "_processingLevelNum": "1",
             "sensor_name": "tirs",
             "_sensor_name": "oli-tirs",
-            "bands": TIRS_L1_BANDS,
+            "bands": TIRS_L1_BANDS + TIRS_L1_QA_BANDS,
         },
     ),
     # Collection 2 Level 1 ETM, L1GS

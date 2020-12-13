@@ -63,6 +63,19 @@ OLI_L1_BANDS: Tuple[str, ...] = ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8",
 
 TIRS_L1_BANDS: Tuple[str, ...] = ("B10", "B11")
 
+OLI_L1_QA_BANDS: Tuple[str, ...] = (
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SAA",
+    "SZA",
+    "VAA",
+    "VZA",
+)
+
+TIRS_L1_QA_BANDS: Tuple[str, ...] = (
+    "QA_PIXEL",
+    "QA_RADSAT",
+)
 
 ETM_L1_BANDS: Tuple[str, ...] = (
     "B1",
@@ -202,11 +215,11 @@ def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:  # noqa: C901
     # Level 1
     else:
         if sensor_name == "oli":
-            bands = OLI_L1_BANDS
+            bands = OLI_L1_BANDS + OLI_L1_QA_BANDS
         elif sensor_name == "tirs":
-            bands = TIRS_L1_BANDS
+            bands = TIRS_L1_BANDS + TIRS_L1_QA_BANDS
         elif sensor_name == "oli-tirs":
-            bands = OLI_L1_BANDS + TIRS_L1_BANDS
+            bands = OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS
         elif sensor_name == "etm":
             bands = ETM_L1_BANDS
         elif sensor_name == "tm":
