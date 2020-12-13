@@ -25,6 +25,8 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
 
         >>> s2_sceneid_parser('S2A_29RKH_20200219_0_L2A')
 
+        >>> s2_sceneid_parse('S2B_MSIL2A_20190730T190919_N0212_R056_T10UEU_20201005T200819')
+
     """
     if re.match(
         "^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{1,2}[A-Z]{3}_[0-9]{1,2}$", sceneid
@@ -67,15 +69,42 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
             r"_"
             r"(?P<processingLevel>L[0-2][ABC])$"
         )
+    elif re.match(
+        "^S2[AB]_MSIL[0-2][ABC]_[0-9]{8}T[0-9]{6}_N[0-9]{4}_R[0-9]{3}_T[0-9A-Z]{5}_[0-9]{8}T[0-9]{6}$",
+        sceneid,
+    ):  # product id
+        pattern = (
+            r"^S"
+            r"(?P<sensor>\w{1})"
+            r"(?P<satellite>[AB]{1})"
+            r"_"
+            r"MSI(?P<processingLevel>L[0-2][ABC])"
+            r"_"
+            r"(?P<acquisitionYear>[0-9]{4})"
+            r"(?P<acquisitionMonth>[0-9]{2})"
+            r"(?P<acquisitionDay>[0-9]{2})"
+            r"T(?P<acquisitionHMS>[0-9]{6})"
+            r"_"
+            r"N(?P<baseline_number>[0-9]{4})"
+            r"_"
+            r"R(?P<relative_orbit>[0-9]{3})"
+            r"_T"
+            r"(?P<utm>[0-9]{2})"
+            r"(?P<lat>\w{1})"
+            r"(?P<sq>\w{2})"
+            r"_"
+            r"(?P<stopDateTime>[0-9]{8}T[0-9]{6})$"
+        )
     else:
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))
 
     meta: Dict[str, Any] = re.match(pattern, sceneid, re.IGNORECASE).groupdict()
-    meta[
-        "scene"
-    ] = "S{sensor}{satellite}_{utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}".format(
-        **meta
-    )
+
+    # When parsing product id, num won't be set.
+    if not meta.get("num"):
+        meta["num"] = "0"
+
+    meta["scene"] = sceneid
     meta["date"] = "{}-{}-{}".format(
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
     )
