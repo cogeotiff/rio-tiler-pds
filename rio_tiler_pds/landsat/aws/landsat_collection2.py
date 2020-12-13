@@ -93,11 +93,6 @@ class LandsatC2Reader(MultiBandReader):
             # always exist, the ST might not exist based on the scene.
             stac_key = f"{prefix}_SR_stac.json"
 
-            import boto3
-
-            boto3.s3.exceptions
-            s3_client.ex
-
         try:
             self.stac_item = json.loads(
                 get_object(self._hostname, stac_key, request_pays=True)
