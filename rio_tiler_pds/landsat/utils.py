@@ -59,6 +59,10 @@ TM_ST_BANDS: Tuple[str, ...] = (
     "ST_URAD",
 )
 
+OLI_L1_BANDS: Tuple[str, ...] = ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9")
+
+TIRS_L1_BANDS: Tuple[str, ...] = ("B10", "B11")
+
 ETM_L1_BANDS: Tuple[str, ...] = ()
 
 TM_L1_BANDS: Tuple[str, ...] = ()
@@ -147,7 +151,7 @@ def sceneid_parser(sceneid: str) -> Dict:
     return meta
 
 
-def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:
+def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:  # noqa: C901
     """Get available Landsat bands given scene metadata
     """
     sensor_name = meta["sensor_name"]
@@ -164,9 +168,20 @@ def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:
         elif sensor_name in ["tm", "etm"]:
             bands = TM_SR_BANDS + TM_ST_BANDS
 
-    # TODO: improve list of bands in future PRs
+    # Level 1
     else:
-        bands = ()
+        if sensor_name == "oli":
+            bands = OLI_L1_BANDS
+        elif sensor_name == "tirs":
+            bands = TIRS_L1_BANDS
+        elif sensor_name == "oli-tirs":
+            bands = OLI_L1_BANDS + TIRS_L1_BANDS
+        elif sensor_name == "etm":
+            bands = ETM_L1_BANDS
+        elif sensor_name == "tm":
+            bands = TM_L1_BANDS
+        elif sensor_name == "mss":
+            bands = MSS_L1_BANDS
 
     return bands
 
