@@ -10,7 +10,12 @@ import rasterio
 from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler_pds.errors import InvalidLandsatSceneId
 from rio_tiler_pds.landsat.aws import L8Reader
-from rio_tiler_pds.landsat.utils import OLI_L1_BANDS, TIRS_L1_BANDS, sceneid_parser
+from rio_tiler_pds.landsat.utils import (
+    OLI_L1_BANDS,
+    OLI_L1_QA_BANDS,
+    TIRS_L1_BANDS,
+    sceneid_parser,
+)
 
 LANDSAT_SCENE_C1 = "LC08_L1TP_016037_20170813_20170814_01_RT"
 LANDSAT_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "landsat-pds")
@@ -324,7 +329,7 @@ def test_landsat_id_c1_valid():
         "_processingLevelNum": "1",
         "sensor_name": "oli-tirs",
         "_sensor_name": "oli-tirs",
-        "bands": OLI_L1_BANDS + TIRS_L1_BANDS,
+        "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
     }
 
     assert sceneid_parser(scene) == expected_content
