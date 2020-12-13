@@ -11,8 +11,8 @@ from rio_tiler_pds.landsat.aws import LandsatC2Reader
 from rio_tiler_pds.landsat.utils import (
     ETM_L1_BANDS,
     MSS_L1_BANDS,
-    OLI_TIRS_SR_BANDS,
-    OLI_TIRS_ST_BANDS,
+    OLI_SR_BANDS,
+    TIRS_ST_BANDS,
     TM_L1_BANDS,
     TM_SR_BANDS,
     TM_ST_BANDS,
@@ -42,7 +42,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-31",
             "_processingLevelNum": "2",
             "sensor_name": "oli-tirs",
-            "bands": OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS,
+            "bands": OLI_SR_BANDS + TIRS_ST_BANDS,
         },
     ),
     # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
@@ -66,7 +66,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-31",
             "_processingLevelNum": "2",
             "sensor_name": "oli-tirs",
-            "bands": OLI_TIRS_SR_BANDS,
+            "bands": OLI_SR_BANDS,
         },
     ),
     # Collection 2 Level 2 TM SP (both SR and ST)
@@ -395,7 +395,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert landsat.minzoom == 5
         assert landsat.maxzoom == 12
         assert len(landsat.bounds) == 4
-        assert landsat.bands == OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
+        assert landsat.bands == OLI_SR_BANDS + TIRS_ST_BANDS
 
         with pytest.raises(MissingBands):
             landsat.info()
@@ -408,9 +408,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert metadata["band_descriptions"] == [("SR_B5", "")]
 
         metadata = landsat.info(bands=landsat.bands)
-        assert len(metadata["band_metadata"]) == len(
-            OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
-        )
+        assert len(metadata["band_metadata"]) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
 
         with pytest.raises(MissingBands):
             landsat.stats()
@@ -419,7 +417,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert stats["SR_B1"]["percentiles"] == [7926, 49017]
 
         stats = landsat.stats(bands=landsat.bands)
-        assert len(stats.items()) == len(OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS)
+        assert len(stats.items()) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
         assert list(stats) == list(landsat.bands)
 
         stats = landsat.stats(bands="SR_B1", hist_options=dict(bins=20))
@@ -635,9 +633,9 @@ def test_LandsatC2L2Reader(rio, get_object):
 
 C2_SENSOR_TEST_CASES = [
     # Collection 2 Level 2 OLI-TIRS 8 SP (both SR and ST)
-    ("LC08_L2SP_001062_20201031_20201106_02_T2", OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS),
+    ("LC08_L2SP_001062_20201031_20201106_02_T2", OLI_SR_BANDS + TIRS_ST_BANDS),
     # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
-    ("LC08_L2SR_122108_20201031_20201106_02_T2", OLI_TIRS_SR_BANDS),
+    ("LC08_L2SR_122108_20201031_20201106_02_T2", OLI_SR_BANDS),
     # Collection 2 Level 2 TM SP (both SR and ST)
     ("LT05_L2SP_014032_20111018_20200820_02_T1", TM_SR_BANDS + TM_ST_BANDS),
     # Collection 2 Level 2 TM SR (no ST)

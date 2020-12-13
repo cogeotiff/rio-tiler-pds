@@ -9,7 +9,7 @@ from rio_toa import brightness_temp, reflectance
 
 from ..errors import InvalidLandsatSceneId
 
-OLI_TIRS_SR_BANDS: Tuple[str, ...] = (
+OLI_SR_BANDS: Tuple[str, ...] = (
     "QA_PIXEL",
     "QA_RADSAT",
     "SR_B1",
@@ -22,7 +22,7 @@ OLI_TIRS_SR_BANDS: Tuple[str, ...] = (
     "SR_QA_AEROSOL",
 )
 
-OLI_TIRS_ST_BANDS: Tuple[str, ...] = (
+TIRS_ST_BANDS: Tuple[str, ...] = (
     "ST_ATRAN",
     "ST_B10",
     "ST_CDIST",
@@ -154,13 +154,13 @@ def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:
 
     if meta["processingCorrectionLevel"] == "L2SR":
         if sensor_name in ["oli-tirs", "oli"]:
-            bands = OLI_TIRS_SR_BANDS
+            bands = OLI_SR_BANDS
         elif sensor_name in ["tm", "etm"]:
             bands = TM_SR_BANDS
 
     elif meta["processingCorrectionLevel"] == "L2SP":
         if sensor_name == "oli-tirs":
-            bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
+            bands = OLI_SR_BANDS + TIRS_ST_BANDS
         elif sensor_name in ["tm", "etm"]:
             bands = TM_SR_BANDS + TM_ST_BANDS
 
