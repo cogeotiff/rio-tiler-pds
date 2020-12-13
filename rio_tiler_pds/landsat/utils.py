@@ -184,12 +184,12 @@ def sceneid_parser(sceneid: str) -> Dict:
         sensor_name = "mss"
 
     # S3 paths always use oli-tirs
-    _sensor_name = sensor_name
-    if _sensor_name in ["oli", "tirs"]:
-        _sensor_name = "oli-tirs"
+    _sensor_s3_prefix = sensor_name
+    if _sensor_s3_prefix in ["oli", "tirs"]:
+        _sensor_s3_prefix = "oli-tirs"
 
     meta["sensor_name"] = sensor_name
-    meta["_sensor_name"] = _sensor_name
+    meta["_sensor_s3_prefix"] = _sensor_s3_prefix
     meta["bands"] = get_bands_for_scene_meta(meta)
 
     return meta
