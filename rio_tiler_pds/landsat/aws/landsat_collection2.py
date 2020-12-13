@@ -72,6 +72,10 @@ class LandsatC2Reader(MultiBandReader):
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
+
+        if self.scene_params["collectionCategory"] == "RT":
+            raise ValueError("RT scenes not available in the usgs-landsat bucket")
+
         self.bands = self.scene_params["bands"]
         self.bounds = self.get_geometry()
 
