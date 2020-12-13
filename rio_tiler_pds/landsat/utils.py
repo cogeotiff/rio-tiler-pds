@@ -63,11 +63,42 @@ OLI_L1_BANDS: Tuple[str, ...] = ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8",
 
 TIRS_L1_BANDS: Tuple[str, ...] = ("B10", "B11")
 
-ETM_L1_BANDS: Tuple[str, ...] = ()
 
-TM_L1_BANDS: Tuple[str, ...] = ()
+ETM_L1_BANDS: Tuple[str, ...] = (
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6_VCID_1",
+    "B6_VCID_2",
+    "B7",
+    "B8",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SAA",
+    "SZA",
+    "VAA",
+    "VZA",
+)
 
-MSS_L1_BANDS: Tuple[str, ...] = ()
+TM_L1_BANDS: Tuple[str, ...] = (
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SAA",
+    "SZA",
+    "VAA",
+    "VZA",
+)
+
+MSS_L1_BANDS: Tuple[str, ...] = ("B4", "B5", "B6", "B7", "QA_PIXEL", "QA_RADSAT")
 
 
 def sceneid_parser(sceneid: str) -> Dict:
