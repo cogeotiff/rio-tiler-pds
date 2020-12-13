@@ -8,13 +8,13 @@ import rasterio
 from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler_pds.errors import InvalidLandsatSceneId
 from rio_tiler_pds.landsat.aws import LandsatC2Reader
-from rio_tiler_pds.landsat.aws.landsat_collection2 import (
+from rio_tiler_pds.landsat.utils import (
     OLI_TIRS_SR_BANDS,
     OLI_TIRS_ST_BANDS,
     TM_SR_BANDS,
     TM_ST_BANDS,
+    sceneid_parser,
 )
-from rio_tiler_pds.landsat.utils import sceneid_parser
 
 # sceneid,expected_content
 LANDSAT_SCENE_PARSER_TEST_CASES = (

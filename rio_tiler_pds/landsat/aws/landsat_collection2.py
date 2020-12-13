@@ -33,56 +33,6 @@ from rio_tiler.io import COGReader, MultiBandReader
 from ... import get_object
 from ..utils import sceneid_parser
 
-OLI_TIRS_SR_BANDS = (
-    "QA_PIXEL",
-    "QA_RADSAT",
-    "SR_B1",
-    "SR_B2",
-    "SR_B3",
-    "SR_B4",
-    "SR_B5",
-    "SR_B6",
-    "SR_B7",
-    "SR_QA_AEROSOL",
-)
-
-OLI_TIRS_ST_BANDS = (
-    "ST_ATRAN",
-    "ST_B10",
-    "ST_CDIST",
-    "ST_DRAD",
-    "ST_EMIS",
-    "ST_EMSD",
-    "ST_QA",
-    "ST_TRAD",
-    "ST_URAD",
-)
-
-TM_SR_BANDS = (
-    "QA_PIXEL",
-    "QA_RADSAT",
-    "SR_ATMOS_OPACITY",
-    "SR_B1",
-    "SR_B2",
-    "SR_B3",
-    "SR_B4",
-    "SR_B5",
-    "SR_B7",
-    "SR_CLOUD_QA",
-)
-
-TM_ST_BANDS = (
-    "ST_ATRAN",
-    "ST_B6",
-    "ST_CDIST",
-    "ST_DRAD",
-    "ST_EMIS",
-    "ST_EMSD",
-    "ST_QA",
-    "ST_TRAD",
-    "ST_URAD",
-)
-
 
 @attr.s
 class LandsatC2L2Reader(MultiBandReader):
@@ -122,25 +72,7 @@ class LandsatC2L2Reader(MultiBandReader):
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
-
-        processing_level = self.scene_params["processingCorrectionLevel"]
-        sensor_name = self.scene_params["sensor_name"]
-
-        if processing_level == "L2SR":
-            if sensor_name in ["oli-tirs", "oli"]:
-                self.bands = OLI_TIRS_SR_BANDS
-            elif sensor_name in ["tm", "etm"]:
-                self.bands = TM_SR_BANDS
-        else:
-            if sensor_name == "oli-tirs":
-                self.bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
-            elif sensor_name in ["tm", "etm"]:
-                self.bands = TM_SR_BANDS + TM_ST_BANDS
-
-        # TODO: add separate level 1 reader with TOA reflectances
-        # elif self.scene_params['processingCorrectionLevel'] in ['L1TP', 'L1GT', 'L1GS']:
-        #     self.bands = DEFAULT_L8L1_BANDS
-
+        self.bands = self.scene_params["bands"]
         self.bounds = self.get_geometry()
 
     def get_geometry(self):
