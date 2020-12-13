@@ -1,7 +1,7 @@
 """Landsat utility functions."""
 
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 import numpy
 
@@ -9,14 +9,64 @@ from rio_toa import brightness_temp, reflectance
 
 from ..errors import InvalidLandsatSceneId
 
+OLI_TIRS_SR_BANDS: Tuple[str, ...] = (
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SR_B1",
+    "SR_B2",
+    "SR_B3",
+    "SR_B4",
+    "SR_B5",
+    "SR_B6",
+    "SR_B7",
+    "SR_QA_AEROSOL",
+)
+
+OLI_TIRS_ST_BANDS: Tuple[str, ...] = (
+    "ST_ATRAN",
+    "ST_B10",
+    "ST_CDIST",
+    "ST_DRAD",
+    "ST_EMIS",
+    "ST_EMSD",
+    "ST_QA",
+    "ST_TRAD",
+    "ST_URAD",
+)
+
+TM_SR_BANDS: Tuple[str, ...] = (
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SR_ATMOS_OPACITY",
+    "SR_B1",
+    "SR_B2",
+    "SR_B3",
+    "SR_B4",
+    "SR_B5",
+    "SR_B7",
+    "SR_CLOUD_QA",
+)
+
+TM_ST_BANDS: Tuple[str, ...] = (
+    "ST_ATRAN",
+    "ST_B6",
+    "ST_CDIST",
+    "ST_DRAD",
+    "ST_EMIS",
+    "ST_EMSD",
+    "ST_QA",
+    "ST_TRAD",
+    "ST_URAD",
+)
+
 
 def sceneid_parser(sceneid: str) -> Dict:
-    """Parse Landsat 8 scene id.
+    """Parse Landsat id.
 
     Author @perrygeo - http://www.perrygeo.com
 
     Args:
-        sceneid (str): Landsat 8 sceneid.
+        sceneid (str): Landsat sceneid.
 
     Returns:
         dict: dictionary with metadata constructed from the sceneid.
@@ -28,8 +78,9 @@ def sceneid_parser(sceneid: str) -> Dict:
         >>> sceneid_parser('LC08_L1TP_016037_20170813_20170814_01_RT')
 
     """
-    collection_1 = r"^L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$"
-    if not re.match(collection_1, sceneid):
+    if not re.match(
+        r"^L[COTEM]0[0-9]_L[12]{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$", sceneid
+    ):
         raise InvalidLandsatSceneId("Could not match {}".format(sceneid))
 
     collection_pattern = (
@@ -63,8 +114,49 @@ def sceneid_parser(sceneid: str) -> Dict:
     meta["date"] = "{}-{}-{}".format(
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
     )
+    meta["_processingLevelNum"] = meta["processingCorrectionLevel"][1]
+
+    if meta["sensor"] == "C":
+        sensor_name = "oli-tirs"
+    elif meta["sensor"] == "O":
+        sensor_name = "oli"
+    elif meta["sensor"] == "T" and int(meta["satellite"]) >= 8:
+        sensor_name = "tirs"
+    elif meta["sensor"] == "E":
+        sensor_name = "etm"
+    elif meta["sensor"] == "T" and int(meta["satellite"]) < 8:
+        sensor_name = "tm"
+    elif meta["sensor"] == "M":
+        sensor_name = "mss"
+
+    meta["sensor_name"] = sensor_name
+    meta["bands"] = get_bands_for_scene_meta(meta)
 
     return meta
+
+
+def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:
+    """Get available Landsat bands given scene metadata
+    """
+    sensor_name = meta["sensor_name"]
+
+    if meta["processingCorrectionLevel"] == "L2SR":
+        if sensor_name in ["oli-tirs", "oli"]:
+            bands = OLI_TIRS_SR_BANDS
+        elif sensor_name in ["tm", "etm"]:
+            bands = TM_SR_BANDS
+
+    elif meta["processingCorrectionLevel"] == "L2SP":
+        if sensor_name == "oli-tirs":
+            bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
+        elif sensor_name in ["tm", "etm"]:
+            bands = TM_SR_BANDS + TM_ST_BANDS
+
+    # TODO: improve list of bands in future PRs
+    else:
+        bands = ()
+
+    return bands
 
 
 def dn_to_toa(arr: numpy.ndarray, band: str, metadata: Dict) -> numpy.ndarray:
