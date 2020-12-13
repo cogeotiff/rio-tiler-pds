@@ -24,7 +24,7 @@ import json
 from typing import Dict, Tuple, Type
 
 import attr
-import boto3
+from botocore.exceptions import ClientError
 from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
@@ -33,8 +33,6 @@ from rio_tiler.io import COGReader, MultiBandReader
 
 from ... import get_object
 from ..utils import sceneid_parser
-
-s3_client = boto3.client("s3")
 
 
 @attr.s
@@ -97,10 +95,13 @@ class LandsatC2Reader(MultiBandReader):
             self.stac_item = json.loads(
                 get_object(self._hostname, stac_key, request_pays=True)
             )
-        except s3_client.exceptions.NoSuchKey:
-            raise ValueError(
-                "stac_item not found. RT scenes may not exist in usgs-landsat bucket."
-            )
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchKey":
+                raise ValueError(
+                    "stac_item not found. Some RT scenes may not exist in usgs-landsat bucket."
+                )
+            else:
+                raise e
 
         return self.stac_item["bbox"]
 
