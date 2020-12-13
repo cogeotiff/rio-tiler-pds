@@ -1,4 +1,24 @@
-"""AWS Landsat Collection 2 reader."""
+"""AWS Landsat Collection 2 reader.
+
+Notes:
+  - For collection 2, level 2, ETM and TM have the same bands
+  - There is no level 2 for MSS sensor
+  - processing_level for level 2 are `L2SR` or `L2SP`
+  -  The L2SR includes:
+    - Surface Reflectance (SR)
+    - angle coefficients file,
+    - Quality Assessment (QA) Bands
+  - The L2SP includes
+    - Surface Reflectance (SR)
+    - Surface Temperature (ST)
+    - ST intermediate bands
+    - angle coefficients file
+    - Quality Assessment (QA) Band.
+
+Links:
+  - https://www.usgs.gov/core-science-systems/nli/landsat/landsat-collection-2
+
+"""
 
 import json
 from typing import Any, Dict, Tuple, Type
@@ -38,7 +58,6 @@ OLI_TIRS_ST_BANDS = (
     "ST_URAD",
 )
 
-# For collection 2, level 2, ETM and TM have the same bands
 TM_SR_BANDS = (
     "QA_PIXEL",
     "QA_RADSAT",
@@ -53,8 +72,6 @@ TM_SR_BANDS = (
 )
 
 TM_ST_BANDS = (
-    "QA_PIXEL",
-    "QA_RADSAT",
     "ST_ATRAN",
     "ST_B6",
     "ST_CDIST",
@@ -100,38 +117,34 @@ class LandsatC2L2Reader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "usgs-landsat"
-    _prefix: str = "collection02/level-{_processingLevelNum}/standard/{_sensor}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
+    _prefix: str = "collection02/level-{_processingLevelNum}/standard/{sensor_name}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
 
         processing_level = self.scene_params["processingCorrectionLevel"]
-        sensor = self.scene_params["_sensor"]
+        sensor_name = self.scene_params["sensor_name"]
 
-        # For collection 2, level 2, ETM and TM have the same bands
         if processing_level == "L2SR":
-            if sensor == "oli-tirs":
+            if sensor_name in ["oli-tirs", "oli"]:
                 self.bands = OLI_TIRS_SR_BANDS
-            elif sensor == "tm":
-                self.bands = TM_SR_BANDS
-            elif sensor == "etm":
+            elif sensor_name in ["tm", "etm"]:
                 self.bands = TM_SR_BANDS
         else:
-            if sensor == "oli-tirs":
+            if sensor_name == "oli-tirs":
                 self.bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
-            elif sensor == "tm":
+            elif sensor_name in ["tm", "etm"]:
                 self.bands = TM_SR_BANDS + TM_ST_BANDS
-            elif sensor == "etm":
-                self.bands = TM_SR_BANDS + TM_ST_BANDS
+
         # TODO: add separate level 1 reader with TOA reflectances
         # elif self.scene_params['processingCorrectionLevel'] in ['L1TP', 'L1GT', 'L1GS']:
         #     self.bands = DEFAULT_L8L1_BANDS
 
-        self._get_geometry()
+        self.bounds = self.get_geometry()
 
-    def _get_geometry(self):
-        # TODO: fetch STAC to get bounds (self.bounds must be set)
+    def get_geometry(self):
+        """Fetch geometry info for the scene."""
         # Allow custom function for users who want to use the WRS2 grid and
         # avoid this GET request.
         prefix = self._prefix.format(**self.scene_params)
@@ -143,7 +156,7 @@ class LandsatC2L2Reader(MultiBandReader):
         self.stac_item = json.loads(
             get_object(self._hostname, f"{prefix}_SR_stac.json", request_pays=True)
         )
-        self.bounds = self.stac_item["bbox"]
+        return self.stac_item["bbox"]
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
