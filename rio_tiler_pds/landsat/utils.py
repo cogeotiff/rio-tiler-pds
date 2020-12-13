@@ -59,6 +59,12 @@ TM_ST_BANDS: Tuple[str, ...] = (
     "ST_URAD",
 )
 
+ETM_L1_BANDS: Tuple[str, ...] = ()
+
+TM_L1_BANDS: Tuple[str, ...] = ()
+
+MSS_L1_BANDS: Tuple[str, ...] = ()
+
 
 def sceneid_parser(sceneid: str) -> Dict:
     """Parse Landsat id.
