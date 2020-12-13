@@ -1,5 +1,7 @@
 # Usage
 
+The neighboring documentation pages include more information about each specific dataset, plus an example.
+
 ## Requester-Pays
 
 Some data are stored on AWS requester-pays buckets (you are charged for LIST/GET requests and data transfer outside the bucket region). For those datasets you need to set `AWS_REQUEST_PAYER="requester"` environement variable to tell AWS S3 that you agree with requester-pays principle.
