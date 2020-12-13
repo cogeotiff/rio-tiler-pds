@@ -24,6 +24,7 @@ import json
 from typing import Dict, Tuple, Type
 
 import attr
+import boto3
 from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
@@ -32,6 +33,8 @@ from rio_tiler.io import COGReader, MultiBandReader
 
 from ... import get_object
 from ..utils import sceneid_parser
+
+s3_client = boto3.client("s3")
 
 
 @attr.s
@@ -72,10 +75,6 @@ class LandsatC2Reader(MultiBandReader):
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
         self.scene_params = sceneid_parser(self.sceneid)
-
-        if self.scene_params["collectionCategory"] == "RT":
-            raise ValueError("RT scenes not available in the usgs-landsat bucket")
-
         self.bands = self.scene_params["bands"]
         self.bounds = self.get_geometry()
 
@@ -94,9 +93,20 @@ class LandsatC2Reader(MultiBandReader):
             # always exist, the ST might not exist based on the scene.
             stac_key = f"{prefix}_SR_stac.json"
 
-        self.stac_item = json.loads(
-            get_object(self._hostname, stac_key, request_pays=True)
-        )
+            import boto3
+
+            boto3.s3.exceptions
+            s3_client.ex
+
+        try:
+            self.stac_item = json.loads(
+                get_object(self._hostname, stac_key, request_pays=True)
+            )
+        except s3_client.exceptions.NoSuchKey:
+            raise ValueError(
+                "stac_item not found. RT scenes may not exist in usgs-landsat bucket."
+            )
+
         return self.stac_item["bbox"]
 
     def _get_band_url(self, band: str) -> str:
