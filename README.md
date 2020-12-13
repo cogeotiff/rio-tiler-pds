@@ -52,16 +52,25 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 
 ## Datasets
 
-Data | Level/Product | Format | Owner | Region | Bucket Type | Link
---- | --- | --- | --- | --- | --- | ---
-Sentinel 2 | L1C | JPEG2000 | Sinergise / AWS | eu-central-1 | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
-Sentinel 2 | L2A | JPEG2000 | Sinergise / AWS | eu-central-1  | **Requester-pays** | https://registry.opendata.aws/sentinel-2/
-Sentinel 2 | L2A | COG | Digital Earth Africa / AWS | us-west-2  | Public | https://www.digitalearthafrica.org/news/operational-and-ready-use-satellite-data-now-available-across-africa
-Sentinel 1 | L1C | COG (Internal GCPS) | Sinergise / AWS | eu-central-1 | **Requester-pays** | https://registry.opendata.aws/sentinel-1/
-Landsat 8  | L1 | GTiff (External Overviews) | Planet / AWS | us-west-2 | Public | https://registry.opendata.aws/landsat-8/
-CBERS 4/4A | L2/L4 | COG | AMS Kepler / AWS | us-east-1 | **Requester-pays** | https://registry.opendata.aws/cbers/
-MODIS (modis-pds) | MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA | GTiff (External Overviews) | - | us-west-2 | Public | https://docs.opendata.aws/modis-pds/readme.html
-MODIS (astraea-opendata) | MCD43A4, MOD11A1, MOD13A1, MYD11A1 MYD13A1 | COG | Astraea / AWS | us-west-2 | **Requester-pays** | https://registry.opendata.aws/modis-astraea/
+| Data                                      | Level/Product                               | Format                     | Owner                      | Region       | Bucket Type        |
+| ----------------------------------------- | ------------------------------------------- | -------------------------- | -------------------------- | ------------ | ------------------ |
+| [Sentinel 2][s2_l1c_jp2]                  | L1C                                         | JPEG2000                   | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
+| [Sentinel 2][s2_l2a_jp2]                  | L2A                                         | JPEG2000                   | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
+| [Sentinel 2][s2_l2a_cog]                  | L2A                                         | COG                        | Digital Earth Africa / AWS | us-west-2    | Public             |
+| [Sentinel 1][s1_l1c_cog]                  | L1C                                         | COG (Internal GCPS)        | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
+| [Landsat 8][l8_l1_cog]                    | L1                                          | GTiff (External Overviews) | Planet / AWS               | us-west-2    | Public             |
+| [CBERS 4/4A][cbers_cog]                   | L2/L4                                       | COG                        | AMS Kepler / AWS           | us-east-1    | **Requester-pays** |
+| [MODIS (modis-pds)][modis_pds]            | MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA | GTiff (External Overviews) | -                          | us-west-2    | Public             |
+| [MODIS (astraea-opendata)][modis_astraea] | MCD43A4, MOD11A1, MOD13A1, MYD11A1 MYD13A1  | COG                        | Astraea / AWS              | us-west-2    | **Requester-pays** |
+
+[s2_l1c_jp2]: https://registry.opendata.aws/sentinel-2/
+[s2_l2a_jp2]: https://registry.opendata.aws/sentinel-2/
+[s2_l2a_cog]: https://registry.opendata.aws/sentinel-2-l2a-cogs/
+[s1_l1c_cog]: https://registry.opendata.aws/sentinel-1/
+[l8_l1_cog]: https://registry.opendata.aws/landsat-8/
+[cbers_cog]: https://registry.opendata.aws/cbers/
+[modis_pds]: https://docs.opendata.aws/modis-pds/readme.html
+[modis_astraea]: https://registry.opendata.aws/modis-astraea/
 
 **Adding more dataset**:
 
