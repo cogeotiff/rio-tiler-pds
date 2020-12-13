@@ -24,14 +24,19 @@ extra:
 # Layout
 nav:
   - Home: 'index.md'
-  - Usage: 'usage.md'
+  - Usage:
+    - Overview: usage/overview.md
+    - Sentinel: usage/sentinel.md
+    - Landsat: usage/landsat.md
+    - CBERS: usage/cbers.md
+    - MODIS: usage/modis.md
   - Development - Contributing: 'contributing.md'
   - Release: 'release-notes.md'
   - API:
-    - cbers: API/cbers.md
-    - sentinel: API/sentinel.md
-    - landsat: API/landsat.md
-    - modis: API/modis.md
+    - Sentinel: API/sentinel.md
+    - Landsat: API/landsat.md
+    - CBERS: API/cbers.md
+    - MODIS: API/modis.md
 
 # Theme
 theme:
