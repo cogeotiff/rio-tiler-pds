@@ -39,6 +39,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-31",
             "_processingLevelNum": "2",
             "sensor_name": "oli-tirs",
+            "bands": OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS,
         },
     ),
     # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
@@ -62,6 +63,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-31",
             "_processingLevelNum": "2",
             "sensor_name": "oli-tirs",
+            "bands": OLI_TIRS_SR_BANDS,
         },
     ),
     # Collection 2 Level 2 TM SP (both SR and ST)
@@ -85,6 +87,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2011-10-18",
             "_processingLevelNum": "2",
             "sensor_name": "tm",
+            "bands": TM_SR_BANDS + TM_ST_BANDS,
         },
     ),
     # Collection 2 Level 2 TM SR (no ST)
@@ -108,6 +111,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2011-09-29",
             "_processingLevelNum": "2",
             "sensor_name": "tm",
+            "bands": TM_SR_BANDS,
         },
     ),
     # Collection 2 Level 2 ETM SP (both SR and ST)
@@ -131,6 +135,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-26",
             "_processingLevelNum": "2",
             "sensor_name": "etm",
+            "bands": TM_SR_BANDS + TM_ST_BANDS,
         },
     ),
     # Collection 2 Level 2 ETM SR (no ST)
@@ -154,6 +159,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-30",
             "_processingLevelNum": "2",
             "sensor_name": "etm",
+            "bands": TM_SR_BANDS,
         },
     ),
 )
