@@ -24,6 +24,7 @@ import json
 from typing import Dict, Tuple, Type
 
 import attr
+from botocore.exceptions import ClientError
 from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
@@ -67,7 +68,7 @@ class LandsatC2Reader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "usgs-landsat"
-    _prefix: str = "collection02/level-{_processingLevelNum}/standard/{sensor_name}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
+    _prefix: str = "collection02/level-{_processingLevelNum}/standard/{_sensor_s3_prefix}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
@@ -81,13 +82,27 @@ class LandsatC2Reader(MultiBandReader):
         # avoid this GET request.
         prefix = self._prefix.format(**self.scene_params)
 
-        # This fetches the Surface Reflectance (SR) STAC item.
-        # There are separate STAC items for Surface Reflectance and Surface
-        # Temperature (ST), but they have the same geometry. The SR should
-        # always exist, the ST might not exist based on the scene.
-        self.stac_item = json.loads(
-            get_object(self._hostname, f"{prefix}_SR_stac.json", request_pays=True)
-        )
+        if self.scene_params["_processingLevelNum"] == "1":
+            stac_key = f"{prefix}_stac.json"
+        else:
+            # This fetches the Surface Reflectance (SR) STAC item.
+            # There are separate STAC items for Surface Reflectance and Surface
+            # Temperature (ST), but they have the same geometry. The SR should
+            # always exist, the ST might not exist based on the scene.
+            stac_key = f"{prefix}_SR_stac.json"
+
+        try:
+            self.stac_item = json.loads(
+                get_object(self._hostname, stac_key, request_pays=True)
+            )
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchKey":
+                raise ValueError(
+                    "stac_item not found. Some RT scenes may not exist in usgs-landsat bucket."
+                )
+            else:
+                raise e
+
         return self.stac_item["bbox"]
 
     def _get_band_url(self, band: str) -> str:

@@ -9,7 +9,7 @@ from rio_toa import brightness_temp, reflectance
 
 from ..errors import InvalidLandsatSceneId
 
-OLI_TIRS_SR_BANDS: Tuple[str, ...] = (
+OLI_SR_BANDS: Tuple[str, ...] = (
     "QA_PIXEL",
     "QA_RADSAT",
     "SR_B1",
@@ -22,7 +22,7 @@ OLI_TIRS_SR_BANDS: Tuple[str, ...] = (
     "SR_QA_AEROSOL",
 )
 
-OLI_TIRS_ST_BANDS: Tuple[str, ...] = (
+TIRS_ST_BANDS: Tuple[str, ...] = (
     "ST_ATRAN",
     "ST_B10",
     "ST_CDIST",
@@ -58,6 +58,60 @@ TM_ST_BANDS: Tuple[str, ...] = (
     "ST_TRAD",
     "ST_URAD",
 )
+
+OLI_L1_BANDS: Tuple[str, ...] = ("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9")
+
+TIRS_L1_BANDS: Tuple[str, ...] = ("B10", "B11")
+
+OLI_L1_QA_BANDS: Tuple[str, ...] = (
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SAA",
+    "SZA",
+    "VAA",
+    "VZA",
+)
+
+TIRS_L1_QA_BANDS: Tuple[str, ...] = (
+    "QA_PIXEL",
+    "QA_RADSAT",
+)
+
+ETM_L1_BANDS: Tuple[str, ...] = (
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6_VCID_1",
+    "B6_VCID_2",
+    "B7",
+    "B8",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SAA",
+    "SZA",
+    "VAA",
+    "VZA",
+)
+
+TM_L1_BANDS: Tuple[str, ...] = (
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "QA_PIXEL",
+    "QA_RADSAT",
+    "SAA",
+    "SZA",
+    "VAA",
+    "VZA",
+)
+
+MSS_L1_BANDS: Tuple[str, ...] = ("B4", "B5", "B6", "B7", "QA_PIXEL", "QA_RADSAT")
 
 
 def sceneid_parser(sceneid: str) -> Dict:
@@ -129,32 +183,49 @@ def sceneid_parser(sceneid: str) -> Dict:
     elif meta["sensor"] == "M":
         sensor_name = "mss"
 
+    # S3 paths always use oli-tirs
+    _sensor_s3_prefix = sensor_name
+    if _sensor_s3_prefix in ["oli", "tirs"]:
+        _sensor_s3_prefix = "oli-tirs"
+
     meta["sensor_name"] = sensor_name
+    meta["_sensor_s3_prefix"] = _sensor_s3_prefix
     meta["bands"] = get_bands_for_scene_meta(meta)
 
     return meta
 
 
-def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:
+def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:  # noqa: C901
     """Get available Landsat bands given scene metadata
     """
     sensor_name = meta["sensor_name"]
 
     if meta["processingCorrectionLevel"] == "L2SR":
         if sensor_name in ["oli-tirs", "oli"]:
-            bands = OLI_TIRS_SR_BANDS
+            bands = OLI_SR_BANDS
         elif sensor_name in ["tm", "etm"]:
             bands = TM_SR_BANDS
 
     elif meta["processingCorrectionLevel"] == "L2SP":
         if sensor_name == "oli-tirs":
-            bands = OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
+            bands = OLI_SR_BANDS + TIRS_ST_BANDS
         elif sensor_name in ["tm", "etm"]:
             bands = TM_SR_BANDS + TM_ST_BANDS
 
-    # TODO: improve list of bands in future PRs
+    # Level 1
     else:
-        bands = ()
+        if sensor_name == "oli":
+            bands = OLI_L1_BANDS + OLI_L1_QA_BANDS
+        elif sensor_name == "tirs":
+            bands = TIRS_L1_BANDS + TIRS_L1_QA_BANDS
+        elif sensor_name == "oli-tirs":
+            bands = OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS
+        elif sensor_name == "etm":
+            bands = ETM_L1_BANDS
+        elif sensor_name == "tm":
+            bands = TM_L1_BANDS
+        elif sensor_name == "mss":
+            bands = MSS_L1_BANDS
 
     return bands
 

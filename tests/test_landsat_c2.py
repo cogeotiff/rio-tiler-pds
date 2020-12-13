@@ -9,8 +9,15 @@ from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
 from rio_tiler_pds.errors import InvalidLandsatSceneId
 from rio_tiler_pds.landsat.aws import LandsatC2Reader
 from rio_tiler_pds.landsat.utils import (
-    OLI_TIRS_SR_BANDS,
-    OLI_TIRS_ST_BANDS,
+    ETM_L1_BANDS,
+    MSS_L1_BANDS,
+    OLI_L1_BANDS,
+    OLI_L1_QA_BANDS,
+    OLI_SR_BANDS,
+    TIRS_L1_BANDS,
+    TIRS_L1_QA_BANDS,
+    TIRS_ST_BANDS,
+    TM_L1_BANDS,
     TM_SR_BANDS,
     TM_ST_BANDS,
     sceneid_parser,
@@ -39,7 +46,8 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-31",
             "_processingLevelNum": "2",
             "sensor_name": "oli-tirs",
-            "bands": OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS,
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": OLI_SR_BANDS + TIRS_ST_BANDS,
         },
     ),
     # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
@@ -63,7 +71,8 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-31",
             "_processingLevelNum": "2",
             "sensor_name": "oli-tirs",
-            "bands": OLI_TIRS_SR_BANDS,
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": OLI_SR_BANDS,
         },
     ),
     # Collection 2 Level 2 TM SP (both SR and ST)
@@ -87,6 +96,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2011-10-18",
             "_processingLevelNum": "2",
             "sensor_name": "tm",
+            "_sensor_s3_prefix": "tm",
             "bands": TM_SR_BANDS + TM_ST_BANDS,
         },
     ),
@@ -111,6 +121,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2011-09-29",
             "_processingLevelNum": "2",
             "sensor_name": "tm",
+            "_sensor_s3_prefix": "tm",
             "bands": TM_SR_BANDS,
         },
     ),
@@ -135,6 +146,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-26",
             "_processingLevelNum": "2",
             "sensor_name": "etm",
+            "_sensor_s3_prefix": "etm",
             "bands": TM_SR_BANDS + TM_ST_BANDS,
         },
     ),
@@ -159,7 +171,308 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "date": "2020-10-30",
             "_processingLevelNum": "2",
             "sensor_name": "etm",
+            "_sensor_s3_prefix": "etm",
             "bands": TM_SR_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 OLI, L1GT
+    (
+        "LO08_L1GT_108030_20201114_20201119_02_T2",
+        {
+            "sensor": "O",
+            "satellite": "08",
+            "processingCorrectionLevel": "L1GT",
+            "path": "108",
+            "row": "030",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "11",
+            "acquisitionDay": "14",
+            "processingYear": "2020",
+            "processingMonth": "11",
+            "processingDay": "19",
+            "collectionNumber": "02",
+            "collectionCategory": "T2",
+            "scene": "LO08_L1GT_108030_20201114_20201119_02_T2",
+            "date": "2020-11-14",
+            "_processingLevelNum": "1",
+            "sensor_name": "oli",
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": OLI_L1_BANDS + OLI_L1_QA_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 OLI, L1TP
+    (
+        "LO08_L1TP_108070_20201114_20201119_02_T1",
+        {
+            "sensor": "O",
+            "satellite": "08",
+            "processingCorrectionLevel": "L1TP",
+            "path": "108",
+            "row": "070",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "11",
+            "acquisitionDay": "14",
+            "processingYear": "2020",
+            "processingMonth": "11",
+            "processingDay": "19",
+            "collectionNumber": "02",
+            "collectionCategory": "T1",
+            "scene": "LO08_L1TP_108070_20201114_20201119_02_T1",
+            "date": "2020-11-14",
+            "_processingLevelNum": "1",
+            "sensor_name": "oli",
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": OLI_L1_BANDS + OLI_L1_QA_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 OLI-TIRS, L1GT
+    (
+        "LC08_L1GT_229113_20201129_20201211_02_T2",
+        {
+            "sensor": "C",
+            "satellite": "08",
+            "processingCorrectionLevel": "L1GT",
+            "path": "229",
+            "row": "113",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "11",
+            "acquisitionDay": "29",
+            "processingYear": "2020",
+            "processingMonth": "12",
+            "processingDay": "11",
+            "collectionNumber": "02",
+            "collectionCategory": "T2",
+            "scene": "LC08_L1GT_229113_20201129_20201211_02_T2",
+            "date": "2020-11-29",
+            "_processingLevelNum": "1",
+            "sensor_name": "oli-tirs",
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 OLI-TIRS, L1TP
+    (
+        "LC08_L1TP_092017_20201129_20201210_02_T1",
+        {
+            "sensor": "C",
+            "satellite": "08",
+            "processingCorrectionLevel": "L1TP",
+            "path": "092",
+            "row": "017",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "11",
+            "acquisitionDay": "29",
+            "processingYear": "2020",
+            "processingMonth": "12",
+            "processingDay": "10",
+            "collectionNumber": "02",
+            "collectionCategory": "T1",
+            "scene": "LC08_L1TP_092017_20201129_20201210_02_T1",
+            "date": "2020-11-29",
+            "_processingLevelNum": "1",
+            "sensor_name": "oli-tirs",
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 TIRS, L1GT
+    (
+        "LT08_L1GT_019213_20201130_20201210_02_T2",
+        {
+            "sensor": "T",
+            "satellite": "08",
+            "processingCorrectionLevel": "L1GT",
+            "path": "019",
+            "row": "213",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "11",
+            "acquisitionDay": "30",
+            "processingYear": "2020",
+            "processingMonth": "12",
+            "processingDay": "10",
+            "collectionNumber": "02",
+            "collectionCategory": "T2",
+            "scene": "LT08_L1GT_019213_20201130_20201210_02_T2",
+            "date": "2020-11-30",
+            "_processingLevelNum": "1",
+            "sensor_name": "tirs",
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": TIRS_L1_BANDS + TIRS_L1_QA_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 ETM, L1GS
+    (
+        "LE07_L1GS_189036_20201129_20201129_02_RT",
+        {
+            "sensor": "E",
+            "satellite": "07",
+            "processingCorrectionLevel": "L1GS",
+            "path": "189",
+            "row": "036",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "11",
+            "acquisitionDay": "29",
+            "processingYear": "2020",
+            "processingMonth": "11",
+            "processingDay": "29",
+            "collectionNumber": "02",
+            "collectionCategory": "RT",
+            "scene": "LE07_L1GS_189036_20201129_20201129_02_RT",
+            "date": "2020-11-29",
+            "_processingLevelNum": "1",
+            "sensor_name": "etm",
+            "_sensor_s3_prefix": "etm",
+            "bands": ETM_L1_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 ETM, L1GT
+    (
+        "LE07_L1GT_023046_20201204_20201206_02_RT",
+        {
+            "sensor": "E",
+            "satellite": "07",
+            "processingCorrectionLevel": "L1GT",
+            "path": "023",
+            "row": "046",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "12",
+            "acquisitionDay": "04",
+            "processingYear": "2020",
+            "processingMonth": "12",
+            "processingDay": "06",
+            "collectionNumber": "02",
+            "collectionCategory": "RT",
+            "scene": "LE07_L1GT_023046_20201204_20201206_02_RT",
+            "date": "2020-12-04",
+            "_processingLevelNum": "1",
+            "sensor_name": "etm",
+            "_sensor_s3_prefix": "etm",
+            "bands": ETM_L1_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 ETM, L1TP
+    (
+        "LE07_L1TP_030042_20201205_20201205_02_RT",
+        {
+            "sensor": "E",
+            "satellite": "07",
+            "processingCorrectionLevel": "L1TP",
+            "path": "030",
+            "row": "042",
+            "acquisitionYear": "2020",
+            "acquisitionMonth": "12",
+            "acquisitionDay": "05",
+            "processingYear": "2020",
+            "processingMonth": "12",
+            "processingDay": "05",
+            "collectionNumber": "02",
+            "collectionCategory": "RT",
+            "scene": "LE07_L1TP_030042_20201205_20201205_02_RT",
+            "date": "2020-12-05",
+            "_processingLevelNum": "1",
+            "sensor_name": "etm",
+            "_sensor_s3_prefix": "etm",
+            "bands": ETM_L1_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 TM, L1GS
+    (
+        "LT05_L1GS_127054_20111111_20200820_02_T2",
+        {
+            "sensor": "T",
+            "satellite": "05",
+            "processingCorrectionLevel": "L1GS",
+            "path": "127",
+            "row": "054",
+            "acquisitionYear": "2011",
+            "acquisitionMonth": "11",
+            "acquisitionDay": "11",
+            "processingYear": "2020",
+            "processingMonth": "08",
+            "processingDay": "20",
+            "collectionNumber": "02",
+            "collectionCategory": "T2",
+            "scene": "LT05_L1GS_127054_20111111_20200820_02_T2",
+            "date": "2011-11-11",
+            "_processingLevelNum": "1",
+            "sensor_name": "tm",
+            "_sensor_s3_prefix": "tm",
+            "bands": TM_L1_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 TM, L1TP
+    (
+        "LT05_L1TP_014032_20111018_20200820_02_T1",
+        {
+            "sensor": "T",
+            "satellite": "05",
+            "processingCorrectionLevel": "L1TP",
+            "path": "014",
+            "row": "032",
+            "acquisitionYear": "2011",
+            "acquisitionMonth": "10",
+            "acquisitionDay": "18",
+            "processingYear": "2020",
+            "processingMonth": "08",
+            "processingDay": "20",
+            "collectionNumber": "02",
+            "collectionCategory": "T1",
+            "scene": "LT05_L1TP_014032_20111018_20200820_02_T1",
+            "date": "2011-10-18",
+            "_processingLevelNum": "1",
+            "sensor_name": "tm",
+            "_sensor_s3_prefix": "tm",
+            "bands": TM_L1_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 MSS, L1GS
+    (
+        "LM05_L1GS_176025_20120901_20200820_02_T2",
+        {
+            "sensor": "M",
+            "satellite": "05",
+            "processingCorrectionLevel": "L1GS",
+            "path": "176",
+            "row": "025",
+            "acquisitionYear": "2012",
+            "acquisitionMonth": "09",
+            "acquisitionDay": "01",
+            "processingYear": "2020",
+            "processingMonth": "08",
+            "processingDay": "20",
+            "collectionNumber": "02",
+            "collectionCategory": "T2",
+            "scene": "LM05_L1GS_176025_20120901_20200820_02_T2",
+            "date": "2012-09-01",
+            "_processingLevelNum": "1",
+            "sensor_name": "mss",
+            "_sensor_s3_prefix": "mss",
+            "bands": MSS_L1_BANDS,
+        },
+    ),
+    # Collection 2 Level 1 MSS, L1TP
+    (
+        "LM05_L1TP_015032_20121230_20200820_02_T2",
+        {
+            "sensor": "M",
+            "satellite": "05",
+            "processingCorrectionLevel": "L1TP",
+            "path": "015",
+            "row": "032",
+            "acquisitionYear": "2012",
+            "acquisitionMonth": "12",
+            "acquisitionDay": "30",
+            "processingYear": "2020",
+            "processingMonth": "08",
+            "processingDay": "20",
+            "collectionNumber": "02",
+            "collectionCategory": "T2",
+            "scene": "LM05_L1TP_015032_20121230_20200820_02_T2",
+            "date": "2012-12-30",
+            "_processingLevelNum": "1",
+            "sensor_name": "mss",
+            "_sensor_s3_prefix": "mss",
+            "bands": MSS_L1_BANDS,
         },
     ),
 )
@@ -224,7 +537,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert landsat.minzoom == 5
         assert landsat.maxzoom == 12
         assert len(landsat.bounds) == 4
-        assert landsat.bands == OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
+        assert landsat.bands == OLI_SR_BANDS + TIRS_ST_BANDS
 
         with pytest.raises(MissingBands):
             landsat.info()
@@ -237,9 +550,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert metadata["band_descriptions"] == [("SR_B5", "")]
 
         metadata = landsat.info(bands=landsat.bands)
-        assert len(metadata["band_metadata"]) == len(
-            OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS
-        )
+        assert len(metadata["band_metadata"]) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
 
         with pytest.raises(MissingBands):
             landsat.stats()
@@ -248,7 +559,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert stats["SR_B1"]["percentiles"] == [7926, 49017]
 
         stats = landsat.stats(bands=landsat.bands)
-        assert len(stats.items()) == len(OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS)
+        assert len(stats.items()) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
         assert list(stats) == list(landsat.bands)
 
         stats = landsat.stats(bands="SR_B1", hist_options=dict(bins=20))
@@ -464,9 +775,9 @@ def test_LandsatC2L2Reader(rio, get_object):
 
 C2_SENSOR_TEST_CASES = [
     # Collection 2 Level 2 OLI-TIRS 8 SP (both SR and ST)
-    ("LC08_L2SP_001062_20201031_20201106_02_T2", OLI_TIRS_SR_BANDS + OLI_TIRS_ST_BANDS),
+    ("LC08_L2SP_001062_20201031_20201106_02_T2", OLI_SR_BANDS + TIRS_ST_BANDS),
     # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
-    ("LC08_L2SR_122108_20201031_20201106_02_T2", OLI_TIRS_SR_BANDS),
+    ("LC08_L2SR_122108_20201031_20201106_02_T2", OLI_SR_BANDS),
     # Collection 2 Level 2 TM SP (both SR and ST)
     ("LT05_L2SP_014032_20111018_20200820_02_T1", TM_SR_BANDS + TM_ST_BANDS),
     # Collection 2 Level 2 TM SR (no ST)
