@@ -81,12 +81,17 @@ class LandsatC2Reader(MultiBandReader):
         # avoid this GET request.
         prefix = self._prefix.format(**self.scene_params)
 
-        # This fetches the Surface Reflectance (SR) STAC item.
-        # There are separate STAC items for Surface Reflectance and Surface
-        # Temperature (ST), but they have the same geometry. The SR should
-        # always exist, the ST might not exist based on the scene.
+        if self.scene_params["_processingLevelNum"] == "1":
+            stac_key = f"{prefix}_stac.json"
+        else:
+            # This fetches the Surface Reflectance (SR) STAC item.
+            # There are separate STAC items for Surface Reflectance and Surface
+            # Temperature (ST), but they have the same geometry. The SR should
+            # always exist, the ST might not exist based on the scene.
+            stac_key = f"{prefix}_SR_stac.json"
+
         self.stac_item = json.loads(
-            get_object(self._hostname, f"{prefix}_SR_stac.json", request_pays=True)
+            get_object(self._hostname, stac_key, request_pays=True)
         )
         return self.stac_item["bbox"]
 
