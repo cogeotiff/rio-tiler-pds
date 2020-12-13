@@ -323,6 +323,7 @@ def test_landsat_id_c1_valid():
         "date": "2017-04-10",
         "_processingLevelNum": "1",
         "sensor_name": "oli-tirs",
+        "bands": (),
     }
 
     assert sceneid_parser(scene) == expected_content

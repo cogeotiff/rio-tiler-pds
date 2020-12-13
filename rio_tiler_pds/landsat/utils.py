@@ -152,6 +152,10 @@ def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:
         elif sensor_name in ["tm", "etm"]:
             bands = TM_SR_BANDS + TM_ST_BANDS
 
+    # TODO: improve list of bands in future PRs
+    else:
+        bands = ()
+
     return bands
 
 
