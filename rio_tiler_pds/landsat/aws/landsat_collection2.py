@@ -30,9 +30,8 @@ from morecantile import TileMatrixSet
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import COGReader, MultiBandReader
-
-from ... import get_object
-from ..utils import sceneid_parser
+from rio_tiler_pds.landsat.utils import sceneid_parser
+from rio_tiler_pds.utils import get_object
 
 
 @attr.s

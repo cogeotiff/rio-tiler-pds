@@ -1,4 +1,6 @@
 """rio-tiler-pds.modis.aws"""
 
-from .modis_astraea import MODISReader as MODISASTRAEAReader  # noqa
-from .modis_pds import MODISReader as MODISPDSReader  # noqa
+# fmt: off
+from rio_tiler_pds.modis.aws.modis_astraea import MODISReader as MODISASTRAEAReader # noqa isort:skip
+# fmt: on
+from rio_tiler_pds.modis.aws.modis_pds import MODISReader as MODISPDSReader  # noqa

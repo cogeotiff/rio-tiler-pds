@@ -8,8 +8,7 @@ from morecantile import TileMatrixSet
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import COGReader, MultiBandReader
-
-from ..utils import sceneid_parser
+from rio_tiler_pds.cbers.utils import sceneid_parser
 
 
 @attr.s

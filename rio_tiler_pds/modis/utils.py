@@ -3,7 +3,7 @@
 import re
 from typing import Any, Dict
 
-from ..errors import InvalidMODISSceneId
+from rio_tiler_pds.errors import InvalidMODISSceneId
 
 
 def sceneid_parser(sceneid: str) -> Dict:

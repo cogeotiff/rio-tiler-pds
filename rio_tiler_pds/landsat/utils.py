@@ -5,9 +5,8 @@ from typing import Any, Dict, Tuple
 
 import numpy
 
+from rio_tiler_pds.errors import InvalidLandsatSceneId
 from rio_toa import brightness_temp, reflectance
-
-from ..errors import InvalidLandsatSceneId
 
 OLI_SR_BANDS: Tuple[str, ...] = (
     "QA_PIXEL",
