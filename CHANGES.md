@@ -5,6 +5,8 @@
 * add sentinel-2 product ID parsing (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/33).
 * fix issue where the sequence number of a sentinel scene id can be two digit (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/35)
 * fix issue where `utm` is only one sigle digit (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/34)
+* add top level export (https://github.com/cogeotiff/rio-tiler-pds/issues/45)
+* removes `get_object` from top level export
 
 ## 0.4.1 (2020-11-24)
 

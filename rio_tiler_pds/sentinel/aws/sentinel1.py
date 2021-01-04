@@ -10,9 +10,8 @@ from rasterio.features import bounds as featureBounds
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import GCPCOGReader, MultiBandReader
-
-from ... import get_object
-from ..utils import s1_sceneid_parser
+from rio_tiler_pds.sentinel.utils import s1_sceneid_parser
+from rio_tiler_pds.utils import get_object
 
 
 @attr.s

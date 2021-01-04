@@ -14,9 +14,8 @@ from rasterio.warp import transform_geom
 from rio_tiler import constants
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import COGReader, MultiBandReader
-
-from ... import get_object
-from ..utils import s2_sceneid_parser
+from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
+from rio_tiler_pds.utils import get_object
 
 default_l1c_bands = (
     "B01",

@@ -16,10 +16,9 @@ from rio_tiler.io import COGReader, MultiBandReader
 from rio_tiler.models import ImageData
 from rio_tiler.tasks import multi_arrays
 from rio_tiler.utils import pansharpening_brovey
+from rio_tiler_pds.landsat.utils import dn_to_toa, sceneid_parser
+from rio_tiler_pds.utils import get_object
 from rio_toa import toa_utils
-
-from ... import get_object
-from ..utils import dn_to_toa, sceneid_parser
 
 landsat8_valid_bands = (
     "B1",

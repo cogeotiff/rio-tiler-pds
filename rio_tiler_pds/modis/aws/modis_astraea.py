@@ -8,10 +8,9 @@ from morecantile import TileMatrixSet
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import COGReader, MultiBandReader
-
-from ...errors import InvalidMODISProduct
-from ..modland_grid import tile_bbox
-from ..utils import sceneid_parser
+from rio_tiler_pds.errors import InvalidMODISProduct
+from rio_tiler_pds.modis.modland_grid import tile_bbox
+from rio_tiler_pds.modis.utils import sceneid_parser
 
 MCD43A4_BANDS = (
     "B01",
