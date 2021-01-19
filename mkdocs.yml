@@ -27,6 +27,7 @@ nav:
   - Usage:
     - Overview: usage/overview.md
     - Sentinel: usage/sentinel.md
+    - Landsat Collection 2: usage/landsat-c2.md
     - Landsat: usage/landsat.md
     - CBERS: usage/cbers.md
     - MODIS: usage/modis.md
@@ -34,6 +35,7 @@ nav:
   - Release: 'release-notes.md'
   - API:
     - Sentinel: API/sentinel.md
+    - Landsat Collection 2: API/landsat-c2.md
     - Landsat: API/landsat.md
     - CBERS: API/cbers.md
     - MODIS: API/modis.md
