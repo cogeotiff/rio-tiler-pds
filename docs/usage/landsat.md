@@ -24,7 +24,7 @@ with rasterio.Env(
         print(landsat.bands)
         >>> ('B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'BQA'
         assert landsat.minzoom == 7
-        assert landsat.minzoom == 12
+        assert landsat.maxzoom == 12
 
         print(landsat.spatial_info.dict())
         >>> {
