@@ -58,7 +58,8 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 | [Sentinel 2][s2_l2a_jp2]                  | L2A                                         | JPEG2000                   | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
 | [Sentinel 2][s2_l2a_cog]                  | L2A                                         | COG                        | Digital Earth Africa / AWS | us-west-2    | Public             |
 | [Sentinel 1][s1_l1c_cog]                  | L1C                                         | COG (Internal GCPS)        | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
-| [Landsat 8][l8_l1_cog]                    | L1                                          | GTiff (External Overviews) | Planet / AWS               | us-west-2    | Public             |
+| [Landsat 8*][l8_l1_cog]                   | L1                                          | GTiff (External Overviews) | Planet / AWS               | us-west-2    | Public             |
+| [Landsat Collection 2][landsat_c2_cog]    | L1,L2                                       | COG                        | USGS / AWS                 | us-west-2    | **Requester-pays** |
 | [CBERS 4/4A][cbers_cog]                   | L2/L4                                       | COG                        | AMS Kepler / AWS           | us-east-1    | **Requester-pays** |
 | [MODIS (modis-pds)][modis_pds]            | MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA | GTiff (External Overviews) | -                          | us-west-2    | Public             |
 | [MODIS (astraea-opendata)][modis_astraea] | MCD43A4, MOD11A1, MOD13A1, MYD11A1 MYD13A1  | COG                        | Astraea / AWS              | us-west-2    | **Requester-pays** |
@@ -68,9 +69,12 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 [s2_l2a_cog]: https://registry.opendata.aws/sentinel-2-l2a-cogs/
 [s1_l1c_cog]: https://registry.opendata.aws/sentinel-1/
 [l8_l1_cog]: https://registry.opendata.aws/landsat-8/
+[landsat_c2_cog]: https://www.usgs.gov/core-science-systems/nli/landsat/landsat-commercial-cloud-data-access
 [cbers_cog]: https://registry.opendata.aws/cbers/
 [modis_pds]: https://docs.opendata.aws/modis-pds/readme.html
 [modis_astraea]: https://registry.opendata.aws/modis-astraea/
+
+`*` Landsat 8 Collection 1 reader has been deprecated because the `landsat-pds` will be deleted on July 1st 2021. For new applications, using Collection 2 is suggested.
 
 **Adding more dataset**:
 
@@ -110,7 +114,7 @@ Ref: [Do you really want people using your data](https://medium.com/@_VincentS_/
 Each dataset has its own submodule (e.g sentinel2: `rio_tiler_pds.sentinel.aws`)
 
 ```python
-from rio_tiler_pds.landsat.aws import L8Reader
+from rio_tiler_pds.landsat.aws import L8Reader, LandsatC2Reader
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 from rio_tiler_pds.sentinel.aws import (
     S2JP2Reader,  # JPEG2000
