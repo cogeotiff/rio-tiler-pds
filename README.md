@@ -74,7 +74,7 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 [modis_pds]: https://docs.opendata.aws/modis-pds/readme.html
 [modis_astraea]: https://registry.opendata.aws/modis-astraea/
 
-`*` Landsat 8 reader has been deprecated because the `landsat-pds` will be deleted on July 1st 2021.
+`*` Landsat 8 Collection 1 reader has been deprecated because the `landsat-pds` will be deleted on July 1st 2021. For new applications, using Collection 2 is suggested.
 
 **Adding more dataset**:
 
