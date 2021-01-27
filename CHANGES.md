@@ -8,7 +8,7 @@
 * fix issue where `utm` is only one sigle digit (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/34)
 * add top level export (https://github.com/cogeotiff/rio-tiler-pds/issues/45)
 * removes `get_object` from top level export
-* add deprecation warning in L8COGReader (https://github.com/cogeotiff/rio-tiler-pds/issues/40)
+* add deprecation warning in L8Reader (https://github.com/cogeotiff/rio-tiler-pds/issues/40)
 
 ## 0.4.1 (2020-11-24)
 
