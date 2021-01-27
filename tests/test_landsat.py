@@ -56,6 +56,10 @@ def test_AWSPDS_L8Reader(rio, get_object):
         with L8Reader("LC08_005004_20170410_20170414_01_T1"):
             pass
 
+    with pytest.warns(DeprecationWarning):
+        with L8Reader(LANDSAT_SCENE_C1):
+            pass
+
     with L8Reader(LANDSAT_SCENE_C1) as landsat:
         assert landsat.scene_params["scene"] == LANDSAT_SCENE_C1
         assert landsat.minzoom == 7

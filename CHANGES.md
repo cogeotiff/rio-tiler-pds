@@ -1,6 +1,6 @@
 # Release Notes
 
-## Next (TBD)
+## 0.5.0 (TBD)
 
 * add AWS's Landsat Collection 2 support (author @kylebarron, https://github.com/cogeotiff/rio-tiler-pds/pull/42)
 * add sentinel-2 product ID parsing (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/33).
@@ -8,6 +8,7 @@
 * fix issue where `utm` is only one sigle digit (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/34)
 * add top level export (https://github.com/cogeotiff/rio-tiler-pds/issues/45)
 * removes `get_object` from top level export
+* add deprecation warning in L8COGReader (https://github.com/cogeotiff/rio-tiler-pds/issues/40)
 
 ## 0.4.1 (2020-11-24)
 

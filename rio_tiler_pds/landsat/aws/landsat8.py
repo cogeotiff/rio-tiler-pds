@@ -1,6 +1,7 @@
 """AWS Landsat 8 reader."""
 
 import os
+import warnings
 from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Type, Union
 
 import attr
@@ -117,6 +118,11 @@ class L8Reader(MultiBandReader):
 
     def __attrs_post_init__(self):
         """Fetch MTL metadata and get bounds."""
+        warnings.warn(
+            "L8Reader is deprecated, the landsat-pds bucket will be deleted on July 1st 2021 "
+            "(ref: https://lists.osgeo.org/pipermail/landsat-pds/2020-December/000178.html).",
+            DeprecationWarning,
+        )
         self.scene_params = sceneid_parser(self.sceneid)
         prefix = self._prefix.format(**self.scene_params)
         basename = f"{self.sceneid}_MTL.txt"
