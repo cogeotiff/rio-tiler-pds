@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.5.0 (TBD)
+## 0.5.0 (2021-02-02)
 
 * add AWS's Landsat Collection 2 support (author @kylebarron, https://github.com/cogeotiff/rio-tiler-pds/pull/42)
 * add sentinel-2 product ID parsing (ref: https://github.com/cogeotiff/rio-tiler-pds/pull/33).
