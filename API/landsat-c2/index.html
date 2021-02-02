@@ -1,0 +1,1716 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A rio-tiler plugin to access and read Public hosted datasets.">
+      
+      
+      
+      
+        <link rel="canonical" href="https://cogeotiff.github.io/rio-tiler-pds/API/landsat-c2/">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.7">
+    
+    
+      
+        <title>Landsat Collection 2 - rio-tiler-pds</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.cb6bc1d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.39b8e14a.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#2094f3">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,400i,700%7CFira+Code&display=fallback">
+        <style>body,input{font-family:"Nunito Sans",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Fira Code",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../../css/mkapi-common.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue" data-md-color-accent="light-blue">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#readers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://cogeotiff.github.io/rio-tiler-pds/" title="rio-tiler-pds" class="md-header-nav__button md-logo" aria-label="rio-tiler-pds">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            rio-tiler-pds
+          </span>
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
+            
+              Landsat Collection 2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/cogeotiff/rio-tiler-pds/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cogeotiff/rio-tiler-pds
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://cogeotiff.github.io/rio-tiler-pds/" title="rio-tiler-pds" class="md-nav__button md-logo" aria-label="rio-tiler-pds">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>
+
+    </a>
+    rio-tiler-pds
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/cogeotiff/rio-tiler-pds/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cogeotiff/rio-tiler-pds
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" >
+      
+      <label class="md-nav__link" for="nav-2">
+        Usage
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Usage" data-md-level="1">
+        <label class="md-nav__title" for="nav-2">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/sentinel/" class="md-nav__link">
+        Sentinel
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/landsat-c2/" class="md-nav__link">
+        Landsat Collection 2
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/landsat/" class="md-nav__link">
+        Landsat
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/cbers/" class="md-nav__link">
+        CBERS
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/modis/" class="md-nav__link">
+        MODIS
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        Development - Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        Release
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+      
+      <label class="md-nav__link" for="nav-5">
+        API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API" data-md-level="1">
+        <label class="md-nav__title" for="nav-5">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sentinel/" class="md-nav__link">
+        Sentinel
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Landsat Collection 2
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Landsat Collection 2
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#readers" class="md-nav__link">
+    Readers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2reader" class="md-nav__link">
+    LandsatC2Reader
+  </a>
+  
+    <nav class="md-nav" aria-label="LandsatC2Reader">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasespatialmixintile_exists" class="md-nav__link">
+    tile_exists
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasebasereaderenter" class="md-nav__link">
+    enter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasebasereaderexit" class="md-nav__link">
+    exit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderparse_expression" class="md-nav__link">
+    parse_expression
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderinfo" class="md-nav__link">
+    info
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderstats" class="md-nav__link">
+    stats
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreadermetadata" class="md-nav__link">
+    metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreadertile" class="md-nav__link">
+    tile
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderpart" class="md-nav__link">
+    part
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderpreview" class="md-nav__link">
+    preview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderpoint" class="md-nav__link">
+    point
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderfeature" class="md-nav__link">
+    feature
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2readerattrs_post_init" class="md-nav__link">
+    attrs_post_init
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2readerget_geometry" class="md-nav__link">
+    get_geometry
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    Utils
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatutilssceneid_parser" class="md-nav__link">
+    sceneid_parser
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../landsat/" class="md-nav__link">
+        Landsat
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cbers/" class="md-nav__link">
+        CBERS
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modis/" class="md-nav__link">
+        MODIS
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#readers" class="md-nav__link">
+    Readers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2reader" class="md-nav__link">
+    LandsatC2Reader
+  </a>
+  
+    <nav class="md-nav" aria-label="LandsatC2Reader">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasespatialmixintile_exists" class="md-nav__link">
+    tile_exists
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasebasereaderenter" class="md-nav__link">
+    enter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasebasereaderexit" class="md-nav__link">
+    exit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderparse_expression" class="md-nav__link">
+    parse_expression
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderinfo" class="md-nav__link">
+    info
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderstats" class="md-nav__link">
+    stats
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreadermetadata" class="md-nav__link">
+    metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreadertile" class="md-nav__link">
+    tile
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderpart" class="md-nav__link">
+    part
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderpreview" class="md-nav__link">
+    preview
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderpoint" class="md-nav__link">
+    point
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tileriobasemultibandreaderfeature" class="md-nav__link">
+    feature
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2readerattrs_post_init" class="md-nav__link">
+    attrs_post_init
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2readerget_geometry" class="md-nav__link">
+    get_geometry
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    Utils
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rio_tiler_pdslandsatutilssceneid_parser" class="md-nav__link">
+    sceneid_parser
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/master/src/API/landsat-c2.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>Landsat Collection 2</h1>
+                
+                <h2 id="readers">Readers<a class="headerlink" href="#readers" title="Permanent link">&para;</a></h2>
+<div class="mkapi-node" id="rio_tiler_pds.landsat.aws.landsat_collection2.LandsatC2Reader">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h2 id="rio_tiler_pdslandsatawslandsat_collection2landsatc2reader" class="mkapi-object-body class top"><code class="mkapi-object-prefix">rio_tiler_pds.landsat.aws.landsat_collection2.</code><code class="mkapi-object-name"><a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2reader">LandsatC2Reader</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">sceneid</code>, <code class="mkapi-object-signature">reader=&lt;class &#39;rio_tiler.io.cogeo.COGReader&#39;&gt;</code>, <code class="mkapi-object-signature">reader_options={}</code>, <code class="mkapi-object-signature">tms=&lt;TileMatrixSet title=&#39;Google Maps Compatible for the World&#39; identifier=&#39;WebMercatorQuad&#39;&gt;</code>, <code class="mkapi-object-signature">minzoom=5</code>, <code class="mkapi-object-signature">maxzoom=12</code><code class="mkapi-object-parenthesis">)</code></h2>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base">rio_tiler.io.base.MultiBandReader</span>
+
+<span class="mkapi-base">rio_tiler.io.base.BaseReader</span>
+
+<span class="mkapi-base">rio_tiler.io.base.SpatialMixin</span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>AWS Public Dataset Landsat Collection 2 COG Reader.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">tms</code>
+<span class="mkapi-item-type">(TileMatrixSet, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">reader</code>
+<span class="mkapi-item-type">(type of COGReader, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">reader_options</code>
+<span class="mkapi-item-type">(dict, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">sceneid</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Landsat 8 sceneid.</span></li>
+
+<li><code class="mkapi-item-name">minzoom</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">maxzoom</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(tuple)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">list of available bands.</span></li>
+
+<li><code class="mkapi-item-name">bbox</code>
+<span class="mkapi-item-type">(tuple)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Dataset bounds (left, bottom, right, top). <strong>READ ONLY attribute</strong>.</span></li>
+
+<li><code class="mkapi-item-name">bounds</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li class="readonly-property"><code class="mkapi-item-name">center</code>
+<span class="mkapi-item-type">(float, float, int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Dataset center + minzoom.</span></li>
+
+<li><code class="mkapi-item-name">maxzoom</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Dataset's Max Zoom level (default is 12).</span></li>
+
+<li><code class="mkapi-item-name">minzoom</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Dataset's Min Zoom level (default is 5).</span></li>
+
+<li><code class="mkapi-item-name">reader</code>
+<span class="mkapi-item-type">(rio_tiler.io.BaseReader)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">reader.</span></li>
+
+<li><code class="mkapi-item-name">reader_options</code>
+<span class="mkapi-item-type">(dict, option)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">options to forward to the reader. Defaults to <code>{}</code>.</span></li>
+
+<li><code class="mkapi-item-name">scene_params</code>
+<span class="mkapi-item-type">(dict)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">scene id parameters.</span></li>
+
+<li class="readonly-property"><code class="mkapi-item-name">spatial_info</code>
+<span class="mkapi-item-type">(SpatialInfo)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return Dataset's spatial info.</span></li>
+
+<li><code class="mkapi-item-name">stac_item</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">tms</code>
+<span class="mkapi-item-type">(morecantile.TileMatrixSet, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">TileMatrixSet grid definition. Defaults to <code>WebMercatorQuad</code>.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section examples">
+      <div class="mkapi-section-name examples">
+          <span class="mkapi-section-name-body examples">Examples</span> 
+        </div>
+      <div class="mkapi-section-body examples"><div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">L8C2COGReader</span><span class="p">(</span><span class="s1">&#39;LC08_L2SR_093106_20200207_20201016_02_T2&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">scene</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">L8C2COGReader</span><span class="p">(</span><span class="s1">&#39;LC08_L1TP_116043_20201122_20201122_02_RT&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">scene</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span>
+</code></pre></div></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler_pds.landsat.aws.landsat_collection2.LandsatC2Reader.__attrs_post_init__">__attrs_post_init__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Fetch productInfo and get bounds.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.BaseReader.__enter__">__enter__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Support using with Context Managers.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.BaseReader.__exit__">__exit__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">exc_type</code>, <code class="mkapi-object-signature">exc_value</code>, <code class="mkapi-object-signature">traceback</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Support using with Context Managers.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.feature">feature</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">shape</code>, <code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">expression</code>, <code class="mkapi-object-signature">band_expression</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Read and merge parts defined by geojson feature from multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler_pds.landsat.aws.landsat_collection2.LandsatC2Reader.get_geometry">get_geometry</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Fetch geometry info for the scene.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.info">info</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">*args</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(dict)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return metadata from multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.metadata">metadata</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">pmin</code>, <code class="mkapi-object-signature">pmax</code>, <code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(dict)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return metadata from multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.parse_expression">parse_expression</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">expression</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(tuple)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Parse rio-tiler band math expression.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.part">part</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">bbox</code>, <code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">expression</code>, <code class="mkapi-object-signature">band_expression</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Read and merge parts from multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.point">point</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">lon</code>, <code class="mkapi-object-signature">lat</code>, <code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">expression</code>, <code class="mkapi-object-signature">band_expression</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(list)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Read a pixel values from multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.preview">preview</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">expression</code>, <code class="mkapi-object-signature">band_expression</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Read and merge previews from multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.stats">stats</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">pmin</code>, <code class="mkapi-object-signature">pmax</code>, <code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(dict)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Return array statistics from multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.MultiBandReader.tile">tile</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">tile_x</code>, <code class="mkapi-object-signature">tile_y</code>, <code class="mkapi-object-signature">tile_z</code>, <code class="mkapi-object-signature">bands</code>, <code class="mkapi-object-signature">expression</code>, <code class="mkapi-object-signature">band_expression</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Read and merge Web Map tiles multiple bands.</span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#rio_tiler.io.base.SpatialMixin.tile_exists">tile_exists</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">tile_z</code>, <code class="mkapi-object-signature">tile_x</code>, <code class="mkapi-object-signature">tile_y</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(bool)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Check if a tile is intersets the dataset bounds.</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.SpatialMixin.tile_exists">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasespatialmixintile_exists" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasespatialmixintile_exists">tile_exists</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">tile_z</code>, <code class="mkapi-object-signature">tile_x</code>, <code class="mkapi-object-signature">tile_y</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Check if a tile is intersets the dataset bounds.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">tile_z</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tile's zoom level index.</span></li>
+
+<li><code class="mkapi-item-name">tile_x</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tile's horizontal index.</span></li>
+
+<li><code class="mkapi-item-name">tile_y</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tile's vertical index.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(bool)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>True if the tile is intersets the dataset bounds.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.BaseReader.__enter__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasebasereaderenter" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasebasereaderenter">__enter__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Support using with Context Managers.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.BaseReader.__exit__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasebasereaderexit" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasebasereaderexit">__exit__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">exc_type</code>, <code class="mkapi-object-signature">exc_value</code>, <code class="mkapi-object-signature">traceback</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Support using with Context Managers.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">exc_type</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">exc_value</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">traceback</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.parse_expression">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreaderparse_expression" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreaderparse_expression">parse_expression</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">expression</code><code class="mkapi-object-parenthesis">)</code><span class="mkapi-item-type"> &#x2192; tuple</span></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Parse rio-tiler band math expression.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">expression</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.info">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreaderinfo" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreaderinfo">info</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">*args</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return metadata from multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">band names to fetch info from. Required keyword argument.</span></li>
+
+<li><code class="mkapi-item-name">*args</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(dict)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>Multiple bands info in form of {"band1": rio_tile.models.Info}.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.stats">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreaderstats" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreaderstats">stats</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">pmin=2.0</code>, <code class="mkapi-object-signature">pmax=98.0</code>, <code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return array statistics from multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">pmin</code>
+<span class="mkapi-item-type">(float, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Histogram minimum cut. Defaults to <code>2.0</code>.</span></li>
+
+<li><code class="mkapi-item-name">pmax</code>
+<span class="mkapi-item-type">(float, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Histogram maximum cut. Defaults to <code>98.0</code>.</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">bands to fetch info from. Required keyword argument.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(dict)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>Multiple bands statistics in form of {"band1": rio_tile.models.ImageStatistics}.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.metadata">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreadermetadata" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreadermetadata">metadata</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">pmin=2.0</code>, <code class="mkapi-object-signature">pmax=98.0</code>, <code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Return metadata from multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">pmin</code>
+<span class="mkapi-item-type">(float, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Histogram minimum cut. Defaults to <code>2.0</code>.</span></li>
+
+<li><code class="mkapi-item-name">pmax</code>
+<span class="mkapi-item-type">(float, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Histogram maximum cut. Defaults to <code>98.0</code>.</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">bands to fetch info from. Required keyword argument.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(dict)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>Multiple bands info an statistics in form of {"band1": rio_tile.models.Metadata}.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.tile">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreadertile" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreadertile">tile</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">tile_x</code>, <code class="mkapi-object-signature">tile_y</code>, <code class="mkapi-object-signature">tile_z</code>, <code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">expression=None</code>, <code class="mkapi-object-signature">band_expression=None</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Read and merge Web Map tiles multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">tile_x</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tile's horizontal index.</span></li>
+
+<li><code class="mkapi-item-name">tile_y</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tile's vertical index.</span></li>
+
+<li><code class="mkapi-item-name">tile_z</code>
+<span class="mkapi-item-type">(int)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Tile's zoom level index.</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">bands to fetch info from.</span></li>
+
+<li><code class="mkapi-item-name">expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for the band list (e.g. b1/b2+b3).</span></li>
+
+<li><code class="mkapi-item-name">band_expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for each band (e.g. b1/b2+b3).</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>ImageData instance with data, mask and tile spatial info.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.part">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreaderpart" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreaderpart">part</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">bbox</code>, <code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">expression=None</code>, <code class="mkapi-object-signature">band_expression=None</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Read and merge parts from multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">bbox</code>
+<span class="mkapi-item-type">(tuple)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Output bounds (left, bottom, right, top) in target crs.</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">bands to fetch info from.</span></li>
+
+<li><code class="mkapi-item-name">expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for the band list (e.g. b1/b2+b3).</span></li>
+
+<li><code class="mkapi-item-name">band_expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for each band (e.g. b1/b2+b3).</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>ImageData instance with data, mask and tile spatial info.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.preview">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreaderpreview" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreaderpreview">preview</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">expression=None</code>, <code class="mkapi-object-signature">band_expression=None</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Read and merge previews from multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">bands to fetch info from.</span></li>
+
+<li><code class="mkapi-item-name">expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for the band list (e.g. b1/b2+b3).</span></li>
+
+<li><code class="mkapi-item-name">band_expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for each band (e.g. b1/b2+b3).</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>ImageData instance with data, mask and tile spatial info.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.point">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreaderpoint" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreaderpoint">point</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">lon</code>, <code class="mkapi-object-signature">lat</code>, <code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">expression=None</code>, <code class="mkapi-object-signature">band_expression=None</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Read a pixel values from multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">lon</code>
+<span class="mkapi-item-type">(float)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Longitude.</span></li>
+
+<li><code class="mkapi-item-name">lat</code>
+<span class="mkapi-item-type">(float)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Latittude.</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">bands to fetch info from.</span></li>
+
+<li><code class="mkapi-item-name">expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for the band list (e.g. b1/b2+b3).</span></li>
+
+<li><code class="mkapi-item-name">band_expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for each band (e.g. b1/b2+b3).</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(list)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>Pixel value per bands.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler.io.base.MultiBandReader.feature">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tileriobasemultibandreaderfeature" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tileriobasemultibandreaderfeature">feature</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">shape</code>, <code class="mkapi-object-signature">bands=None</code>, <code class="mkapi-object-signature">expression=None</code>, <code class="mkapi-object-signature">band_expression=None</code>, <code class="mkapi-object-signature">**kwargs</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Read and merge parts defined by geojson feature from multiple bands.</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">shape</code>
+<span class="mkapi-item-type">(dict)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Valid GeoJSON feature.</span></li>
+
+<li><code class="mkapi-item-name">**kwargs</code>
+<span class="mkapi-item-type">(any)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description"></span></li>
+
+<li><code class="mkapi-item-name">bands</code>
+<span class="mkapi-item-type">(sequence of str or str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">bands to fetch info from.</span></li>
+
+<li><code class="mkapi-item-name">expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for the band list (e.g. b1/b2+b3).</span></li>
+
+<li><code class="mkapi-item-name">band_expression</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">rio-tiler expression for each band (e.g. b1/b2+b3).</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(rio_tiler.models.ImageData)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>ImageData instance with data, mask and tile spatial info.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler_pds.landsat.aws.landsat_collection2.LandsatC2Reader.__attrs_post_init__">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tiler_pdslandsatawslandsat_collection2landsatc2readerattrs_post_init" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2readerattrs_post_init">__attrs_post_init__</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Fetch productInfo and get bounds.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="rio_tiler_pds.landsat.aws.landsat_collection2.LandsatC2Reader.get_geometry">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="rio_tiler_pdslandsatawslandsat_collection2landsatc2readerget_geometry" class="mkapi-object-body method"><code class="mkapi-object-name"><a href="#rio_tiler_pdslandsatawslandsat_collection2landsatc2readerget_geometry">get_geometry</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Fetch geometry info for the scene.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+
+<h2 id="utils">Utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
+<div class="mkapi-node" id="rio_tiler_pds.landsat.utils.sceneid_parser">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h2 id="rio_tiler_pdslandsatutilssceneid_parser" class="mkapi-object-body function top"><code class="mkapi-object-prefix">rio_tiler_pds.landsat.utils.</code><code class="mkapi-object-name"><a href="#rio_tiler_pdslandsatutilssceneid_parser">sceneid_parser</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">sceneid</code><code class="mkapi-object-parenthesis">)</code></h2>
+  </div>
+  
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Parse Landsat id.</p>
+<p>Author @perrygeo - <a href="http://www.perrygeo.com">www.perrygeo.com</a></p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">sceneid</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Landsat sceneid.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(dict)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>dictionary with metadata constructed from the sceneid.</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">InvalidLandsatSceneId</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If <code>sceneid</code> doesn't match the regex schema.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section examples">
+      <div class="mkapi-section-name examples">
+          <span class="mkapi-section-name-body examples">Examples</span> 
+        </div>
+      <div class="mkapi-section-body examples"><div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">sceneid_parser</span><span class="p">(</span><span class="s1">&#39;LC08_L1TP_016037_20170813_20170814_01_RT&#39;</span><span class="p">)</span>
+</code></pre></div></div>
+    </div>
+  </div>
+
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../sentinel/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Sentinel
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../landsat/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Landsat
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/cogeotiff" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/cogeotiff" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://www.cogeo.org/" target="_blank" rel="noopener" title="www.cogeo.org" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.53cc9318.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e9c9f54f.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.9c0e82ba.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="../../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>
