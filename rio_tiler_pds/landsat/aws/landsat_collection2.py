@@ -48,10 +48,10 @@ class LandsatC2Reader(MultiBandReader):
         bands (tuple): list of available bands.
 
     Examples:
-        >>> with L8C2COGReader('LC08_L2SR_093106_20200207_20201016_02_T2') as scene:
+        >>> with LandsatC2Reader('LC08_L2SR_093106_20200207_20201016_02_T2') as scene:
                 print(scene.bounds)
 
-        >>> with L8C2COGReader('LC08_L1TP_116043_20201122_20201122_02_RT') as scene:
+        >>> with LandsatC2Reader('LC08_L1TP_116043_20201122_20201122_02_RT') as scene:
                 print(scene.bounds)
 
     """
