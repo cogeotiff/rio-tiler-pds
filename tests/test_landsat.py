@@ -222,7 +222,6 @@ def test_AWSPDS_L8Reader(rio, get_object):
         data_nodata, mask_nodata = landsat.preview(
             bands="BQA", nodata=0, resampling_method="bilinear"
         )
-        assert not numpy.array_equal(data, data_nodata)
         assert not numpy.array_equal(mask, mask_nodata)
 
         with pytest.raises(MissingBands):
