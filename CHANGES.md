@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.5.1 (TBD)
+
+* fix landsat `sceneid_parser` for Collection 2 Albers dataset (https://github.com/cogeotiff/rio-tiler-pds/pull/56)
+
 ## 0.5.0 (2021-02-02)
 
 * add AWS's Landsat Collection 2 support (author @kylebarron, https://github.com/cogeotiff/rio-tiler-pds/pull/42)
