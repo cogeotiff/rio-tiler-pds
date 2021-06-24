@@ -820,7 +820,7 @@ def test_landsat_id_c2_albers_valid():
         "_processingLevelNum": "2",
         "sensor_name": "oli-tirs",
         "_sensor_s3_prefix": "oli-tirs",
-        "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
+        "bands": OLI_SR_BANDS + TIRS_ST_BANDS,
     }
 
     assert sceneid_parser(scene) == expected_content
