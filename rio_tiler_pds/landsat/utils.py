@@ -182,6 +182,10 @@ def sceneid_parser(sceneid: str) -> Dict:
     elif meta["sensor"] == "M":
         sensor_name = "mss"
 
+    meta["category"] = (
+        "albers" if meta["collectionCategory"] in ["A1", "A2"] else "standard"
+    )
+
     # S3 paths always use oli-tirs
     _sensor_s3_prefix = sensor_name
     if _sensor_s3_prefix in ["oli", "tirs"]:

@@ -48,6 +48,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "oli-tirs",
             "_sensor_s3_prefix": "oli-tirs",
             "bands": OLI_SR_BANDS + TIRS_ST_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 2 OLI-TIRS 8 SR (no ST)
@@ -73,6 +74,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "oli-tirs",
             "_sensor_s3_prefix": "oli-tirs",
             "bands": OLI_SR_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 2 TM SP (both SR and ST)
@@ -98,6 +100,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "tm",
             "_sensor_s3_prefix": "tm",
             "bands": TM_SR_BANDS + TM_ST_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 2 TM SR (no ST)
@@ -123,6 +126,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "tm",
             "_sensor_s3_prefix": "tm",
             "bands": TM_SR_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 2 ETM SP (both SR and ST)
@@ -148,6 +152,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "etm",
             "_sensor_s3_prefix": "etm",
             "bands": TM_SR_BANDS + TM_ST_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 2 ETM SR (no ST)
@@ -173,6 +178,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "etm",
             "_sensor_s3_prefix": "etm",
             "bands": TM_SR_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 OLI, L1GT
@@ -198,6 +204,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "oli",
             "_sensor_s3_prefix": "oli-tirs",
             "bands": OLI_L1_BANDS + OLI_L1_QA_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 OLI, L1TP
@@ -223,6 +230,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "oli",
             "_sensor_s3_prefix": "oli-tirs",
             "bands": OLI_L1_BANDS + OLI_L1_QA_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 OLI-TIRS, L1GT
@@ -248,6 +256,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "oli-tirs",
             "_sensor_s3_prefix": "oli-tirs",
             "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 OLI-TIRS, L1TP
@@ -273,6 +282,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "oli-tirs",
             "_sensor_s3_prefix": "oli-tirs",
             "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 TIRS, L1GT
@@ -298,6 +308,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "tirs",
             "_sensor_s3_prefix": "oli-tirs",
             "bands": TIRS_L1_BANDS + TIRS_L1_QA_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 ETM, L1GS
@@ -323,6 +334,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "etm",
             "_sensor_s3_prefix": "etm",
             "bands": ETM_L1_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 ETM, L1GT
@@ -348,6 +360,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "etm",
             "_sensor_s3_prefix": "etm",
             "bands": ETM_L1_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 ETM, L1TP
@@ -373,6 +386,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "etm",
             "_sensor_s3_prefix": "etm",
             "bands": ETM_L1_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 TM, L1GS
@@ -398,6 +412,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "tm",
             "_sensor_s3_prefix": "tm",
             "bands": TM_L1_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 TM, L1TP
@@ -423,6 +438,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "tm",
             "_sensor_s3_prefix": "tm",
             "bands": TM_L1_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 MSS, L1GS
@@ -448,6 +464,7 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "mss",
             "_sensor_s3_prefix": "mss",
             "bands": MSS_L1_BANDS,
+            "category": "standard",
         },
     ),
     # Collection 2 Level 1 MSS, L1TP
@@ -473,6 +490,33 @@ LANDSAT_SCENE_PARSER_TEST_CASES = (
             "sensor_name": "mss",
             "_sensor_s3_prefix": "mss",
             "bands": MSS_L1_BANDS,
+            "category": "standard",
+        },
+    ),
+    # Collection 2 Level2 Albers
+    (
+        "LC08_L2SP_077010_20210616_20210623_02_A1",
+        {
+            "sensor": "C",
+            "satellite": "08",
+            "processingCorrectionLevel": "L2SP",
+            "path": "077",
+            "row": "010",
+            "acquisitionYear": "2021",
+            "acquisitionMonth": "06",
+            "acquisitionDay": "16",
+            "processingYear": "2021",
+            "processingMonth": "06",
+            "processingDay": "23",
+            "collectionNumber": "02",
+            "collectionCategory": "A1",
+            "scene": "LC08_L2SP_077010_20210616_20210623_02_A1",
+            "date": "2021-06-16",
+            "_processingLevelNum": "2",
+            "sensor_name": "oli-tirs",
+            "_sensor_s3_prefix": "oli-tirs",
+            "bands": OLI_SR_BANDS + TIRS_ST_BANDS,
+            "category": "albers",
         },
     ),
 )
@@ -795,32 +839,3 @@ def test_LandsatC2L2Reader_bands(rio, get_object):
     for sceneid, expected_bands in C2_SENSOR_TEST_CASES:
         with LandsatC2Reader(sceneid) as landsat:
             assert landsat.bands == expected_bands
-
-
-def test_landsat_id_c2_albers_valid():
-    """Parse landsat valid Collection 2 Albers sceneid and return metadata."""
-    scene = "LC08_L2SP_077010_20210616_20210623_02_A1"
-
-    expected_content = {
-        "sensor": "C",
-        "satellite": "08",
-        "processingCorrectionLevel": "L2SP",
-        "path": "077",
-        "row": "010",
-        "acquisitionYear": "2021",
-        "acquisitionMonth": "06",
-        "acquisitionDay": "16",
-        "processingYear": "2021",
-        "processingMonth": "06",
-        "processingDay": "23",
-        "collectionNumber": "02",
-        "collectionCategory": "A1",
-        "scene": "LC08_L2SP_077010_20210616_20210623_02_A1",
-        "date": "2021-06-16",
-        "_processingLevelNum": "2",
-        "sensor_name": "oli-tirs",
-        "_sensor_s3_prefix": "oli-tirs",
-        "bands": OLI_SR_BANDS + TIRS_ST_BANDS,
-    }
-
-    assert sceneid_parser(scene) == expected_content
