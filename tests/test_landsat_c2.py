@@ -795,3 +795,32 @@ def test_LandsatC2L2Reader_bands(rio, get_object):
     for sceneid, expected_bands in C2_SENSOR_TEST_CASES:
         with LandsatC2Reader(sceneid) as landsat:
             assert landsat.bands == expected_bands
+
+
+def test_landsat_id_c2_albers_valid():
+    """Parse landsat valid Collection 2 Albers sceneid and return metadata."""
+    scene = "LC08_L2SP_077010_20210616_20210623_02_A1"
+
+    expected_content = {
+        "sensor": "C",
+        "satellite": "08",
+        "processingCorrectionLevel": "L2SP",
+        "path": "077",
+        "row": "010",
+        "acquisitionYear": "2021",
+        "acquisitionMonth": "06",
+        "acquisitionDay": "16",
+        "processingYear": "2021",
+        "processingMonth": "06",
+        "processingDay": "23",
+        "collectionNumber": "02",
+        "collectionCategory": "A1",
+        "scene": "LC08_L2SP_077010_20210616_20210623_02_A1",
+        "date": "2021-06-16",
+        "_processingLevelNum": "2",
+        "sensor_name": "oli-tirs",
+        "_sensor_s3_prefix": "oli-tirs",
+        "bands": OLI_L1_BANDS + TIRS_L1_BANDS + OLI_L1_QA_BANDS,
+    }
+
+    assert sceneid_parser(scene) == expected_content

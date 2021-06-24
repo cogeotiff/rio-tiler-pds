@@ -132,7 +132,7 @@ def sceneid_parser(sceneid: str) -> Dict:
 
     """
     if not re.match(
-        r"^L[COTEM]0[0-9]_L[12]{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$", sceneid
+        r"^L[COTEM]\d{2}_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_\w{2}$", sceneid
     ):
         raise InvalidLandsatSceneId("Could not match {}".format(sceneid))
 
