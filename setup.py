@@ -6,7 +6,7 @@ with open("README.md") as f:
     readme = f.read()
 
 # Runtime requirements.
-inst_reqs = ["rio-tiler>=2.0.0rc2,<2.1", "rio-toa"]
+inst_reqs = ["rio-tiler>=2.0,<2.2", "rio-toa"]
 
 extra_reqs = {
     "test": ["pytest", "pytest-cov"],
@@ -25,6 +25,7 @@ setup(
         "Intended Audience :: Information Technology",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.6",

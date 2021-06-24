@@ -142,12 +142,12 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
 
         bbox = (-69.8, 48.2, -69, 48.7)
         data, mask = sentinel.part(bbox, bands="B04")
-        assert data.shape == (1, 49, 78)
-        assert mask.shape == (49, 78)
+        assert data.any()
+        assert not mask.all()
 
         data, mask = sentinel.part(bbox, bands=("B04", "B03", "B02"))
-        assert data.shape == (3, 49, 78)
-        assert mask.shape == (49, 78)
+        assert data.any()
+        assert not mask.all()
 
         with pytest.raises(MissingBands):
             sentinel.part(bbox)
@@ -156,7 +156,7 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
             data, _ = sentinel.part(
                 bbox, bands=("B04", "B03", "B02"), expression="B01/B02"
             )
-            assert data.shape == (1, 49, 78)
+            assert data.any()
 
         # Check for kwargs colision
         # If nodata=None is passed, it will overwrite the default nodata set in the reader
@@ -171,7 +171,7 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
             data, _ = sentinel.preview(
                 bands=("B04", "B03", "B02"), expression="B01/B02"
             )
-            assert data.shape == (1, 122, 122)
+            assert data.any()
 
 
 L2A_TJSON_PATH = os.path.join(

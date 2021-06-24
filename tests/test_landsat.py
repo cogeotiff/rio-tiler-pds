@@ -211,12 +211,18 @@ def test_AWSPDS_L8Reader(rio, get_object):
         assert data.shape == (1, 259, 255)
         assert not mask.all()
 
-        # nodata and resampling_method are set at reader level an shouldn't be set
-        data, mask = landsat.preview(
+        # nodata and resampling_method are set at reader level
+        data_nodata, mask_nodata = landsat.preview(
+            bands="BQA", nodata=1, resampling_method="nearest"
+        )
+        numpy.testing.assert_equal(data, data_nodata)
+        numpy.testing.assert_equal(mask, mask_nodata)
+
+        # check when using wrong values
+        data_nodata, mask_nodata = landsat.preview(
             bands="BQA", nodata=0, resampling_method="bilinear"
         )
-        assert data.shape == (1, 259, 255)
-        assert mask.all()
+        assert not numpy.array_equal(mask, mask_nodata)
 
         with pytest.raises(MissingBands):
             landsat.point(-80.094, 33.2062)
@@ -237,9 +243,8 @@ def test_AWSPDS_L8Reader(rio, get_object):
             landsat.part((-80.593, 32.9134, -79.674, 33.6790))
 
         data, mask = landsat.part((-80.593, 32.9134, -79.674, 33.6790), bands="B7")
-        assert data.shape == (1, 87, 104)
+        assert data.any()
         assert data.dtype == numpy.uint16
-        assert mask.shape == (87, 104)
         assert mask.all()
 
         data, _ = landsat.part(
@@ -248,14 +253,13 @@ def test_AWSPDS_L8Reader(rio, get_object):
             nodata=0,
             resampling_method="bilinear",
         )
-        assert data.shape == (1, 87, 104)
+        assert data.any()
 
         data, mask = landsat.part(
             (-80.593, 32.9134, -79.674, 33.6790), expression="B5*0.8, B4*1.1, B3*0.8"
         )
-        assert data.shape == (3, 87, 104)
+        assert data.any()
         assert data.dtype == numpy.float64
-        assert mask.shape == (87, 104)
         assert mask.all()
 
         data, mask = landsat.part(
@@ -289,26 +293,19 @@ def test_AWSPDS_L8Reader(rio, get_object):
             landsat.feature(feat)
 
         data, mask = landsat.feature(feat, bands="B7")
-        assert data.shape == (1, 35, 56)
+        assert data.any()
         assert data.dtype == numpy.uint16
         assert mask.shape == (35, 56)
 
-        data, _ = landsat.feature(
-            feat, bands="BQA", nodata=0, resampling_method="bilinear",
-        )
-        assert data.shape == (1, 35, 56)
-
         data, mask = landsat.feature(feat, expression="B5*0.8, B4*1.1, B3*0.8")
-        assert data.shape == (3, 35, 56)
+        assert data.shape[0] == 3
         assert data.dtype == numpy.float64
-        assert mask.shape == (35, 56)
 
         data, mask = landsat.feature(
             feat, bands=("B4", "B3", "B2"), pan=True, width=80, height=80,
         )
         assert data.shape == (3, 80, 80)
         assert data.dtype == numpy.uint16
-        assert mask.shape == (80, 80)
 
 
 def test_landsat_id_c1_valid():
