@@ -1,8 +1,9 @@
 # Release Notes
 
-## 0.5.1 (TBD)
+## 0.5.1 (2021-06-25)
 
 * fix landsat `sceneid_parser` for Collection 2 Albers dataset (https://github.com/cogeotiff/rio-tiler-pds/pull/56)
+* allow `standard` and `albers` collections for Landsat Collection 2 reader (https://github.com/cogeotiff/rio-tiler-pds/pull/58)
 
 ## 0.5.0 (2021-02-02)
 

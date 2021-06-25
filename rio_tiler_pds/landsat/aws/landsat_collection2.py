@@ -67,7 +67,7 @@ class LandsatC2Reader(MultiBandReader):
 
     _scheme: str = "s3"
     _hostname: str = "usgs-landsat"
-    _prefix: str = "collection02/level-{_processingLevelNum}/standard/{_sensor_s3_prefix}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
+    _prefix: str = "collection02/level-{_processingLevelNum}/{category}/{_sensor_s3_prefix}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
