@@ -41,7 +41,7 @@ class S1L1CReader(MultiBandReader):
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
 
-    bands: Tuple = attr.ib(init=False, default=("vv", "vh"))
+    bands: Tuple = attr.ib(init=False)
     productInfo: Dict = attr.ib(init=False)
     datageom: Dict = attr.ib(init=False)
 
@@ -52,6 +52,17 @@ class S1L1CReader(MultiBandReader):
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
         self.scene_params = s1_sceneid_parser(self.sceneid)
+        if self.scene_params["polarisation"] == "DH":
+            self.bands = ("hh", "hv")
+
+        elif self.scene_params["polarisation"] == "DV":
+            self.bands = ("vv", "vh")
+
+        elif self.scene_params["polarisation"] == "SH":
+            self.bands = "hh"
+
+        elif self.scene_params["polarisation"] == "SV":
+            self.bands = "vv"
 
         prefix = self._prefix.format(**self.scene_params)
         self.productInfo = json.loads(
