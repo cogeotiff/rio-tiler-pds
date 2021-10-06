@@ -151,7 +151,7 @@ def s1_sceneid_parser(sceneid: str) -> Dict:
         r"_"
         r"(?P<processing_level>[0-9])"
         r"(?P<product_class>[SA])"
-        r"(?P<polarisation>(SH)|(SV)|(DH)|(DV)|(HH)|(HV)|(VV)|(VH))"
+        r"(?P<polarisation>(SH)|(SV)|(DH)|(DV))"
         r"_"
         r"(?P<startDateTime>[0-9]{8}T[0-9]{6})"
         r"_"

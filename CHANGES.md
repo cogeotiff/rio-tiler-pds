@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.5.2 (2021-10-06)
+
+* Fix available `bands` for Sentinel-1 based on Polarisation type (https://github.com/cogeotiff/rio-tiler-pds/pull/59)
+
 ## 0.5.1 (2021-06-25)
 
 * fix landsat `sceneid_parser` for Collection 2 Albers dataset (https://github.com/cogeotiff/rio-tiler-pds/pull/56)
