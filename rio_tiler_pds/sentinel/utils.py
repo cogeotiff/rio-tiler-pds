@@ -134,7 +134,7 @@ def s1_sceneid_parser(sceneid: str) -> Dict:
 
     """
     if not re.match(
-        "^S1[AB]_(IW)|(EW)_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$",
+        "^S1[AB]_(IW|EW)_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$",
         sceneid,
     ):
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))

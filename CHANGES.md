@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.5.3 (2021-10-08)
+
+* Fix invalid sceneid parser for Sentinel-1
+
 ## 0.5.2 (2021-10-06)
 
 * Fix available `bands` for Sentinel-1 based on Polarisation type (https://github.com/cogeotiff/rio-tiler-pds/pull/59)

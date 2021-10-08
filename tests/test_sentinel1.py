@@ -9,6 +9,7 @@ import rasterio
 from rio_tiler.errors import InvalidBandName
 from rio_tiler_pds.errors import InvalidSentinelSceneId
 from rio_tiler_pds.sentinel.aws import S1L1CReader
+from rio_tiler_pds.sentinel.utils import s1_sceneid_parser
 
 SENTINEL_SCENE = "S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s1-l1c")
@@ -84,3 +85,138 @@ def test_AWSPDS_S1L1CReader(rio, get_object):
         data, mask = sentinel.tile(tile_x, tile_y, tile_z, bands=("vv", "vh"))
         assert data.shape == (2, 256, 256)
         assert mask.shape == (256, 256)
+
+
+SENTINEL1_SCENE_PARSER_TEST_CASES = (
+    (
+        "S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B",
+        {
+            "sensor": "1",
+            "satellite": "A",
+            "beam": "IW",
+            "product": "GRD",
+            "resolution": "H",
+            "processing_level": "1",
+            "product_class": "S",
+            "polarisation": "DV",
+            "startDateTime": "20180716T004042",
+            "stopDateTime": "20180716T004107",
+            "absolute_orbit": "022812",
+            "mission_task": "02792A",
+            "product_id": "FD5B",
+            "acquisitionYear": "2018",
+            "acquisitionMonth": "07",
+            "acquisitionDay": "16",
+            "scene": "S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B",
+            "date": "2018-07-16",
+            "_month": "7",
+            "_day": "16",
+        },
+    ),
+    (
+        "S1B_EW_GRDM_1SDH_20210920T202549_20210920T202649_028786_036F85_6E7E",
+        {
+            "sensor": "1",
+            "satellite": "B",
+            "beam": "EW",
+            "product": "GRD",
+            "resolution": "M",
+            "processing_level": "1",
+            "product_class": "S",
+            "polarisation": "DH",
+            "startDateTime": "20210920T202549",
+            "stopDateTime": "20210920T202649",
+            "absolute_orbit": "028786",
+            "mission_task": "036F85",
+            "product_id": "6E7E",
+            "acquisitionYear": "2021",
+            "acquisitionMonth": "09",
+            "acquisitionDay": "20",
+            "scene": "S1B_EW_GRDM_1SDH_20210920T202549_20210920T202649_028786_036F85_6E7E",
+            "date": "2021-09-20",
+            "_month": "9",
+            "_day": "20",
+        },
+    ),
+    (
+        "S1A_EW_GRDM_1SSH_20210920T061420_20210920T061520_039761_04B3D4_7079",
+        {
+            "sensor": "1",
+            "satellite": "A",
+            "beam": "EW",
+            "product": "GRD",
+            "resolution": "M",
+            "processing_level": "1",
+            "product_class": "S",
+            "polarisation": "SH",
+            "startDateTime": "20210920T061420",
+            "stopDateTime": "20210920T061520",
+            "absolute_orbit": "039761",
+            "mission_task": "04B3D4",
+            "product_id": "7079",
+            "acquisitionYear": "2021",
+            "acquisitionMonth": "09",
+            "acquisitionDay": "20",
+            "scene": "S1A_EW_GRDM_1SSH_20210920T061420_20210920T061520_039761_04B3D4_7079",
+            "date": "2021-09-20",
+            "_month": "9",
+            "_day": "20",
+        },
+    ),
+    (
+        "S1B_IW_GRDH_1SSV_20210920T213024_20210920T213053_028787_036F8A_5B74",
+        {
+            "sensor": "1",
+            "satellite": "B",
+            "beam": "IW",
+            "product": "GRD",
+            "resolution": "H",
+            "processing_level": "1",
+            "product_class": "S",
+            "polarisation": "SV",
+            "startDateTime": "20210920T213024",
+            "stopDateTime": "20210920T213053",
+            "absolute_orbit": "028787",
+            "mission_task": "036F8A",
+            "product_id": "5B74",
+            "acquisitionYear": "2021",
+            "acquisitionMonth": "09",
+            "acquisitionDay": "20",
+            "scene": "S1B_IW_GRDH_1SSV_20210920T213024_20210920T213053_028787_036F8A_5B74",
+            "date": "2021-09-20",
+            "_month": "9",
+            "_day": "20",
+        },
+    ),
+    (
+        "S1A_IW_GRDH_1SSH_20210920T175655_20210920T175729_039768_04B410_7D7D",
+        {
+            "sensor": "1",
+            "satellite": "A",
+            "beam": "IW",
+            "product": "GRD",
+            "resolution": "H",
+            "processing_level": "1",
+            "product_class": "S",
+            "polarisation": "SH",
+            "startDateTime": "20210920T175655",
+            "stopDateTime": "20210920T175729",
+            "absolute_orbit": "039768",
+            "mission_task": "04B410",
+            "product_id": "7D7D",
+            "acquisitionYear": "2021",
+            "acquisitionMonth": "09",
+            "acquisitionDay": "20",
+            "scene": "S1A_IW_GRDH_1SSH_20210920T175655_20210920T175729_039768_04B410_7D7D",
+            "date": "2021-09-20",
+            "_month": "9",
+            "_day": "20",
+        },
+    ),
+)
+
+
+@pytest.mark.parametrize("sceneid,expected_content", SENTINEL1_SCENE_PARSER_TEST_CASES)
+def test_s1_sceneid_parser(sceneid, expected_content):
+    """Parse Sentinel-1 Sceneid."""
+    assert s1_sceneid_parser(sceneid) == expected_content
