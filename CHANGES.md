@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.5.4 (2021-10-08)
+
+* `bands` should be stored as `tuple` in sentinel-1 reader
+
 ## 0.5.3 (2021-10-08)
 
 * Fix invalid sceneid parser for Sentinel-1

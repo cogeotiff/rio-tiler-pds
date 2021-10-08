@@ -59,10 +59,10 @@ class S1L1CReader(MultiBandReader):
             self.bands = ("vv", "vh")
 
         elif self.scene_params["polarisation"] == "SH":
-            self.bands = "hh"
+            self.bands = ("hh",)
 
         elif self.scene_params["polarisation"] == "SV":
-            self.bands = "vv"
+            self.bands = ("vv",)
 
         prefix = self._prefix.format(**self.scene_params)
         self.productInfo = json.loads(
