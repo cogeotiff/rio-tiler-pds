@@ -2,6 +2,11 @@
 
 ### L1C - JPEG2000
 
+!!! warnings
+
+    :warning: JPEG2000 format is not `Cloud Optimized`, numerous GET requests will be needed to read such format
+    which could result in important cost.
+
 bands: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
 ```python
@@ -18,37 +23,58 @@ with rasterio.Env(AWS_REQUEST_PAYER="requester"):
         >>> <class 'rio_tiler_pds.sentinel.aws.sentinel2.S2L1CReader'>
 
         print(type(sentinel.tileInfo))
-        >>> dict
+        >>> <class 'dict'>
 
         print(type(sentinel.datageom))
-        >>> dict
+        >>> <class 'dict'>
 
-        print(sentinel.center)
-        >>> (-69.4190338105916, 48.25699850457617, 8)
+        print(sentinel.bands)
+        >>> ('B01',
+        'B02',
+        'B03',
+        'B04',
+        'B05',
+        'B06',
+        'B07',
+        'B08',
+        'B09',
+        'B11',
+        'B12',
+        'B8A')
 
-        print(sentinel.info(bands="B01").dict(exclude_none=True))
+        print(sentinel.info(bands="B01").json(exclude_none=True))
         >>> {
-            'bounds': (-69.97083660271242, 47.761069480166974, -68.86723101847078, 48.75292752898536),
-            'center': (-69.4190338105916, 48.25699850457617, 8),
+            'bounds': [-69.98971880792764, 47.761069480166995, -68.86723101847079, 48.75300221903151],
             'minzoom': 8,
             'maxzoom': 14,
-            'band_metadata': [('B01', {})],
-            'band_descriptions': [('B01', '')],
+            'band_metadata': [["B01", {}]],
+            'band_descriptions': [["B01", {}]],
             'dtype': 'uint16',
-            'colorinterp': ['gray'],
-            'nodata_type': 'None'
+            'nodata_type': 'Nodata',
+            'colorinterp': ['gray']
         }
 
-        print(sentinel.stats(bands="B8A")["B8A"].dict())
+        print(sentinel.statistics(bands="B8A")["B8A"].json())
         >>> {
-            'percentiles': [106, 9322],
-            'min': 1,
-            'max': 13659,
-            'std': 2682.6511198930048,
+            'min': 1.0,
+            'max': 19753.0,
+            'mean': 2873.8173758756675,
+            'count': 653216.0,
+            'sum': 1877223491.0,
+            'std': 2680.2546389126283,
+            'median': 2919.0,
+            'majority': 117.0,
+            'minority': 9913.0,
+            'unique': 11767.0,
             'histogram': [
-                [261631, 52188, 137746, 98039, 41066, 30818, 21095, 8631, 1442, 105],
-                [1.0, 1366.8, 2732.6, 4098.4, 5464.2, 6830.0, 8195.8, 9561.6, 10927.4, 12293.199999999999, 13659.0]
-            ]
+                [281576.0, 154185.0, 130600.0, 49758.0, 30001.0, 6851.0, 242.0, 1.0, 1.0, 1.0],
+                [1.0, 1976.2, 3951.4, 5926.6, 7901.8, 9877.0, 11852.2, 13827.4, 15802.6, 17777.8, 19753.0]
+            ],
+            'valid_percent': 62.3,
+            'masked_pixels': 395360.0,
+            'valid_pixels': 653216.0,
+            'percentile_98': 9320.699999999953,
+            'percentile_2': 106.0
         }
 
         img = sentinel.tile(77, 89, 8, bands="B01")
@@ -72,6 +98,11 @@ with rasterio.Env(AWS_REQUEST_PAYER="requester"):
 
 ### L2A - JPEG2000
 
+!!! warnings
+
+    :warning: JPEG2000 format is not `Cloud Optimized`, numerous GET requests will be needed to read such format
+    which could result in important cost.
+
 bands: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
 Note: `AOT, SCL, WVP` bands are not supported.
@@ -94,15 +125,14 @@ with rasterio.Env(AWS_REQUEST_PAYER="requester"):
 
         print(sentinel.info(bands="B01").dict(exclude_none=True))
         >>> {
-            'bounds': (-69.96945818759949, 47.7610811323474, -68.86723101847078, 48.75292752898536),
-            'center': (-69.41834460303514, 48.257004330666376, 8),
-            'minzoom': 8,
-            'maxzoom': 14,
-            'band_metadata': [('B01', {})],
-            'band_descriptions': [('B01', '')],
-            'dtype': 'uint16',
-            'colorinterp': ['gray'],
-            'nodata_type': 'None'
+            "bounds": [-69.98831359398795, 47.7610811323474, -68.86723101847079, 48.75300225264652],
+            "minzoom": 8,
+            "maxzoom": 14,
+            "band_metadata": [["B01", {}]],
+            "band_descriptions": [["B01", ""]],
+            "dtype": "uint16",
+            "nodata_type": "Nodata",
+            "colorinterp": ["gray"]
         }
 ```
 

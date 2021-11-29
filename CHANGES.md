@@ -4,6 +4,13 @@
 
 * update rio-tiler requirement to `>=3.0.0`
 
+**breaking changes**
+
+* remove python 3.6 support
+* `sceneid` -> `input` in Reader attributes
+* remove `.stats()` and `.metadata()` methods
+* `bands` is now optional for `.info()` and `.statistics`
+* remove useless `band_expression` option
 
 ## 0.5.4 (2021-10-08)
 

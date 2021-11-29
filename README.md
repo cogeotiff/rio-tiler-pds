@@ -129,20 +129,20 @@ All Readers are subclass of [`rio_tiler.io.BaseReader`](https://github.com/cogeo
 
 #### Properties
 - **bounds**: Scene bounding box
+- **crs**: CRS of the bounding box
+- **geographic_bounds**: bounding box in geographic projection (e.g WGS84)
 - **minzoom**: WebMercator MinZoom (e.g 7 for Landsat8)
 - **maxzoom**: WebMercator MaxZoom (e.g 12 for Landsat8)
-- **center**: Scene center
-- **spatial_info**: zooms, bounds and center
 
 #### Methods
 
 - **info**: Returns band's simple info (e.g nodata, band_descriptions, ....)
-- **stats**: Returns band's statistics (percentile, histogram, ...)
-- **metadata**: info + stats
+- **statistics**: Returns band's statistics (percentile, histogram, ...)
 - **tile**: Read web mercator map tile from bands
 - **part**: Extract part of bands
 - **preview**: Returns a low resolution preview from bands
 - **point**: Returns band's pixel value for a given lon,lat
+- **feature**: Extract part of bands
 
 #### Other
 - **bands** (property): List of available bands for each dataset
@@ -239,38 +239,58 @@ When reading data or metadata, readers will merge them.
 
 e.g
 ```python
-with S2COGReader("S2A_L1C_20170729_19UDP_0") as sentinel:
+with S2COGReader("S2A_L2A_20170729_19UDP_0") as sentinel:
     img = sentinel.tile(77, 89, 8, bands=("B01", "B02")
     assert img.data.shape == (2, 256, 256)
 
-    print(sentinel.metadata(bands=("B01", "B02")).dict(exclude_none=True) )
-    > {
-      'bounds': (-11.97923472537954, 24.29633060395354, -10.8745567866346, 25.3046147384797),
-      'center': (-11.42689575600707, 24.800472671216617, 8),
-      'minzoom': 8,
-      'maxzoom': 14,
-      'band_metadata': [('B01', {}), ('B02', {})],
-      'band_descriptions': [('B01', ''), ('B02', '')],
-      'dtype': 'uint16',
-      'nodata_type': 'Nodata',
-      'colorinterp': ['gray', 'gray'],
-      'statistics': {
-        'B01': {
-          'percentiles': [999.0, 1958.0],
-          'min': 351.0,
-          'max': 7436.0,
-          'std': 308.61305419228694,
-          'histogram': [[...],[...]]
-        },
-        'B02': {
-          'percentiles': [1215.0, 2294.0],
-          'min': 350.0,
-          'max': 7335.0,
-          'std': 321.2007321982642,
-          'histogram': [[...], [...]]
-        }
-      }
-    }
+    stats = sentinel.statistics(bands=("B01", "B02"))
+    print(stats)
+    >> {
+      'B01': BandStatistics(
+        min=2.0,
+        max=17132.0,
+        mean=2183.7570706659685,
+        count=651247.0,
+        sum=1422165241.0,
+        std=3474.123975478363,
+        median=370.0,
+        majority=238.0,
+        minority=2.0,
+        unique=15112.0,
+        histogram=[
+          [476342.0, 35760.0, 27525.0, 24852.0, 24379.0, 23792.0, 20891.0, 13602.0, 3891.0, 213.0],
+          [2.0, 1715.0, 3428.0, 5141.0, 6854.0, 8567.0, 10280.0, 11993.0, 13706.0, 15419.0, 17132.0]
+        ],
+        valid_percent=62.11,
+        masked_pixels=397329.0,
+        valid_pixels=651247.0,
+        percentile_2=179.0,
+        percentile_98=12465.0
+      ),
+      'B02': BandStatistics(
+        min=1.0,
+        max=15749.0,
+        mean=1941.2052554560712,
+        count=651247.0,
+        sum=1264204099.0,
+        std=3130.545395156859,
+        median=329.0,
+        majority=206.0,
+        minority=11946.0,
+        unique=13904.0,
+        histogram=[
+          [479174.0, 34919.0, 27649.0, 25126.0, 24913.0, 24119.0, 20223.0, 12097.0, 2872.0, 155.0],
+          [1.0, 1575.8, 3150.6, 4725.4, 6300.2, 7875.0, 9449.8, 11024.6, 12599.4, 14174.199999999999, 15749.0]
+        ],
+        valid_percent=62.11,
+        masked_pixels=397329.0,
+        valid_pixels=651247.0,
+        percentile_2=134.0,
+        percentile_98=11227.079999999958
+      )}
+
+      print(stats["B01"].min)
+      >> 2.0
 ```
 
 ## Changes
