@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.6.0 (TBD)
+## 0.6.0 (2021-11-29)
 
 * update rio-tiler requirement to `>=3.0.0`
 
