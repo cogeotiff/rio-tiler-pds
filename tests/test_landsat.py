@@ -80,8 +80,9 @@ def test_AWSPDS_L8Reader(rio, get_object):
             "BQA",
         )
 
-        with pytest.raises(MissingBands):
-            landsat.info()
+        with pytest.warns(UserWarning):
+            meta = landsat.info()
+        assert len(meta.band_descriptions) == len(landsat.bands)
 
         with pytest.raises(InvalidBandName):
             landsat.info(bands="BAND5")
@@ -93,44 +94,27 @@ def test_AWSPDS_L8Reader(rio, get_object):
         metadata = landsat.info(bands=landsat.bands)
         assert len(metadata["band_metadata"]) == 12
 
-        with pytest.raises(MissingBands):
-            landsat.stats()
+        with pytest.warns(UserWarning):
+            stats = landsat.statistics()
+        assert list(stats) == list(landsat.bands)
 
-        stats = landsat.stats(bands="B1")
-        assert stats["B1"]["percentiles"] == [1206, 6957]
+        stats = landsat.statistics(bands="B1")
+        assert stats["B1"]["percentile_2"]
+        assert stats["B1"]["percentile_98"]
 
-        stats = landsat.stats(bands=landsat.bands)
+        stats = landsat.statistics(bands=landsat.bands)
         assert len(stats.items()) == 12
         assert list(stats) == list(landsat.bands)
 
-        stats = landsat.stats(bands="B1", hist_options=dict(bins=20))
+        stats = landsat.statistics(bands="B1", hist_options=dict(bins=20))
         assert len(stats["B1"]["histogram"][0]) == 20
 
-        stats = landsat.stats(pmin=10, pmax=90, bands="B1")
-        assert stats["B1"]["percentiles"] == [1274, 3964]
-
-        stats = landsat.stats(bands="BQA")
+        stats = landsat.statistics(bands="BQA")
         assert stats["BQA"]["min"] == 2720
 
-        stats = landsat.stats(bands="BQA", nodata=0, resampling_method="bilinear")
+        stats = landsat.statistics(bands="BQA", nodata=0, resampling_method="bilinear")
         # nodata and resampling_method are set at reader level an shouldn't be set
         assert stats["BQA"]["min"] == 1
-
-        with pytest.raises(MissingBands):
-            landsat.metadata()
-
-        metadata = landsat.metadata(bands="B1")
-        assert metadata["statistics"]["B1"]["percentiles"] == [1206, 6957]
-        assert metadata["band_metadata"] == [("B1", {})]
-        assert metadata["band_descriptions"] == [("B1", "")]
-
-        metadata = landsat.metadata(bands=("B1", "B2"))
-        assert metadata["band_metadata"] == [("B1", {}), ("B2", {})]
-        assert metadata["band_descriptions"] == [("B1", ""), ("B2", "")]
-
-        # nodata and resampling_method are set at reader level an shouldn't be set
-        metadata = landsat.metadata(bands="BQA", nodata=0, resampling_method="bilinear")
-        assert metadata["statistics"]["BQA"]["min"] == 1
 
         tile_z = 8
         tile_x = 71
@@ -302,7 +286,11 @@ def test_AWSPDS_L8Reader(rio, get_object):
         assert data.dtype == numpy.float64
 
         data, mask = landsat.feature(
-            feat, bands=("B4", "B3", "B2"), pan=True, width=80, height=80,
+            feat,
+            bands=("B4", "B3", "B2"),
+            pan=True,
+            width=80,
+            height=80,
         )
         assert data.shape == (3, 80, 80)
         assert data.dtype == numpy.uint16

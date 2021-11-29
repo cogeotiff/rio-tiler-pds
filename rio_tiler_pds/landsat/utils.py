@@ -199,8 +199,7 @@ def sceneid_parser(sceneid: str) -> Dict:
 
 
 def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:  # noqa: C901
-    """Get available Landsat bands given scene metadata
-    """
+    """Get available Landsat bands given scene metadata"""
     sensor_name = meta["sensor_name"]
 
     if meta["processingCorrectionLevel"] == "L2SR":

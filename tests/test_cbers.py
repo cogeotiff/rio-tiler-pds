@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 import rasterio
 
-from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
+from rio_tiler.errors import InvalidBandName, TileOutsideBounds
 from rio_tiler_pds.cbers.aws import CBERSReader
 from rio_tiler_pds.cbers.utils import sceneid_parser
 from rio_tiler_pds.errors import InvalidCBERSSceneId
@@ -59,8 +59,14 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
         assert cbers.maxzoom
         assert cbers.bands == ("B5", "B6", "B7", "B8")
 
-        with pytest.raises(MissingBands):
-            cbers.info()
+        with pytest.warns(UserWarning):
+            meta = cbers.info()
+        assert meta.band_descriptions == [
+            ("B5", ""),
+            ("B6", ""),
+            ("B7", ""),
+            ("B8", ""),
+        ]
 
         with pytest.raises(InvalidBandName):
             cbers.info(bands="BAND5")
@@ -78,31 +84,17 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
             ("B8", ""),
         ]
 
-        with pytest.raises(MissingBands):
-            cbers.stats()
+        with pytest.warns(UserWarning):
+            stats = cbers.statistics()
+        assert list(stats) == ["B5", "B6", "B7", "B8"]
 
-        stats = cbers.stats(bands="B5")
+        stats = cbers.statistics(bands="B5")
         assert len(stats.items()) == 1
-        assert stats["B5"]["percentiles"] == [28, 98]
+        assert stats["B5"]["percentile_2"]
+        assert stats["B5"]["percentile_98"]
 
-        stats = cbers.stats(bands=cbers.bands, hist_options={"bins": 20})
+        stats = cbers.statistics(bands=cbers.bands, hist_options={"bins": 20})
         assert len(stats["B5"]["histogram"][0]) == 20
-
-        with pytest.raises(MissingBands):
-            cbers.metadata()
-
-        metadata = cbers.metadata(bands="B5")
-        assert metadata["statistics"]["B5"]["percentiles"] == [28, 98]
-
-        metadata = cbers.metadata(bands=cbers.bands)
-        assert metadata["statistics"]["B5"]["percentiles"] == [28, 98]
-        assert len(metadata["band_metadata"]) == 4
-        assert metadata["band_descriptions"] == [
-            ("B5", ""),
-            ("B6", ""),
-            ("B7", ""),
-            ("B8", ""),
-        ]
 
         tile_z = 10
         tile_x = 664
@@ -203,8 +195,14 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
         assert cbers.maxzoom
         assert cbers.bands == ("B5", "B6", "B7", "B8")
 
-        with pytest.raises(MissingBands):
-            cbers.info()
+        with pytest.warns(UserWarning):
+            meta = cbers.info()
+        assert meta.band_descriptions == [
+            ("B5", ""),
+            ("B6", ""),
+            ("B7", ""),
+            ("B8", ""),
+        ]
 
         with pytest.raises(InvalidBandName):
             cbers.info(bands="BAND5")
@@ -222,31 +220,17 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
             ("B8", ""),
         ]
 
-        with pytest.raises(MissingBands):
-            cbers.stats()
+        with pytest.warns(UserWarning):
+            stats = cbers.statistics()
+        assert list(stats) == ["B5", "B6", "B7", "B8"]
 
-        stats = cbers.stats(bands="B5")
+        stats = cbers.statistics(bands="B5")
         assert len(stats.items()) == 1
-        assert stats["B5"]["percentiles"] == [30, 52]
+        assert stats["B5"]["percentile_2"]
+        assert stats["B5"]["percentile_98"]
 
-        stats = cbers.stats(bands=cbers.bands, hist_options=dict(bins=20))
+        stats = cbers.statistics(bands=cbers.bands, hist_options=dict(bins=20))
         assert len(stats["B5"]["histogram"][0]) == 20
-
-        with pytest.raises(MissingBands):
-            cbers.metadata()
-
-        metadata = cbers.metadata(bands="B5")
-        assert metadata["statistics"]["B5"]["percentiles"] == [30, 52]
-
-        metadata = cbers.metadata(bands=cbers.bands)
-        assert metadata["statistics"]["B5"]["percentiles"] == [30, 52]
-        assert len(metadata["band_metadata"]) == 4
-        assert metadata["band_descriptions"] == [
-            ("B5", ""),
-            ("B6", ""),
-            ("B7", ""),
-            ("B8", ""),
-        ]
 
         tile_z = 10
         tile_x = 385

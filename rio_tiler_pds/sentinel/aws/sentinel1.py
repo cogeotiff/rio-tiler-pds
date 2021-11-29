@@ -1,13 +1,13 @@
 """AWS Sentinel 1 reader."""
 
 import json
-from typing import Dict, Tuple, Type
+from typing import Dict, Type
 
 import attr
 from morecantile import TileMatrixSet
 from rasterio.features import bounds as featureBounds
 
-from rio_tiler.constants import WEB_MERCATOR_TMS
+from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import GCPCOGReader, MultiBandReader
 from rio_tiler_pds.sentinel.utils import s1_sceneid_parser
@@ -19,7 +19,7 @@ class S1L1CReader(MultiBandReader):
     """AWS Public Dataset Sentinel 1 reader.
 
     Args:
-        sceneid (str): Sentinel-1 sceneid.
+        input (str): Sentinel-1 sceneid.
 
     Attributes:
         minzoom (int): Dataset's Min Zoom level (default is 8).
@@ -34,24 +34,27 @@ class S1L1CReader(MultiBandReader):
 
     """
 
-    sceneid: str = attr.ib()
+    input: str = attr.ib()
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
     reader: Type[GCPCOGReader] = attr.ib(default=GCPCOGReader)
     reader_options: Dict = attr.ib(default={"nodata": 0})
-    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
 
-    bands: Tuple = attr.ib(init=False)
     productInfo: Dict = attr.ib(init=False)
     datageom: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-s1-l1c"
-    _prefix: str = "{product}/{acquisitionYear}/{_month}/{_day}/{beam}/{polarisation}/{scene}"
+    _prefix: str = (
+        "{product}/{acquisitionYear}/{_month}/{_day}/{beam}/{polarisation}/{scene}"
+    )
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
-        self.scene_params = s1_sceneid_parser(self.sceneid)
+        self.scene_params = s1_sceneid_parser(self.input)
         if self.scene_params["polarisation"] == "DH":
             self.bands = ("hh", "hv")
 
@@ -68,8 +71,10 @@ class S1L1CReader(MultiBandReader):
         self.productInfo = json.loads(
             get_object(self._hostname, f"{prefix}/productInfo.json", request_pays=True)
         )
+
         self.datageom = self.productInfo["footprint"]
         self.bounds = featureBounds(self.datageom)
+        self.crs = WGS84_CRS
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""

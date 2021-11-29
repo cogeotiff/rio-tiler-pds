@@ -85,15 +85,14 @@ def test_AWS_MODISPDSReader(rio):
         metadata = modis.info(bands="B01")
         assert metadata["band_descriptions"] == [("B01", "Nadir_Reflectance_Band1")]
 
-        metadata = modis.metadata(bands=("B01", "B02"))
-        assert metadata["band_descriptions"] == [
-            ("B01", "Nadir_Reflectance_Band1"),
-            ("B02", "Nadir_Reflectance_Band2"),
-        ]
+        with pytest.warns(UserWarning):
+            stats = modis.statistics()
+        assert list(stats) == list(modis.bands)
 
-        stats = modis.stats(bands="B05")
+        stats = modis.statistics(bands="B05")
         assert len(stats.items()) == 1
-        assert stats["B05"]["percentiles"]
+        assert stats["B05"]["percentile_2"]
+        assert stats["B05"]["percentile_98"]
 
         tile_z = 7
         tile_x = 76

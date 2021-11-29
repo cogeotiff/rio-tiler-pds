@@ -3,15 +3,14 @@
 import json
 import re
 from collections import OrderedDict
-from typing import Any, Dict, Tuple, Type, Union
+from typing import Any, Dict, Sequence, Type, Union
 
 import attr
 from morecantile import TileMatrixSet
 from rasterio.crs import CRS
 from rasterio.features import bounds as featureBounds
-from rasterio.warp import transform_geom
 
-from rio_tiler import constants
+from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import COGReader, MultiBandReader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
@@ -38,7 +37,7 @@ class S2L1CReader(MultiBandReader):
     """AWS Public Dataset Sentinel 2 L1C reader.
 
     Args:
-        sceneid (str): Sentinel-2 L1C sceneid.
+        input (str): Sentinel-2 L1C sceneid.
 
     Attributes:
         minzoom (int): Dataset's Min Zoom level (default is 8).
@@ -54,14 +53,17 @@ class S2L1CReader(MultiBandReader):
 
     """
 
-    sceneid: str = attr.ib()
+    input: str = attr.ib()
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
     reader: Type[COGReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(default={"nodata": 0})
-    tms: TileMatrixSet = attr.ib(default=constants.WEB_MERCATOR_TMS)
+
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
 
-    bands: Tuple = attr.ib(init=False, default=default_l1c_bands)
+    bands: Sequence[str] = attr.ib(init=False, default=default_l1c_bands)
+
     tileInfo: Dict = attr.ib(init=False)
     datageom: Dict = attr.ib(init=False)
 
@@ -71,16 +73,16 @@ class S2L1CReader(MultiBandReader):
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
-        self.scene_params = s2_sceneid_parser(self.sceneid)
+        self.scene_params = s2_sceneid_parser(self.input)
 
         prefix = self._prefix.format(**self.scene_params)
         self.tileInfo = json.loads(
             get_object(self._hostname, f"{prefix}/tileInfo.json", request_pays=True)
         )
-        input_geom = self.tileInfo["tileDataGeometry"]
-        input_crs = CRS.from_user_input(input_geom["crs"]["properties"]["name"])
-        self.datageom = transform_geom(input_crs, constants.WGS84_CRS, input_geom)
+
+        self.datageom = self.tileInfo["tileDataGeometry"]
         self.bounds = featureBounds(self.datageom)
+        self.crs = CRS.from_user_input(self.datageom["crs"]["properties"]["name"])
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
@@ -149,7 +151,7 @@ class S2L2AReader(S2L1CReader):
     """AWS Public Dataset Sentinel 2 L2A reader.
 
     Args:
-        sceneid (str): Sentinel-2 L2A sceneid.
+        input (str): Sentinel-2 L2A sceneid.
 
     Attributes:
         bands (tuple): list of available bands (default is ('B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B11', 'B12', 'B8A')).
@@ -160,7 +162,7 @@ class S2L2AReader(S2L1CReader):
 
     """
 
-    bands: tuple = attr.ib(init=False, default=default_l2a_bands)
+    bands: Sequence[str] = attr.ib(init=False, default=default_l2a_bands)
 
     _scheme: str = "s3"
     _hostname: str = "sentinel-s2-l2a"
@@ -195,7 +197,7 @@ class S2L2ACOGReader(MultiBandReader):
     """AWS Public Dataset Sentinel 2 L2A COGS reader.
 
     Args:
-        sceneid (str): Sentinel-2 sceneid.
+        input (str): Sentinel-2 sceneid.
 
     Attributes:
         minzoom (int): Dataset's Min Zoom level (default is 8).
@@ -210,14 +212,15 @@ class S2L2ACOGReader(MultiBandReader):
 
     """
 
-    sceneid: str = attr.ib()
+    input: str = attr.ib()
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
     reader: Type[COGReader] = attr.ib(default=COGReader)
     reader_options: Dict = attr.ib(factory=dict)
-    tms: TileMatrixSet = attr.ib(default=constants.WEB_MERCATOR_TMS)
+
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
 
-    bands: tuple = attr.ib(init=False)
     stac_item: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
@@ -226,7 +229,7 @@ class S2L2ACOGReader(MultiBandReader):
 
     def __attrs_post_init__(self):
         """Fetch item.json and get bounds and bands."""
-        self.scene_params = s2_sceneid_parser(self.sceneid)
+        self.scene_params = s2_sceneid_parser(self.input)
 
         cog_sceneid = "S{sensor}{satellite}_{_utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}".format(
             **self.scene_params
@@ -237,10 +240,12 @@ class S2L2ACOGReader(MultiBandReader):
                 self._hostname, f"{prefix}/{cog_sceneid}.json", request_pays=True
             )
         )
+        self.bounds = self.stac_item["bbox"]
+        self.crs = WGS84_CRS
+
         self.bands = tuple(
             [band for band in self.stac_item["assets"] if re.match("B[0-9A]{2}", band)]
         )
-        self.bounds = self.stac_item["bbox"]
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""

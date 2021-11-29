@@ -26,59 +26,44 @@ from rio_tiler_pds.landsat.aws import LandsatC2Reader
 with rasterio.Env(AWS_REQUEST_PAYER="requester"):
     with LandsatC2Reader("LC08_L2SR_093106_20200207_20201016_02_T2") as landsat:
         print(landsat.bands)
-        # ('QA_PIXEL', 'QA_RADSAT', 'SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B6', 'SR_B7', 'SR_QA_AEROSOL')
+        >>> ('QA_PIXEL', 'QA_RADSAT', 'SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B6', 'SR_B7', 'SR_QA_AEROSOL')
         assert landsat.minzoom == 5
         assert landsat.maxzoom == 12
 
-        print(landsat.spatial_info.dict())
-        # {'bounds': (127.5491501485206,
-        #             -66.70704040042727,
-        #             132.96321916779596,
-        #             -64.45548178742538),
-        #  'center': (130.25618465815828, -65.58126109392633, 5),
-        #  'maxzoom': 12,
-        #  'minzoom': 5}
+        print(landsat.info(bands="SR_B1").json(exclude_none=True))
+        >>> {
+            "bounds": [127.54909041630796, -66.70705179185323, 132.96277753047164, -64.4554629843337],
+            "minzoom": 5,
+            "maxzoom": 12,
+            "band_metadata": [["SR_B1", {}]],
+            "band_descriptions": [["SR_B1", ""]],
+            "dtype": "uint16",
+            "nodata_type": "Nodata",
+            "colorinterp": ["gray"]
+        }
 
-        print(landsat.info(bands="SR_B1").dict(exclude_none=True))
-        # {'band_descriptions': [('SR_B1', '')],
-        #  'band_metadata': [('SR_B1', {})],
-        #  'bounds': (127.5491501485206,
-        #             -66.70704040042727,
-        #             132.96321916779596,
-        #             -64.45548178742538),
-        #  'center': (130.25618465815828, -65.58126109392633, 5),
-        #  'colorinterp': ['gray'],
-        #  'dtype': 'uint16',
-        #  'maxzoom': 12,
-        #  'minzoom': 5,
-        #  'nodata_type': 'Nodata'}
-
-        print(landsat.stats(bands="SR_B1")["SR_B1"].dict())
-        # {'histogram': [[6580.0,
-        #                 291951.0,
-        #                 35705.0,
-        #                 30246.0,
-        #                 21644.0,
-        #                 14611.0,
-        #                 22435.0,
-        #                 33499.0,
-        #                 46199.0,
-        #                 53017.0],
-        #                [5.0,
-        #                 5587.0,
-        #                 11169.0,
-        #                 16751.0,
-        #                 22333.0,
-        #                 27915.0,
-        #                 33497.0,
-        #                 39079.0,
-        #                 44661.0,
-        #                 50243.0,
-        #                 55825.0]],
-        #  'max': 55825.0,
-        #  'min': 5.0,
-        #  'percentiles': [6223.0, 52240.0],
-        #  'std': 16839.923244537837}
+        print(landsat.statistics(bands="SR_B1")["SR_B1"].json())
+        >>> {
+            "min": 2487.0,
+            "max": 53345.0,
+            "mean": 21039.126798561152,
+            "count": 8896.0,
+            "sum": 187164072.0,
+            "std": 16484.450981447077,
+            "median": 10978.0,
+            "majority": 8233.0,
+            "minority": 2487.0,
+            "unique": 5932.0,
+            "histogram": [
+                [594.0, 4181.0, 603.0, 557.0, 296.0, 207.0, 296.0, 469.0, 615.0, 1078.0],
+                [2487.0, 7572.8, 12658.6, 17744.4, 22830.2, 27916.0, 33001.8, 38087.6, 43173.4, 48259.200000000004, 53345.0]
+            ],
+            "valid_percent": 54.3,
+            "masked_pixels": 7488.0,
+            "valid_pixels": 8896.0,
+            "percentile_98": 52178.1,
+            "percentile_2": 7367.9
+        }
 
         tile_z = 8
         tile_x = 218
