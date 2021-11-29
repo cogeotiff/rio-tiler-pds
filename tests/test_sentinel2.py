@@ -94,7 +94,7 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
             "B8A",
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B20")
+            sentinel.statistics(bands="B20")
 
         assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
@@ -114,11 +114,9 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
             values = sentinel.point(-69.41, 48.25, bands="B01", expression="B01/B02")
             assert values[0] == 1193.0 / 846.0
 
-        stats = sentinel.stats(bands="B01")
-        assert stats["B01"]["percentiles"] == [1094, 8170]
-
-        metadata = sentinel.metadata(bands="B01")
-        assert metadata["statistics"]["B01"]["percentiles"] == [1094, 8170]
+        stats = sentinel.statistics(bands="B01")
+        assert stats["B01"]["percentile_2"]
+        assert stats["B01"]["percentile_98"]
 
         tile_z = 8
         tile_x = 78
@@ -229,15 +227,13 @@ def test_AWSPDS_S2L2AReader(rio, get_object):
             # "WVP",
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B25")
+            sentinel.statistics(bands="B25")
 
         assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
-        stats = sentinel.stats(bands="B01")
-        assert stats["B01"]["percentiles"] == [1094, 8170]
-
-        metadata = sentinel.metadata(bands="B01")
-        assert metadata["statistics"]["B01"]["percentiles"] == [1094, 8170]
+        stats = sentinel.statistics(bands="B01")
+        assert stats["B01"]["percentile_2"]
+        assert stats["B01"]["percentile_98"]
 
         tile_z = 8
         tile_x = 78
@@ -316,12 +312,13 @@ def test_AWSPDS_S2COGReader(rio, get_object):
             )
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B30")
+            sentinel.statistics(bands="B30")
 
         assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
-        stats = sentinel.stats(bands="B01")
-        assert stats["B01"]["percentiles"] == [1029, 1929]
+        stats = sentinel.statistics(bands="B01")
+        assert stats["B01"]["percentile_2"]
+        assert stats["B01"]["percentile_98"]
 
         assert (
             sentinel._get_band_url("B01")
@@ -351,10 +348,11 @@ def test_AWSPDS_S2COGReader(rio, get_object):
             )
         )
         with pytest.raises(InvalidBandName):
-            sentinel.stats(bands="B25")
+            sentinel.statistics(bands="B25")
 
-        stats = sentinel.stats(bands="B01")
-        assert stats["B01"]["percentiles"] == [1029, 1929]
+        stats = sentinel.statistics(bands="B01")
+        assert stats["B01"]["percentile_2"]
+        assert stats["B01"]["percentile_98"]
 
         assert (
             sentinel._get_band_url("B01")

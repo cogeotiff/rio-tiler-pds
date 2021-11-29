@@ -6,7 +6,7 @@ with open("README.md") as f:
     readme = f.read()
 
 # Runtime requirements.
-inst_reqs = ["rio-tiler>=2.0,<2.2", "rio-toa"]
+inst_reqs = ["rio-tiler>=3.0.0,<4.0", "rio-toa"]
 
 extra_reqs = {
     "test": ["pytest", "pytest-cov"],
@@ -17,7 +17,7 @@ extra_reqs = {
 setup(
     name="rio-tiler-pds",
     version="0.5.4",
-    python_requires=">=3",
+    python_requires=">=3.7",
     description=u"""Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS""",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -28,7 +28,6 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering :: GIS",
     ],
     keywords="COG cogeo raster aws map tiler gdal rasterio",

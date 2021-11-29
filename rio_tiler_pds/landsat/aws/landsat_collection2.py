@@ -21,13 +21,13 @@ Links:
 """
 
 import json
-from typing import Dict, Tuple, Type
+from typing import Dict, Type
 
 import attr
 from botocore.exceptions import ClientError
 from morecantile import TileMatrixSet
 
-from rio_tiler.constants import WEB_MERCATOR_TMS
+from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import COGReader, MultiBandReader
 from rio_tiler_pds.landsat.utils import sceneid_parser
@@ -39,7 +39,7 @@ class LandsatC2Reader(MultiBandReader):
     """AWS Public Dataset Landsat Collection 2 COG Reader.
 
     Args:
-        sceneid (str): Landsat 8 sceneid.
+        input (str): Landsat 8 sceneid.
 
     Attributes:
         minzoom (int): Dataset's Min Zoom level (default is 5).
@@ -56,14 +56,14 @@ class LandsatC2Reader(MultiBandReader):
 
     """
 
-    sceneid: str = attr.ib()
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(default={})
+    input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
+    reader: Type[COGReader] = attr.ib(default=COGReader)
+    reader_options: Dict = attr.ib(factory=dict)
+
     minzoom: int = attr.ib(default=5)
     maxzoom: int = attr.ib(default=12)
-
-    bands: Tuple = attr.ib(init=False)
 
     _scheme: str = "s3"
     _hostname: str = "usgs-landsat"
@@ -71,9 +71,11 @@ class LandsatC2Reader(MultiBandReader):
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
-        self.scene_params = sceneid_parser(self.sceneid)
+        self.scene_params = sceneid_parser(self.input)
         self.bands = self.scene_params["bands"]
+
         self.bounds = self.get_geometry()
+        self.crs = WGS84_CRS
 
     def get_geometry(self):
         """Fetch geometry info for the scene."""

@@ -7,11 +7,17 @@ from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Type, Union
 import attr
 import numpy
 from morecantile import TileMatrixSet
+from rasterio.crs import CRS
 from rasterio.enums import Resampling
 from rasterio.io import DatasetReader
 
-from rio_tiler.constants import WEB_MERCATOR_TMS
-from rio_tiler.errors import InvalidBandName, MissingBands, TileOutsideBounds
+from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
+from rio_tiler.errors import (
+    ExpressionMixingWarning,
+    InvalidBandName,
+    MissingBands,
+    TileOutsideBounds,
+)
 from rio_tiler.expression import apply_expression
 from rio_tiler.io import COGReader, MultiBandReader
 from rio_tiler.models import ImageData
@@ -39,14 +45,16 @@ landsat8_valid_bands = (
 
 @attr.s
 class L8COGReader(COGReader):
-    """Landsat COG  Reader."""
+    """Custom Landsat COGReader."""
 
-    filepath: str = attr.ib()
+    input: str = attr.ib()
     scene_metadata: Dict = attr.ib()
     dataset: DatasetReader = attr.ib(default=None)
+
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib(default=None)
     maxzoom: int = attr.ib(default=None)
+
     colormap: Dict = attr.ib(default=None)
 
     # Define global options to be forwarded to functions reading the data (e.g rio_tiler.reader._read)
@@ -58,11 +66,13 @@ class L8COGReader(COGReader):
         Callable[[numpy.ndarray, numpy.ndarray], Tuple[numpy.ndarray, numpy.ndarray]]
     ] = attr.ib(default=None)
 
+    geographic_crs: CRS = attr.ib(init=False, default=WGS84_CRS)
+
     _kwargs: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def __attrs_post_init__(self):
         """Define _kwargs, open dataset and get info."""
-        basename = os.path.basename(self.filepath)
+        basename = os.path.basename(self.input)
         band = basename.split(".")[0].split("_")[-1]
         if band == "BQA":
             self.resampling_method = "nearest"
@@ -71,7 +81,8 @@ class L8COGReader(COGReader):
             self.nodata = 0
 
             def post_process(
-                arr: numpy.ndarray, mask: numpy.ndarray,
+                arr: numpy.ndarray,
+                mask: numpy.ndarray,
             ) -> Tuple[numpy.ndarray, numpy.ndarray]:
                 """Post Process function, Apply TOA translation."""
                 arr = dn_to_toa(arr, band, self.scene_metadata["L1_METADATA_FILE"])
@@ -87,7 +98,7 @@ class L8Reader(MultiBandReader):
     """AWS Public Dataset Landsat 8 reader.
 
     Args:
-        sceneid (str): Landsat 8 sceneid.
+        input (str): Landsat 8 sceneid.
 
     Attributes:
         minzoom (int): Dataset's Min Zoom level (default is 7).
@@ -102,15 +113,17 @@ class L8Reader(MultiBandReader):
 
     """
 
-    sceneid: str = attr.ib()
+    input: str = attr.ib()
+    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
     reader: Type[L8COGReader] = attr.ib(default=L8COGReader)
     reader_options: Dict = attr.ib(factory=dict)
-    tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
     minzoom: int = attr.ib(default=7)
     maxzoom: int = attr.ib(default=12)
 
     mtl_metadata: Dict = attr.ib(init=False)
-    bands: Tuple = attr.ib(init=False, default=landsat8_valid_bands)
+    bands: Sequence[str] = attr.ib(init=False, default=landsat8_valid_bands)
 
     _scheme: str = "s3"
     _hostname: str = "landsat-pds"
@@ -123,17 +136,20 @@ class L8Reader(MultiBandReader):
             "(ref: https://lists.osgeo.org/pipermail/landsat-pds/2020-December/000178.html).",
             DeprecationWarning,
         )
-        self.scene_params = sceneid_parser(self.sceneid)
+        self.scene_params = sceneid_parser(self.input)
         prefix = self._prefix.format(**self.scene_params)
-        basename = f"{self.sceneid}_MTL.txt"
+        basename = f"{self.input}_MTL.txt"
         self.mtl_metadata = toa_utils._parse_mtl_txt(
             get_object(self._hostname, f"{prefix}/{basename}").decode()
         )
+
         self.bounds = tuple(
             toa_utils._get_bounds_from_metadata(
                 self.mtl_metadata["L1_METADATA_FILE"]["PRODUCT_METADATA"]
             )
         )
+        self.crs = WGS84_CRS
+
         self.reader_options.update({"scene_metadata": self.mtl_metadata})
 
     def _get_band_url(self, band: str) -> str:
@@ -142,7 +158,7 @@ class L8Reader(MultiBandReader):
             raise InvalidBandName(f"{band} is not valid")
 
         prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{self.sceneid}_{band}.TIF"
+        return f"{self._scheme}://{self._hostname}/{prefix}/{self.input}_{band}.TIF"
 
     def tile(
         self,
@@ -151,20 +167,23 @@ class L8Reader(MultiBandReader):
         tile_z: int,
         bands: Union[Sequence[str], str] = None,
         expression: Optional[str] = "",
-        band_expression: Optional[
-            str
-        ] = "",  # Expression for each band based on index names
         pan: bool = False,
         **kwargs: Any,
     ) -> ImageData:
         """Read a Mercator Map tile multiple bands."""
-        if not self.tile_exists(tile_z, tile_x, tile_y):
+        if not self.tile_exists(tile_x, tile_y, tile_z):
             raise TileOutsideBounds(
                 f"Tile {tile_z}/{tile_x}/{tile_y} is outside image bounds"
             )
 
         if isinstance(bands, str):
             bands = (bands,)
+
+        if bands and expression:
+            warnings.warn(
+                "Both expression and bands passed; expression will overwrite bands parameter.",
+                ExpressionMixingWarning,
+            )
 
         if expression:
             bands = self.parse_expression(expression)
@@ -180,17 +199,11 @@ class L8Reader(MultiBandReader):
         def _reader(band: str, *args: Any, **kwargs: Any) -> ImageData:
             url = self._get_band_url(band)
             with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                return cog.tile(*args, **kwargs)
+                data = cog.tile(*args, **kwargs)
+                data.band_names = [band]
+                return data
 
-        output = multi_arrays(
-            bands,
-            _reader,
-            tile_x,
-            tile_y,
-            tile_z,
-            expression=band_expression,
-            **kwargs,
-        )
+        output = multi_arrays(bands, _reader, tile_x, tile_y, tile_z, **kwargs)
 
         if pan:
             bands = bands[:-1]
@@ -201,6 +214,7 @@ class L8Reader(MultiBandReader):
         if expression:
             blocks = expression.split(",")
             output.data = apply_expression(blocks, bands, output.data)
+            output.band_names = blocks
 
         return output
 
@@ -209,15 +223,18 @@ class L8Reader(MultiBandReader):
         bbox: Tuple[float, float, float, float],
         bands: Union[Sequence[str], str] = None,
         expression: Optional[str] = "",
-        band_expression: Optional[
-            str
-        ] = "",  # Expression for each band based on index names
         pan: bool = False,
         **kwargs: Any,
     ) -> ImageData:
         """Read part of multiple bands."""
         if isinstance(bands, str):
             bands = (bands,)
+
+        if bands and expression:
+            warnings.warn(
+                "Both expression and bands passed; expression will overwrite bands parameter.",
+                ExpressionMixingWarning,
+            )
 
         if expression:
             bands = self.parse_expression(expression)
@@ -233,11 +250,11 @@ class L8Reader(MultiBandReader):
         def _reader(band: str, *args: Any, **kwargs: Any) -> ImageData:
             url = self._get_band_url(band)
             with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                return cog.part(*args, **kwargs)
+                data = cog.part(*args, **kwargs)
+                data.band_names = [band]
+                return data
 
-        output = multi_arrays(
-            bands, _reader, bbox, expression=band_expression, **kwargs,
-        )
+        output = multi_arrays(bands, _reader, bbox, **kwargs)
 
         if pan:
             bands = bands[:-1]
@@ -248,6 +265,7 @@ class L8Reader(MultiBandReader):
         if expression:
             blocks = expression.split(",")
             output.data = apply_expression(blocks, bands, output.data)
+            output.band_names = blocks
 
         return output
 
@@ -255,15 +273,18 @@ class L8Reader(MultiBandReader):
         self,
         bands: Union[Sequence[str], str] = None,
         expression: Optional[str] = "",
-        band_expression: Optional[
-            str
-        ] = "",  # Expression for each band based on index names
         pan: bool = False,
         **kwargs: Any,
     ) -> ImageData:
         """Return a preview from multiple bands."""
         if isinstance(bands, str):
             bands = (bands,)
+
+        if bands and expression:
+            warnings.warn(
+                "Both expression and bands passed; expression will overwrite bands parameter.",
+                ExpressionMixingWarning,
+            )
 
         if expression:
             bands = self.parse_expression(expression)
@@ -279,9 +300,11 @@ class L8Reader(MultiBandReader):
         def _reader(band: str, **kwargs: Any) -> ImageData:
             url = self._get_band_url(band)
             with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                return cog.preview(**kwargs)
+                data = cog.preview(**kwargs)
+                data.band_names = [band]
+                return data
 
-        output = multi_arrays(bands, _reader, expression=band_expression, **kwargs)
+        output = multi_arrays(bands, _reader, **kwargs)
 
         if pan:
             bands = bands[:-1]
@@ -292,6 +315,7 @@ class L8Reader(MultiBandReader):
         if expression:
             blocks = expression.split(",")
             output.data = apply_expression(blocks, bands, output.data)
+            output.band_names = blocks
 
         return output
 
@@ -300,15 +324,18 @@ class L8Reader(MultiBandReader):
         shape: Dict,
         bands: Union[Sequence[str], str] = None,
         expression: Optional[str] = "",
-        band_expression: Optional[
-            str
-        ] = "",  # Expression for each band based on index names
         pan: bool = False,
         **kwargs: Any,
     ) -> ImageData:
         """Read multiple bands for a GeoJSON feature."""
         if isinstance(bands, str):
             bands = (bands,)
+
+        if bands and expression:
+            warnings.warn(
+                "Both expression and bands passed; expression will overwrite bands parameter.",
+                ExpressionMixingWarning,
+            )
 
         if expression:
             bands = self.parse_expression(expression)
@@ -324,11 +351,11 @@ class L8Reader(MultiBandReader):
         def _reader(band: str, *args: Any, **kwargs: Any) -> ImageData:
             url = self._get_band_url(band)
             with self.reader(url, tms=self.tms, **self.reader_options) as cog:
-                return cog.feature(*args, **kwargs)
+                data = cog.feature(*args, **kwargs)
+                data.band_names = [band]
+                return data
 
-        output = multi_arrays(
-            bands, _reader, shape, expression=band_expression, **kwargs,
-        )
+        output = multi_arrays(bands, _reader, shape, **kwargs)
 
         if pan:
             bands = bands[:-1]

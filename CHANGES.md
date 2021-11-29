@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.6.0 (TBD)
+
+* update rio-tiler requirement to `>=3.0.0`
+
+
 ## 0.5.4 (2021-10-08)
 
 * `bands` should be stored as `tuple` in sentinel-1 reader

@@ -28,8 +28,9 @@ class CBERSReader(MultiBandReader):
 
     """
 
-    sceneid: str = attr.ib()
+    input: str = attr.ib()
     reader: Type[COGReader] = attr.ib(default=COGReader)
+
     reader_options: Dict = attr.ib(factory=dict)
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
@@ -39,12 +40,13 @@ class CBERSReader(MultiBandReader):
 
     def __attrs_post_init__(self):
         """Fetch Reference band to get the bounds."""
-        self.scene_params = sceneid_parser(self.sceneid)
+        self.scene_params = sceneid_parser(self.input)
         self.bands = self.scene_params["bands"]
 
         ref = self._get_band_url(self.scene_params["reference_band"])
         with self.reader(ref, tms=self.tms, **self.reader_options) as cog:
             self.bounds = cog.bounds
+            self.crs = cog.crs
             self.minzoom = cog.minzoom
             self.maxzoom = cog.maxzoom
 
@@ -55,4 +57,4 @@ class CBERSReader(MultiBandReader):
 
         prefix = self._prefix.format(**self.scene_params)
         band = band.replace("B", "BAND")
-        return f"{self._scheme}://{self._hostname}/{prefix}/{self.sceneid}_{band}.tif"
+        return f"{self._scheme}://{self._hostname}/{prefix}/{self.input}_{band}.tif"
