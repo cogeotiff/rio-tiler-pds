@@ -101,8 +101,10 @@ class MODISReader(MultiBandReader):
     maxzoom: int = attr.ib(default=9)
 
     _scheme: str = "s3"
-    _hostname: str = "modis-pds"
-    _prefix: str = "{product}.{version}/{horizontal_grid}/{vertical_grid}/{date}"
+    bucket: str = attr.ib(default="modis-pds")
+    prefix_pattern: str = attr.ib(
+        default="{product}.{version}/{horizontal_grid}/{vertical_grid}/{date}"
+    )
 
     def __attrs_post_init__(self):
         """Parse Sceneid and get grid bounds."""
@@ -126,5 +128,5 @@ class MODISReader(MultiBandReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")
 
-        prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{self.input}_{band}.TIF"
+        prefix = self.prefix_pattern.format(**self.scene_params)
+        return f"{self._scheme}://{self.bucket}/{prefix}/{self.input}_{band}.TIF"

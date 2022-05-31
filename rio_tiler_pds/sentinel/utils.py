@@ -50,7 +50,7 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
         )
 
     elif re.match(
-        "^S2[AB]_[0-9]{1,2}[A-Z]{3}_[0-9]{8}_[0-9]{1,2}_L[0-2][A-C]$", sceneid
+        r"^S2[AB]_[0-9]{1,2}[A-Z]{3}_[0-9]{8}_[0-9]{1,2}_L[0-2][A-C]$", sceneid
     ):  # New sceneid format
         pattern = (
             r"^S"
@@ -70,7 +70,7 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
             r"(?P<processingLevel>L[0-2][ABC])$"
         )
     elif re.match(
-        "^S2[AB]_MSIL[0-2][ABC]_[0-9]{8}T[0-9]{6}_N[0-9]{4}_R[0-9]{3}_T[0-9A-Z]{5}_[0-9]{8}T[0-9]{6}$",
+        r"^S2[AB]_MSIL[0-2][ABC]_[0-9]{8}T[0-9]{6}_N[0-9]{4}_R[0-9]{3}_T[0-9A-Z]{5}_[0-9]{8}T[0-9]{6}$",
         sceneid,
     ):  # product id
         pattern = (

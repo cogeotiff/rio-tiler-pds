@@ -35,8 +35,10 @@ class CBERSReader(MultiBandReader):
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
     _scheme: str = "s3"
-    _hostname: str = "cbers-pds"
-    _prefix: str = "CBERS{mission}/{instrument}/{path}/{row}/{scene}"
+    bucket: str = attr.ib(default="cbers-pds")
+    prefix_pattern: str = attr.ib(
+        default="CBERS{mission}/{instrument}/{path}/{row}/{scene}"
+    )
 
     def __attrs_post_init__(self):
         """Fetch Reference band to get the bounds."""
@@ -55,6 +57,6 @@ class CBERSReader(MultiBandReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")
 
-        prefix = self._prefix.format(**self.scene_params)
+        prefix = self.prefix_pattern.format(**self.scene_params)
         band = band.replace("B", "BAND")
-        return f"{self._scheme}://{self._hostname}/{prefix}/{self.input}_{band}.tif"
+        return f"{self._scheme}://{self.bucket}/{prefix}/{self.input}_{band}.tif"

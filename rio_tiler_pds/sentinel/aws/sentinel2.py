@@ -68,16 +68,18 @@ class S2L1CReader(MultiBandReader):
     datageom: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
-    _hostname: str = "sentinel-s2-l1c"
-    _prefix: str = "tiles/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{_day}/{num}"
+    bucket: str = attr.ib(default="sentinel-s2-l1c")
+    prefix_pattern: str = attr.ib(
+        default="tiles/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{_day}/{num}"
+    )
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
         self.scene_params = s2_sceneid_parser(self.input)
 
-        prefix = self._prefix.format(**self.scene_params)
+        prefix = self.prefix_pattern.format(**self.scene_params)
         self.tileInfo = json.loads(
-            get_object(self._hostname, f"{prefix}/tileInfo.json", request_pays=True)
+            get_object(self.bucket, f"{prefix}/tileInfo.json", request_pays=True)
         )
 
         self.datageom = self.tileInfo["tileDataGeometry"]
@@ -91,8 +93,8 @@ class S2L1CReader(MultiBandReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid.\nValid bands: {self.bands}")
 
-        prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{band}.jp2"
+        prefix = self.prefix_pattern.format(**self.scene_params)
+        return f"{self._scheme}://{self.bucket}/{prefix}/{band}.jp2"
 
 
 SENTINEL_L2_BANDS = OrderedDict(
@@ -165,8 +167,10 @@ class S2L2AReader(S2L1CReader):
     bands: Sequence[str] = attr.ib(init=False, default=default_l2a_bands)
 
     _scheme: str = "s3"
-    _hostname: str = "sentinel-s2-l2a"
-    _prefix: str = "tiles/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{_day}/{num}"
+    bucket: str = attr.ib(default="sentinel-s2-l2a")
+    prefix_pattern: str = attr.ib(
+        default="tiles/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/{_day}/{num}"
+    )
 
     def _get_resolution(self, band: str) -> str:
         """Return L2A resolution prefix"""
@@ -187,9 +191,9 @@ class S2L2AReader(S2L1CReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid.\nValid bands: {self.bands}")
 
-        prefix = self._prefix.format(**self.scene_params)
+        prefix = self.prefix_pattern.format(**self.scene_params)
         res = self._get_resolution(band)
-        return f"{self._scheme}://{self._hostname}/{prefix}/R{res}m/{band}.jp2"
+        return f"{self._scheme}://{self.bucket}/{prefix}/R{res}m/{band}.jp2"
 
 
 @attr.s
@@ -224,8 +228,10 @@ class S2L2ACOGReader(MultiBandReader):
     stac_item: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
-    _hostname: str = "sentinel-cogs"
-    _prefix: str = "sentinel-s2-{_levelLow}-cogs/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/S{sensor}{satellite}_{_utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}"
+    bucket: str = attr.ib(default="sentinel-cogs")
+    prefix_pattern: str = attr.ib(
+        default="sentinel-s2-{_levelLow}-cogs/{_utm}/{lat}/{sq}/{acquisitionYear}/{_month}/S{sensor}{satellite}_{_utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}"
+    )
 
     def __attrs_post_init__(self):
         """Fetch item.json and get bounds and bands."""
@@ -234,11 +240,9 @@ class S2L2ACOGReader(MultiBandReader):
         cog_sceneid = "S{sensor}{satellite}_{_utm}{lat}{sq}_{acquisitionYear}{acquisitionMonth}{acquisitionDay}_{num}_{processingLevel}".format(
             **self.scene_params
         )
-        prefix = self._prefix.format(**self.scene_params)
+        prefix = self.prefix_pattern.format(**self.scene_params)
         self.stac_item = json.loads(
-            get_object(
-                self._hostname, f"{prefix}/{cog_sceneid}.json", request_pays=True
-            )
+            get_object(self.bucket, f"{prefix}/{cog_sceneid}.json", request_pays=True)
         )
         self.bounds = self.stac_item["bbox"]
         self.crs = WGS84_CRS
@@ -254,8 +258,8 @@ class S2L2ACOGReader(MultiBandReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid.\nValid bands: {self.bands}")
 
-        prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{band}.tif"
+        prefix = self.prefix_pattern.format(**self.scene_params)
+        return f"{self._scheme}://{self.bucket}/{prefix}/{band}.tif"
 
 
 def S2COGReader(sceneid: str, **kwargs: Any) -> S2L2ACOGReader:

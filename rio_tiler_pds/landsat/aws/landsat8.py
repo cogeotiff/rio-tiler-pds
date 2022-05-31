@@ -126,8 +126,8 @@ class L8Reader(MultiBandReader):
     bands: Sequence[str] = attr.ib(init=False, default=landsat8_valid_bands)
 
     _scheme: str = "s3"
-    _hostname: str = "landsat-pds"
-    _prefix: str = "c1/L8/{path}/{row}/{scene}"
+    bucket: str = attr.ib(default="landsat-pds")
+    prefix_pattern: str = attr.ib(default="c1/L8/{path}/{row}/{scene}")
 
     def __attrs_post_init__(self):
         """Fetch MTL metadata and get bounds."""
@@ -137,10 +137,10 @@ class L8Reader(MultiBandReader):
             DeprecationWarning,
         )
         self.scene_params = sceneid_parser(self.input)
-        prefix = self._prefix.format(**self.scene_params)
+        prefix = self.prefix_pattern.format(**self.scene_params)
         basename = f"{self.input}_MTL.txt"
         self.mtl_metadata = toa_utils._parse_mtl_txt(
-            get_object(self._hostname, f"{prefix}/{basename}").decode()
+            get_object(self.bucket, f"{prefix}/{basename}").decode()
         )
 
         self.bounds = tuple(
@@ -157,8 +157,8 @@ class L8Reader(MultiBandReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")
 
-        prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{self.input}_{band}.TIF"
+        prefix = self.prefix_pattern.format(**self.scene_params)
+        return f"{self._scheme}://{self.bucket}/{prefix}/{self.input}_{band}.TIF"
 
     def tile(
         self,
