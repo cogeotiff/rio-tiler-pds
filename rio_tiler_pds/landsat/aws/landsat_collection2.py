@@ -66,8 +66,10 @@ class LandsatC2Reader(MultiBandReader):
     maxzoom: int = attr.ib(default=12)
 
     _scheme: str = "s3"
-    _hostname: str = "usgs-landsat"
-    _prefix: str = "collection02/level-{_processingLevelNum}/{category}/{_sensor_s3_prefix}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
+    bucket: str = attr.ib(default="usgs-landsat")
+    prefix_pattern: str = attr.ib(
+        default="collection02/level-{_processingLevelNum}/{category}/{_sensor_s3_prefix}/{acquisitionYear}/{path}/{row}/{scene}/{scene}"
+    )
 
     def __attrs_post_init__(self):
         """Fetch productInfo and get bounds."""
@@ -81,7 +83,7 @@ class LandsatC2Reader(MultiBandReader):
         """Fetch geometry info for the scene."""
         # Allow custom function for users who want to use the WRS2 grid and
         # avoid this GET request.
-        prefix = self._prefix.format(**self.scene_params)
+        prefix = self.prefix_pattern.format(**self.scene_params)
 
         if self.scene_params["_processingLevelNum"] == "1":
             stac_key = f"{prefix}_stac.json"
@@ -94,7 +96,7 @@ class LandsatC2Reader(MultiBandReader):
 
         try:
             self.stac_item = json.loads(
-                get_object(self._hostname, stac_key, request_pays=True)
+                get_object(self.bucket, stac_key, request_pays=True)
             )
         except ClientError as e:
             if e.response["Error"]["Code"] == "NoSuchKey":
@@ -113,5 +115,5 @@ class LandsatC2Reader(MultiBandReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid.\nValid bands: {self.bands}")
 
-        prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}_{band}.TIF"
+        prefix = self.prefix_pattern.format(**self.scene_params)
+        return f"{self._scheme}://{self.bucket}/{prefix}_{band}.TIF"

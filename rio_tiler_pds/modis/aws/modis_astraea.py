@@ -112,8 +112,10 @@ class MODISReader(MultiBandReader):
     maxzoom: int = attr.ib(default=9)
 
     _scheme: str = "s3"
-    _hostname: str = "astraea-opendata"
-    _prefix: str = "{product}.{version}/{horizontal_grid}/{vertical_grid}/{date}"
+    bucket: str = attr.ib(default="astraea-opendata")
+    prefix_pattern: str = attr.ib(
+        default="{product}.{version}/{horizontal_grid}/{vertical_grid}/{date}"
+    )
 
     def __attrs_post_init__(self):
         """Parse Sceneid and get grid bounds."""
@@ -143,5 +145,5 @@ class MODISReader(MultiBandReader):
         else:
             band_prefix = ""
 
-        prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/{self.input}_{band_prefix}{band}.TIF"
+        prefix = self.prefix_pattern.format(**self.scene_params)
+        return f"{self._scheme}://{self.bucket}/{prefix}/{self.input}_{band_prefix}{band}.TIF"

@@ -18,7 +18,7 @@ setup(
     name="rio-tiler-pds",
     version="0.6.0",
     python_requires=">=3.7",
-    description=u"""Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS""",
+    description="""Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS""",
     long_description=readme,
     long_description_content_type="text/markdown",
     classifiers=[
@@ -31,7 +31,7 @@ setup(
         "Topic :: Scientific/Engineering :: GIS",
     ],
     keywords="COG cogeo raster aws map tiler gdal rasterio",
-    author=u"Vincent Sarago",
+    author="Vincent Sarago",
     author_email="vincent@developmentseed.org",
     url="https://github.com/cogeotiff/rio-tiler-pds",
     license="BSD",

@@ -47,9 +47,9 @@ class S1L1CReader(MultiBandReader):
     datageom: Dict = attr.ib(init=False)
 
     _scheme: str = "s3"
-    _hostname: str = "sentinel-s1-l1c"
-    _prefix: str = (
-        "{product}/{acquisitionYear}/{_month}/{_day}/{beam}/{polarisation}/{scene}"
+    bucket: str = attr.ib(default="sentinel-s1-l1c")
+    prefix_pattern: str = attr.ib(
+        default="{product}/{acquisitionYear}/{_month}/{_day}/{beam}/{polarisation}/{scene}"
     )
 
     def __attrs_post_init__(self):
@@ -67,9 +67,9 @@ class S1L1CReader(MultiBandReader):
         elif self.scene_params["polarisation"] == "SV":
             self.bands = ("vv",)
 
-        prefix = self._prefix.format(**self.scene_params)
+        prefix = self.prefix_pattern.format(**self.scene_params)
         self.productInfo = json.loads(
-            get_object(self._hostname, f"{prefix}/productInfo.json", request_pays=True)
+            get_object(self.bucket, f"{prefix}/productInfo.json", request_pays=True)
         )
 
         self.datageom = self.productInfo["footprint"]
@@ -81,5 +81,5 @@ class S1L1CReader(MultiBandReader):
         if band not in self.bands:
             raise InvalidBandName(f"{band} is not valid")
 
-        prefix = self._prefix.format(**self.scene_params)
-        return f"{self._scheme}://{self._hostname}/{prefix}/measurement/{self.scene_params['beam'].lower()}-{band}.tiff"
+        prefix = self.prefix_pattern.format(**self.scene_params)
+        return f"{self._scheme}://{self.bucket}/{prefix}/measurement/{self.scene_params['beam'].lower()}-{band}.tiff"
