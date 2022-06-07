@@ -1,5 +1,9 @@
 # Release Notes
 
+## next (TDB)
+
+* enable `bucket` and `prefix_pattern` as input (@author @f-skold, https://github.com/cogeotiff/rio-tiler-pds/pull/61)
+
 ## 0.6.0 (2021-11-29)
 
 * update rio-tiler requirement to `>=3.0.0`
