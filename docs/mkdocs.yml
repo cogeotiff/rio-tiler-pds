@@ -2,7 +2,7 @@
 site_name: 'rio-tiler-pds'
 site_description: 'A rio-tiler plugin to access and read Public hosted datasets.'
 
-docs_dir: 'docs'
+docs_dir: 'src'
 site_dir: 'build'
 
 # Repository

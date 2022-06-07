@@ -1,0 +1,60 @@
+[project]
+name = "rio-tiler-pds"
+description = "Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS."
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Vincent Sarago", email = "vincent@developmentseed.com"},
+]
+keywords = ["COGEO", "Cloud Optimized Geotiff", "AWS PDS"]
+classifiers = [
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Typing :: Typed",
+]
+dynamic = ["version"]
+dependencies = ["rio-tiler>=3.0.0,<4.0", "rio-toa"]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
+dev = ["pre-commit"]
+docs = ["mkdocs", "mkdocs-material", "pygments", "mkapi"]
+
+[project.urls]
+Source = "https://github.com/cogeotiff/rio-tiler-pds"
+Documentation = "https://cogeotiff.github.io/rio-tiler-pds/"
+
+[build-system]
+requires = ["flit>=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "rio_tiler_pds"
+
+[tool.flit.sdist]
+exclude = [
+    "tests/",
+    "docs/",
+    ".github/",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["rio_tiler", "rio_tiler_pds", "rio_toa"]
+known_third_party = ["rasterio","morecantile"]
+default_section = "THIRDPARTY"
+
+[tool.mypy]
+no_strict_optional = true
+
+[tool.pydocstyle]
+select = "D1"
+match = "(?!test).*.py"
