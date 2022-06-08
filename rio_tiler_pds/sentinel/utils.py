@@ -98,7 +98,7 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
     else:
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))
 
-    meta: Dict[str, Any] = re.match(pattern, sceneid, re.IGNORECASE).groupdict()
+    meta: Dict[str, Any] = re.match(pattern, sceneid, re.IGNORECASE).groupdict()  # type: ignore
 
     # When parsing product id, num won't be set.
     if not meta.get("num"):
@@ -164,7 +164,7 @@ def s1_sceneid_parser(sceneid: str) -> Dict:
         r"(?P<product_id>[0-9A-Z]{4})$"
     )
 
-    meta: Dict[str, Any] = re.match(
+    meta: Dict[str, Any] = re.match(  # type: ignore
         sentinel_pattern, sceneid, re.IGNORECASE
     ).groupdict()
 

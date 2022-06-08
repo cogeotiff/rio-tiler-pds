@@ -42,7 +42,7 @@ def sceneid_parser(sceneid: str) -> Dict:
         r"(?P<processingCorrectionLevel>L\w+)$"
     )
 
-    meta: Dict[str, Any] = re.match(cbers_pattern, sceneid, re.IGNORECASE).groupdict()
+    meta: Dict[str, Any] = re.match(cbers_pattern, sceneid, re.IGNORECASE).groupdict()  # type: ignore
     meta["scene"] = sceneid
     meta["date"] = "{}-{}-{}".format(
         meta["acquisitionYear"], meta["acquisitionMonth"], meta["acquisitionDay"]
