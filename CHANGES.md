@@ -1,8 +1,9 @@
 # Release Notes
 
-## next (TDB)
+## 0.7.0 (2022-06-08)
 
 * enable `bucket` and `prefix_pattern` as input (@author @f-skold, https://github.com/cogeotiff/rio-tiler-pds/pull/61)
+* switch to `pyproject.toml`
 
 ## 0.6.0 (2021-11-29)
 
