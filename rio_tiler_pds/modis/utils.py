@@ -43,6 +43,6 @@ def sceneid_parser(sceneid: str) -> Dict:
     else:
         raise InvalidMODISSceneId("Could not match {}".format(sceneid))
 
-    meta: Dict[str, Any] = re.match(pattern, sceneid, re.IGNORECASE).groupdict()
+    meta: Dict[str, Any] = re.match(pattern, sceneid, re.IGNORECASE).groupdict()  # type: ignore
     meta["scene"] = sceneid
     return meta

@@ -7,12 +7,18 @@ Issues and pull requests are more than welcome: https://github.com/cogeotiff/rio
 ```bash
 $ git clone https://github.com/cogeotiff/rio-tiler-pds.git
 $ cd rio-tiler-pds
-$ pip install -e .[dev]
+$ pip install -e .["test,dev"]
 ```
 
-**Python3.7 only**
+You can then run the tests with the following command:
 
-This repo is set to use `pre-commit` to run *isort*, *flake8*, *pydocstring*, *black* ("uncompromising Python code formatter") and *mypy* when committing new code.
+```sh
+python -m pytest --cov rio_tiler_pds --cov-report term-missing
+```
+
+### pre-commit
+
+This repo is set to use `pre-commit` to run *isort*, *flake8*, *pydocstring*, *black* ("uncompromising Python code formatter") and mypy when committing new code.
 
 ```bash
 $ pre-commit install
@@ -20,21 +26,21 @@ $ pre-commit install
 
 ### Docs
 
-```
-pip install rio_tiler_pds[docs]
+```sh
+pip install rio_tiler_pds["docs"]
 ```
 
 Hot-reloading docs:
 
-```
+```sh
 git clone https://github.com/cogeotiff/rio-tiler-pds
 cd rio-tiler-pds
-mkdocs serve
+mkdocs serve -f docs/mkdocs.yml
 ```
 
 To manually deploy docs (note you should never need to do this because Github
 Actions deploys automatically for new commits.):
 
-```
-mkdocs gh-deploy
+```sh
+mkdocs gh-deploy -f docs/mkdocs.yml
 ```

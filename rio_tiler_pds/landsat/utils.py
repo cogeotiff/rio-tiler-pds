@@ -159,7 +159,7 @@ def sceneid_parser(sceneid: str) -> Dict:
         r"(?P<collectionCategory>\w{2})$"
     )
 
-    meta: Dict[str, Any] = re.match(
+    meta: Dict[str, Any] = re.match(  # type: ignore
         collection_pattern, sceneid, re.IGNORECASE
     ).groupdict()
 

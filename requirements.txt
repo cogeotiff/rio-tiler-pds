@@ -1,3 +1,0 @@
-
-rio-tiler>=2.0.0rc2,<2.1
-rio-toa
