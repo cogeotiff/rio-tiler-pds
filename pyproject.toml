@@ -3,7 +3,7 @@ name = "rio-tiler-pds"
 description = "Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS."
 readme = "README.md"
 requires-python = ">=3.7"
-license = {file = "LICENSE"}
+license = {file = "LICENSE.txt"}
 authors = [
     {name = "Vincent Sarago", email = "vincent@developmentseed.com"},
 ]
