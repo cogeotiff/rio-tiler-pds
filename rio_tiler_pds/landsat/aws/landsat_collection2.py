@@ -23,7 +23,7 @@ Links:
 import json
 from typing import Dict, Type
 
-import attr
+import attr  # type: ignore
 from botocore.exceptions import ClientError
 from morecantile import TileMatrixSet
 

@@ -1,11 +1,10 @@
 """AWS Sentinel 2 readers."""
 
 import json
-import re
 from collections import OrderedDict
 from typing import Any, Dict, Sequence, Type, Union
 
-import attr
+import attr  # type: ignore
 from morecantile import TileMatrixSet
 from rasterio.crs import CRS
 from rasterio.features import bounds as featureBounds
@@ -156,10 +155,10 @@ sentinel_l2a_band_map = {
     "rededge2": "B06",
     "rededge3": "B07",
     "nir": "B08",
+    "nir08": "B8A",
     "nir09": "B09",
     "swir16": "B11",
     "swir22": "B12",
-    "nir08": "B8A",
 }
 
 
@@ -263,7 +262,11 @@ class S2L2ACOGReader(MultiBandReader):
         self.crs = WGS84_CRS
 
         self.bands = tuple(
-            [sentinel_l2a_band_map.get(band) for band in self.stac_item["assets"] if sentinel_l2a_band_map.get(band)]
+            [
+                sentinel_l2a_band_map.get(band)
+                for band in self.stac_item["assets"]
+                if sentinel_l2a_band_map.get(band)
+            ]
         )
 
     def _get_band_url(self, band: str) -> str:
