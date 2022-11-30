@@ -2,7 +2,7 @@
 
 from typing import Dict, Type
 
-import attr  # type: ignore
+import attr
 from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS

@@ -4,7 +4,7 @@ import os
 import warnings
 from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Type, Union
 
-import attr  # type: ignore
+import attr
 import numpy
 from morecantile import TileMatrixSet
 from rasterio.crs import CRS

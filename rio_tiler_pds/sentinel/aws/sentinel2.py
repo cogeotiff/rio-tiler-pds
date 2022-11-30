@@ -4,7 +4,7 @@ import json
 from collections import OrderedDict
 from typing import Any, Dict, Sequence, Type, Union
 
-import attr  # type: ignore
+import attr
 from morecantile import TileMatrixSet
 from rasterio.crs import CRS
 from rasterio.features import bounds as featureBounds

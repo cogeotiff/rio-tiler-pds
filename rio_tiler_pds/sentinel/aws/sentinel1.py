@@ -3,7 +3,7 @@
 import json
 from typing import Dict, Type
 
-import attr  # type: ignore
+import attr
 from morecantile import TileMatrixSet
 from rasterio.features import bounds as featureBounds
 
