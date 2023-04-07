@@ -58,7 +58,6 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 | [Sentinel 2][s2_l2a_jp2]                  | L2A                                         | JPEG2000                   | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
 | [Sentinel 2][s2_l2a_cog]                  | L2A                                         | COG                        | Digital Earth Africa / AWS | us-west-2    | Public             |
 | [Sentinel 1][s1_l1c_cog]                  | L1C                                         | COG (Internal GCPS)        | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
-| [Landsat 8*][l8_l1_cog]                   | L1                                          | GTiff (External Overviews) | Planet / AWS               | us-west-2    | Public             |
 | [Landsat Collection 2][landsat_c2_cog]    | L1,L2                                       | COG                        | USGS / AWS                 | us-west-2    | **Requester-pays** |
 | [CBERS 4/4A][cbers_cog]                   | L2/L4                                       | COG                        | AMS Kepler / AWS           | us-east-1    | **Requester-pays** |
 | [MODIS (modis-pds)][modis_pds]            | MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA | GTiff (External Overviews) | -                          | us-west-2    | Public             |
@@ -68,13 +67,10 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 [s2_l2a_jp2]: https://registry.opendata.aws/sentinel-2/
 [s2_l2a_cog]: https://registry.opendata.aws/sentinel-2-l2a-cogs/
 [s1_l1c_cog]: https://registry.opendata.aws/sentinel-1/
-[l8_l1_cog]: https://registry.opendata.aws/landsat-8/
 [landsat_c2_cog]: https://www.usgs.gov/core-science-systems/nli/landsat/landsat-commercial-cloud-data-access
 [cbers_cog]: https://registry.opendata.aws/cbers/
 [modis_pds]: https://docs.opendata.aws/modis-pds/readme.html
 [modis_astraea]: https://registry.opendata.aws/modis-astraea/
-
-`*` Landsat 8 Collection 1 reader has been deprecated because the `landsat-pds` will be deleted on July 1st 2021. For new applications, using Collection 2 is suggested.
 
 **Adding more dataset**:
 
@@ -114,7 +110,7 @@ Ref: [Do you really want people using your data](https://medium.com/@_VincentS_/
 Each dataset has its own submodule (e.g sentinel2: `rio_tiler_pds.sentinel.aws`)
 
 ```python
-from rio_tiler_pds.landsat.aws import L8Reader, LandsatC2Reader
+from rio_tiler_pds.landsat.aws import LandsatC2Reader
 from rio_tiler_pds.sentinel.aws import S1L1CReader
 from rio_tiler_pds.sentinel.aws import (
     S2JP2Reader,  # JPEG2000
@@ -131,8 +127,8 @@ All Readers are subclass of [`rio_tiler.io.BaseReader`](https://github.com/cogeo
 - **bounds**: Scene bounding box
 - **crs**: CRS of the bounding box
 - **geographic_bounds**: bounding box in geographic projection (e.g WGS84)
-- **minzoom**: WebMercator MinZoom (e.g 7 for Landsat8)
-- **maxzoom**: WebMercator MaxZoom (e.g 12 for Landsat8)
+- **minzoom**: WebMercator MinZoom (e.g 7 for Landsat 8)
+- **maxzoom**: WebMercator MaxZoom (e.g 12 for Landsat 8)
 
 #### Methods
 
@@ -156,33 +152,54 @@ e.g: Landsat on AWS
 Because the Landsat AWS PDS follows a regular schema to store the data (`s3://{bucket}/c1/L8/{path}/{row}/{scene}/{scene}_{band}.TIF"`), we can easily reconstruct the full band's path by parsing the scene id.
 
 ```python
-from rio_tiler_pds.landsat.aws import L8Reader
+from rio_tiler_pds.landsat.aws import LandsatC2Reader
 from rio_tiler_pds.landsat.utils import sceneid_parser
 
-sceneid_parser("LC08_L1TP_016037_20170813_20170814_01_RT")
+sceneid_parser("LC08_L2SP_001062_20201031_20201106_02_T2")
 
-> {
-  'sensor': 'C',
-  'satellite': '08',
-  'processingCorrectionLevel': 'L1TP',
-  'path': '016',
-  'row': '037',
-  'acquisitionYear': '2017',
-  'acquisitionMonth': '08',
-  'acquisitionDay': '13',
-  'processingYear': '2017',
-  'processingMonth': '08',
-  'processingDay': '14',
-  'collectionNumber': '01',
-  'collectionCategory': 'RT',
-  'scene': 'LC08_L1TP_016037_20170813_20170814_01_RT',
-  'date': '2017-08-13'
-}
+> {'sensor': 'C',
+ 'satellite': '08',
+ 'processingCorrectionLevel': 'L2SP',
+ 'path': '001',
+ 'row': '062',
+ 'acquisitionYear': '2020',
+ 'acquisitionMonth': '10',
+ 'acquisitionDay': '31',
+ 'processingYear': '2020',
+ 'processingMonth': '11',
+ 'processingDay': '06',
+ 'collectionNumber': '02',
+ 'collectionCategory': 'T2',
+ 'scene': 'LC08_L2SP_001062_20201031_20201106_02_T2',
+ 'date': '2020-10-31',
+ '_processingLevelNum': '2',
+ 'category': 'standard',
+ 'sensor_name': 'oli-tirs',
+ '_sensor_s3_prefix': 'oli-tirs',
+ 'bands': ('QA_PIXEL',
+  'QA_RADSAT',
+  'SR_B1',
+  'SR_B2',
+  'SR_B3',
+  'SR_B4',
+  'SR_B5',
+  'SR_B6',
+  'SR_B7',
+  'SR_QA_AEROSOL',
+  'ST_ATRAN',
+  'ST_B10',
+  'ST_CDIST',
+  'ST_DRAD',
+  'ST_EMIS',
+  'ST_EMSD',
+  'ST_QA',
+  'ST_TRAD',
+  'ST_URAD')}
 
-with L8Reader("LC08_L1TP_016037_20170813_20170814_01_RT") as landsat:
-    print(landsat._get_band_url("B1"))
+with LandsatC2Reader("LC08_L2SP_001062_20201031_20201106_02_T2") as landsat:
+    print(landsat._get_band_url("SR_B2"))
 
-> s3://landsat-pds/c1/L8/016/037/LC08_L1TP_016037_20170813_20170814_01_RT/LC08_L1TP_016037_20170813_20170814_01_RT_B1.TIF
+> s3://usgs-landsat/collection02/level-2/standard/oli-tirs/2020/001/062/LC08_L2SP_001062_20201031_20201106_02_T2/LC08_L2SP_001062_20201031_20201106_02_T2_SR_B2.TIF
 ```
 
 Each dataset has a specific scene id format:
@@ -219,20 +236,34 @@ Each dataset has a specific scene id format:
 `rio-tiler-pds` Readers assume that bands (e.g eo:band in STAC) are stored in separate files.
 
 ```bash
-$ aws s3 ls landsat-pds/c1/L8/013/031/LC08_L1TP_013031_20130930_20170308_01_T1/
-
-LC08_L1TP_013031_20130930_20170308_01_T1_B1.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B10.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B11.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B2.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B3.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B4.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B5.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B6.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B7.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B8.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_B9.TIF
-LC08_L1TP_013031_20130930_20170308_01_T1_BQA.TIF
+$ aws s3 ls s3://usgs-landsat/collection02/level-2/standard/oli-tirs/2020/001/062/LC08_L2SP_001062_20201031_20201106_02_T2/ --request-payer
+LC08_L2SP_001062_20201031_20201106_02_T2_ANG.txt
+LC08_L2SP_001062_20201031_20201106_02_T2_MTL.json
+LC08_L2SP_001062_20201031_20201106_02_T2_MTL.txt
+LC08_L2SP_001062_20201031_20201106_02_T2_MTL.xml
+LC08_L2SP_001062_20201031_20201106_02_T2_QA_PIXEL.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_QA_RADSAT.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B1.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B2.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B3.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B4.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B5.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B6.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B7.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_QA_AEROSOL.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_stac.json
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_ATRAN.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_B10.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_CDIST.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_DRAD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_EMIS.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_EMSD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_QA.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_TRAD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_URAD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_stac.json
+LC08_L2SP_001062_20201031_20201106_02_T2_thumb_large.jpeg
+LC08_L2SP_001062_20201031_20201106_02_T2_thumb_small.jpeg
 ```
 
 When reading data or metadata, readers will merge them.
@@ -240,7 +271,7 @@ When reading data or metadata, readers will merge them.
 e.g
 ```python
 with S2COGReader("S2A_L2A_20170729_19UDP_0") as sentinel:
-    img = sentinel.tile(77, 89, 8, bands=("B01", "B02")
+    img = sentinel.tile(78, 89, 8, bands=("B01", "B02"))
     assert img.data.shape == (2, 256, 256)
 
     stats = sentinel.statistics(bands=("B01", "B02"))

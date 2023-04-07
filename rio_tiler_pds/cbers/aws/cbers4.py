@@ -7,7 +7,7 @@ from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import COGReader, MultiBandReader
+from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.cbers.utils import sceneid_parser
 
 
@@ -29,10 +29,13 @@ class CBERSReader(MultiBandReader):
     """
 
     input: str = attr.ib()
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-
-    reader_options: Dict = attr.ib(factory=dict)
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
+
+    minzoom: int = attr.ib(default=None)
+    maxzoom: int = attr.ib(default=None)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(factory=dict)
 
     _scheme: str = "s3"
     bucket: str = attr.ib(default="cbers-pds")

@@ -61,7 +61,7 @@ def mock_rasterio_open(band):
 
 
 @patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_S2L1CReader(rio, get_object):
     """Test AWSPDS_S2L1CReader."""
     rio.open = mock_rasterio_open
@@ -99,20 +99,20 @@ def test_AWSPDS_S2L1CReader(rio, get_object):
         assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
         values = sentinel.point(-69.41, 48.25, bands=("B01", "B02"))
-        assert values == [1193, 846]
+        assert values.data.tolist() == [1193, 846]
 
         values = sentinel.point(-69.41, 48.25, bands="B01")
-        assert values == [1193]
+        assert values.data.tolist() == [1193]
 
         values = sentinel.point(-69.41, 48.25, expression="B01/B02")
-        assert values[0] == 1193.0 / 846.0
+        assert values.data[0] == 1193.0 / 846.0
 
         with pytest.raises(MissingBands):
             sentinel.point(-69.41, 48.25)
 
         with pytest.warns(ExpressionMixingWarning):
             values = sentinel.point(-69.41, 48.25, bands="B01", expression="B01/B02")
-            assert values[0] == 1193.0 / 846.0
+            assert values.data[0] == 1193.0 / 846.0
 
         stats = sentinel.statistics(bands="B01")
         assert stats["B01"]["percentile_2"]
@@ -191,7 +191,7 @@ with open(L2A_TJSON_PATH, "rb") as f:
 
 
 @patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_S2L2AReader(rio, get_object):
     """Test AWSPDS_S2L2AReader."""
     rio.open = mock_rasterio_open
@@ -279,7 +279,7 @@ def mock_rasterio_open_cogs(band):
 
 
 @patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_S2COGReader(rio, get_object):
     """Test AWSPDS_S2L2ACOGReader."""
     rio.open = mock_rasterio_open_cogs

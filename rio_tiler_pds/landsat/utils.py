@@ -6,7 +6,6 @@ from typing import Any, Dict, Tuple
 import numpy
 
 from rio_tiler_pds.errors import InvalidLandsatSceneId
-from rio_toa import brightness_temp, reflectance
 
 OLI_SR_BANDS: Tuple[str, ...] = (
     "QA_PIXEL",
@@ -230,42 +229,3 @@ def get_bands_for_scene_meta(meta: Dict) -> Tuple[str, ...]:  # noqa: C901
             bands = MSS_L1_BANDS
 
     return bands
-
-
-def dn_to_toa(arr: numpy.ndarray, band: str, metadata: Dict) -> numpy.ndarray:
-    """Convert DN to TOA or Temp.
-
-    Args:
-        arr (numpy.ndarray): Digital Number array values.
-        band (str): Landsat 8 band's name.
-        metadata (str): Landsat MTL metadata.
-
-    Returns:
-        numpy.ndarray: DN coverted to TOA or Temperature.
-
-    """
-    if band in ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9"]:  # OLI
-        multi_reflect = metadata["RADIOMETRIC_RESCALING"].get(
-            f"REFLECTANCE_MULT_BAND_{band[1:]}"
-        )
-        add_reflect = metadata["RADIOMETRIC_RESCALING"].get(
-            f"REFLECTANCE_ADD_BAND_{band[1:]}"
-        )
-        sun_elev = metadata["IMAGE_ATTRIBUTES"]["SUN_ELEVATION"]
-
-        arr = 10000 * reflectance.reflectance(
-            arr, multi_reflect, add_reflect, sun_elev, src_nodata=0
-        )
-        arr = arr.astype("uint16")
-
-    elif band in ["B10", "B11"]:  # TIRS
-        multi_rad = metadata["RADIOMETRIC_RESCALING"].get(
-            f"RADIANCE_MULT_BAND_{band[1:]}"
-        )
-        add_rad = metadata["RADIOMETRIC_RESCALING"].get(f"RADIANCE_ADD_BAND_{band[1:]}")
-        k1 = metadata["TIRS_THERMAL_CONSTANTS"].get(f"K1_CONSTANT_BAND_{band[1:]}")
-        k2 = metadata["TIRS_THERMAL_CONSTANTS"].get(f"K2_CONSTANT_BAND_{band[1:]}")
-
-        arr = brightness_temp.brightness_temp(arr, multi_rad, add_rad, k1, k2)
-
-    return arr
