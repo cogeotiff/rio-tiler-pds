@@ -38,7 +38,7 @@ def mock_rasterio_open(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWS_MODISPDSReader(rio):
     """Test MODIS Reader."""
     rio.open = mock_rasterio_open

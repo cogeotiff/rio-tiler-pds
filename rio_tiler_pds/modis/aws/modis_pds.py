@@ -7,7 +7,7 @@ from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import COGReader, MultiBandReader
+from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.errors import InvalidMODISProduct
 from rio_tiler_pds.modis.modland_grid import tile_bbox
 from rio_tiler_pds.modis.utils import sceneid_parser
@@ -92,13 +92,13 @@ class MODISReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(factory=dict)
-
     minzoom: int = attr.ib(default=4)
     # Most of MODIS product are at 500m resolution (zoom = 8)
     # Some are at 250m (zoom = 10) (MOD09GQ & MYD09GQ) thus we use maxzoom = 9 by default
     maxzoom: int = attr.ib(default=9)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(factory=dict)
 
     _scheme: str = "s3"
     bucket: str = attr.ib(default="modis-pds")

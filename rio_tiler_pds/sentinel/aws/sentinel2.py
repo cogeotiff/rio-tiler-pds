@@ -12,7 +12,7 @@ from rasterio.features import bounds as featureBounds
 
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import COGReader, MultiBandReader
+from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 from rio_tiler_pds.utils import get_object
 
@@ -56,11 +56,11 @@ class S2L1CReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(default={"nodata": 0})
-
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(default={"options": {"nodata": 0}})
 
     bands: Sequence[str] = attr.ib(init=False, default=default_l1c_bands)
 
@@ -175,14 +175,15 @@ class S2L2AReader(S2L1CReader):
     def _get_resolution(self, band: str) -> str:
         """Return L2A resolution prefix"""
         if band.startswith("B"):
-            for res, bands in SENTINEL_L2_BANDS.items():
+            for resolution, bands in SENTINEL_L2_BANDS.items():
                 if band in bands:
-                    break
-        else:
-            for res, bands in SENTINEL_L2_PRODUCTS.items():
-                if band in bands:
-                    break
-        return res
+                    return resolution
+
+        for resolution, bands in SENTINEL_L2_PRODUCTS.items():
+            if band in bands:
+                return resolution
+
+        raise ValueError(f"Couldn't find resolution for Band {band}")
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
@@ -219,11 +220,11 @@ class S2L2ACOGReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(factory=dict)
-
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(factory=dict)
 
     stac_item: Dict = attr.ib(init=False)
 

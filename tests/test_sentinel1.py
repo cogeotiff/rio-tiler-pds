@@ -42,7 +42,7 @@ def mock_rasterio_open(band):
 
 
 @patch("rio_tiler_pds.sentinel.aws.sentinel1.get_object")
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_S1L1CReader(rio, get_object):
     """Test AWSPDS_S1L1CReader."""
     rio.open = mock_rasterio_open
