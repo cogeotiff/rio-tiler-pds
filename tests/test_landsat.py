@@ -106,7 +106,7 @@ def test_AWSPDS_L8Reader(rio, get_object):
         assert len(stats.items()) == 12
         assert list(stats) == list(landsat.bands)
 
-        stats = landsat.statistics(bands="B1", hist_options=dict(bins=20))
+        stats = landsat.statistics(bands="B1", hist_options={"bins": 20})
         assert len(stats["B1"]["histogram"][0]) == 20
 
         stats = landsat.statistics(bands="BQA")

@@ -1,3 +1,5 @@
+"""Test Landsat C2."""
+
 from pathlib import Path
 from unittest.mock import patch
 
@@ -609,7 +611,7 @@ def test_LandsatC2L2Reader(rio, get_object):
         assert len(stats.items()) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
         assert list(stats) == list(landsat.bands)
 
-        stats = landsat.statistics(bands="SR_B1", hist_options=dict(bins=20))
+        stats = landsat.statistics(bands="SR_B1", hist_options={"bins": 20})
         assert len(stats["SR_B1"]["histogram"][0]) == 20
 
         stats = landsat.statistics(bands="QA_PIXEL")

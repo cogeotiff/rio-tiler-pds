@@ -229,7 +229,7 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
         assert stats["B5"]["percentile_2"]
         assert stats["B5"]["percentile_98"]
 
-        stats = cbers.statistics(bands=cbers.bands, hist_options=dict(bins=20))
+        stats = cbers.statistics(bands=cbers.bands, hist_options={"bins": 20})
         assert len(stats["B5"]["histogram"][0]) == 20
 
         tile_z = 10

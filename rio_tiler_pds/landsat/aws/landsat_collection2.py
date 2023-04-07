@@ -102,7 +102,7 @@ class LandsatC2Reader(MultiBandReader):
             if e.response["Error"]["Code"] == "NoSuchKey":
                 raise ValueError(
                     "stac_item not found. Some RT scenes may not exist in usgs-landsat bucket."
-                )
+                ) from e
             else:
                 raise e
 

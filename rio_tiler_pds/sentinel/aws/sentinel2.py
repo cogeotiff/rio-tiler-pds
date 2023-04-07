@@ -175,14 +175,15 @@ class S2L2AReader(S2L1CReader):
     def _get_resolution(self, band: str) -> str:
         """Return L2A resolution prefix"""
         if band.startswith("B"):
-            for res, bands in SENTINEL_L2_BANDS.items():
+            for resolution, bands in SENTINEL_L2_BANDS.items():
                 if band in bands:
-                    break
-        else:
-            for res, bands in SENTINEL_L2_PRODUCTS.items():
-                if band in bands:
-                    break
-        return res
+                    return resolution
+
+        for resolution, bands in SENTINEL_L2_PRODUCTS.items():
+            if band in bands:
+                return resolution
+
+        raise ValueError(f"Couldn't find resolution for Band {band}")
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
