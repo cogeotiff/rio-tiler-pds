@@ -29,7 +29,7 @@ from morecantile import TileMatrixSet
 
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import COGReader, MultiBandReader
+from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.landsat.utils import sceneid_parser
 from rio_tiler_pds.utils import get_object
 
@@ -59,11 +59,11 @@ class LandsatC2Reader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(factory=dict)
-
     minzoom: int = attr.ib(default=5)
     maxzoom: int = attr.ib(default=12)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(factory=dict)
 
     _scheme: str = "s3"
     bucket: str = attr.ib(default="usgs-landsat")

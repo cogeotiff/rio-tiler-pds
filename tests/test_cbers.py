@@ -41,7 +41,7 @@ def mock_rasterio_open(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_CBERSReader_CB4_MUX(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
@@ -113,13 +113,13 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
         tile_x = 664
         tile_y = 495
         data, mask = cbers.tile(
-            tile_x, tile_y, tile_z, expression="B8*0.8, B7*1.1, B6*0.8"
+            tile_x, tile_y, tile_z, expression="B8*0.8; B7*1.1; B6*0.8"
         )
         assert data.shape == (3, 256, 256)
         assert mask.shape == (256, 256)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_CBERSReader_CB4_AWFI(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
@@ -140,7 +140,7 @@ def test_AWSPDS_CBERSReader_CB4_AWFI(rio):
         assert mask.shape == (256, 256)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_CBERSReader_CB4_PAN10M(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
@@ -161,7 +161,7 @@ def test_AWSPDS_CBERSReader_CB4_PAN10M(rio):
         assert mask.shape == (256, 256)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_CBERSReader_CB4_PAN5M(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
@@ -182,7 +182,7 @@ def test_AWSPDS_CBERSReader_CB4_PAN5M(rio):
         assert mask.shape == (256, 256)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
@@ -249,13 +249,13 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
         tile_x = 385
         tile_y = 567
         data, mask = cbers.tile(
-            tile_x, tile_y, tile_z, expression="B8*0.8, B7*1.1, B6*0.8"
+            tile_x, tile_y, tile_z, expression="B8*0.8; B7*1.1; B6*0.8"
         )
         assert data.shape == (3, 256, 256)
         assert mask.shape == (256, 256)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_CBERSReader_CB4A_WPM(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open
@@ -276,7 +276,7 @@ def test_AWSPDS_CBERSReader_CB4A_WPM(rio):
         assert mask.shape == (256, 256)
 
 
-@patch("rio_tiler.io.cogeo.rasterio")
+@patch("rio_tiler.io.rasterio.rasterio")
 def test_AWSPDS_CBERSReader_CB4A_WFI(rio):
     """Should work as expected (get bounds)"""
     rio.open = mock_rasterio_open

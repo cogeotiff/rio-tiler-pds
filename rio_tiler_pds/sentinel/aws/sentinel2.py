@@ -12,7 +12,7 @@ from rasterio.features import bounds as featureBounds
 
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import COGReader, MultiBandReader
+from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 from rio_tiler_pds.utils import get_object
 
@@ -56,11 +56,11 @@ class S2L1CReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(default={"nodata": 0})
-
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(default={"options": {"nodata": 0}})
 
     bands: Sequence[str] = attr.ib(init=False, default=default_l1c_bands)
 
@@ -220,11 +220,11 @@ class S2L2ACOGReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(factory=dict)
-
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(factory=dict)
 
     stac_item: Dict = attr.ib(init=False)
 
