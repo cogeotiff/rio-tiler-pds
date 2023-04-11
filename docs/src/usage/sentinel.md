@@ -142,7 +142,10 @@ bands: `B01, B02, B03, B04, B05, B06, B07, B08, B09, B11, B12, B8A`
 
 Note: `AOT, SCL, WVP` STAC assets are not supported.
 
-Note: the `B10` band is the cirrus band and is only supported for L1C, not L2A.
+Notes:
+
+- the `B10` band is the cirrus band and is only supported for L1C, not L2A.
+- the `sentinel-2-l2a-cogs` is a public dataset, no AWS credential should be needed.
 
 ```python
 from rio_tiler_pds.sentinel.aws import S2COGReader
@@ -179,3 +182,8 @@ with rasterio.Env(AWS_REQUEST_PAYER="requester"):
         print(sentinel._get_band_url("vv"))
         > 's3://sentinel-s1-l1c/GRD/2018/7/16/IW/DV/S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B/measurement/iw-vv.tiff'
 ```
+
+
+!!! Important
+
+For most dataset hosted on AWS you will need to have AWS credentials available in your environment.

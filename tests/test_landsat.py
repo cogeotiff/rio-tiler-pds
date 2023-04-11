@@ -1,5 +1,6 @@
 """Test Landsat C2."""
 
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -546,7 +547,7 @@ LANDSAT_PATH = (
 INVALID_LANDSAT_SCENE_C2 = "LC08_001062_20201031_20201106_02_T2"
 
 with open(LANDSAT_PATH / f"{LANDSAT_SCENE_C2}_SR_stac.json", "r") as f:
-    LANDSAT_METADATA = f.read().encode("utf-8")
+    LANDSAT_METADATA = json.loads(f.read().encode("utf-8"))
 
 
 @pytest.fixture(autouse=True)
@@ -567,12 +568,12 @@ def mock_rasterio_open(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler_pds.landsat.aws.landsat_collection2.get_object")
+@patch("rio_tiler_pds.landsat.aws.landsat_collection2.fetch")
 @patch("rio_tiler.io.rasterio.rasterio")
-def test_LandsatC2L2Reader(rio, get_object):
+def test_LandsatC2L2Reader(rio, fetch):
     """Should work as expected (get and parse metadata)."""
     rio.open = mock_rasterio_open
-    get_object.return_value = LANDSAT_METADATA
+    fetch.return_value = LANDSAT_METADATA
 
     with pytest.raises(InvalidLandsatSceneId):
         with LandsatC2Reader(INVALID_LANDSAT_SCENE_C2):
@@ -822,12 +823,12 @@ C2_SENSOR_TEST_CASES = [
 ]
 
 
-@patch("rio_tiler_pds.landsat.aws.landsat_collection2.get_object")
+@patch("rio_tiler_pds.landsat.aws.landsat_collection2.fetch")
 @patch("rio_tiler.io.rasterio.rasterio")
-def test_LandsatC2L2Reader_bands(rio, get_object):
+def test_LandsatC2L2Reader_bands(rio, fetch):
     """Should work as expected (get and parse metadata)."""
     rio.open = mock_rasterio_open
-    get_object.return_value = LANDSAT_METADATA
+    fetch.return_value = LANDSAT_METADATA
 
     with pytest.raises(InvalidLandsatSceneId):
         with LandsatC2Reader(INVALID_LANDSAT_SCENE_C2):

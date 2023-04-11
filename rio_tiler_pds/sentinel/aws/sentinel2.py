@@ -1,6 +1,7 @@
 """AWS Sentinel 2 readers."""
 
 import json
+import os
 from collections import OrderedDict
 from typing import Any, Dict, Sequence, Type, Union
 
@@ -13,7 +14,7 @@ from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
-from rio_tiler_pds.utils import get_object
+from rio_tiler_pds.utils import fetch
 
 default_l1c_bands = (
     "B01",
@@ -77,8 +78,8 @@ class S2L1CReader(MultiBandReader):
         self.scene_params = s2_sceneid_parser(self.input)
 
         prefix = self.prefix_pattern.format(**self.scene_params)
-        self.tileInfo = json.loads(
-            get_object(self.bucket, f"{prefix}/tileInfo.json", request_pays=True)
+        self.tileInfo = fetch(
+            f"s3://{self.bucket}/{prefix}/tileInfo.json", request_pays=True
         )
 
         self.datageom = self.tileInfo["tileDataGeometry"]
@@ -259,9 +260,14 @@ class S2L2ACOGReader(MultiBandReader):
             **self.scene_params
         )
         prefix = self.prefix_pattern.format(**self.scene_params)
-        self.stac_item = json.loads(
-            get_object(self.bucket, f"{prefix}/{cog_sceneid}.json", request_pays=True)
-        )
+        try:
+            self.stac_item = fetch(
+                f"https://{self.bucket}.s3.us-west-2.amazonaws.com/{prefix}/{cog_sceneid}.json"
+            )
+
+        except:  # noqa
+            self.stac_item = fetch(f"s3://{self.bucket}/{prefix}/{cog_sceneid}.json")
+
         self.bounds = self.stac_item["bbox"]
         self.crs = WGS84_CRS
 
