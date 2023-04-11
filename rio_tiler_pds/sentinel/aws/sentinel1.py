@@ -9,7 +9,7 @@ from rasterio.features import bounds as featureBounds
 
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import GCPCOGReader, MultiBandReader
+from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.sentinel.utils import s1_sceneid_parser
 from rio_tiler_pds.utils import get_object
 
@@ -37,11 +37,11 @@ class S1L1CReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[GCPCOGReader] = attr.ib(default=GCPCOGReader)
-    reader_options: Dict = attr.ib(default={"nodata": 0})
-
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(default={"options": {"nodata": 0}})
 
     productInfo: Dict = attr.ib(init=False)
     datageom: Dict = attr.ib(init=False)

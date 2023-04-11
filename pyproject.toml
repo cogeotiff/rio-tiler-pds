@@ -2,7 +2,7 @@
 name = "rio-tiler-pds"
 description = "Get mercator tile from cloud hosted dataset such as CBERS-4, Sentinel-2, Sentinel-1 and Landsat-8 AWS PDS."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = {file = "LICENSE.txt"}
 authors = [
     {name = "Vincent Sarago", email = "vincent@developmentseed.com"},
@@ -12,14 +12,15 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: GIS",
     "Typing :: Typed",
 ]
 dynamic = ["version"]
-dependencies = ["rio-tiler>=3.0.0,<4.0", "rio-toa"]
+dependencies = ["rio-tiler>=4.0,<5.0"]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
@@ -46,6 +47,17 @@ exclude = [
     "CONTRIBUTING.md",
 ]
 
+[tool.coverage.run]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
 [tool.isort]
 profile = "black"
 known_first_party = ["rio_tiler", "rio_tiler_pds", "rio_toa"]
@@ -53,8 +65,20 @@ known_third_party = ["rasterio","morecantile"]
 default_section = "THIRDPARTY"
 
 [tool.mypy]
-no_strict_optional = true
+no_strict_optional = "True"
 
-[tool.pydocstyle]
-select = "D1"
-match = "(?!test).*.py"
+[tool.ruff]
+select = [
+    "D1",  # pydocstyle errors
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "B905",  # ignore zip() without an explicit strict= parameter, only support with python >3.10
+]
+
+

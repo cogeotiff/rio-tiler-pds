@@ -11,7 +11,7 @@ from rasterio.features import bounds as featureBounds
 
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
-from rio_tiler.io import COGReader, MultiBandReader
+from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 from rio_tiler_pds.utils import get_object
 
@@ -55,11 +55,11 @@ class S2L1CReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(default={"nodata": 0})
-
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(default={"options": {"nodata": 0}})
 
     bands: Sequence[str] = attr.ib(init=False, default=default_l1c_bands)
 
@@ -128,6 +128,7 @@ SENTINEL_L2_PRODUCTS = OrderedDict(
     ]
 )
 
+# STAC < 1.0.0
 default_l2a_bands = (
     "B01",
     "B02",
@@ -146,19 +147,21 @@ default_l2a_bands = (
     # "WVP",
 )
 
+# https://github.com/cogeotiff/rio-tiler-pds/issues/63
+# STAC >= 1.0.0
 sentinel_l2a_band_map = {
-    "coastal": "B01",
-    "blue": "B02",
-    "green": "B03",
-    "red": "B04",
-    "rededge1": "B05",
-    "rededge2": "B06",
-    "rededge3": "B07",
-    "nir": "B08",
-    "nir08": "B8A",
-    "nir09": "B09",
-    "swir16": "B11",
-    "swir22": "B12",
+    "B01": "coastal",
+    "B02": "blue",
+    "B03": "green",
+    "B04": "red",
+    "B05": "rededge1",
+    "B06": "rededge2",
+    "B07": "rededge3",
+    "B08": "nir",
+    "B8A": "nir08",
+    "B09": "nir09",
+    "B11": "swir16",
+    "B12": "swir22",
 }
 
 
@@ -189,14 +192,15 @@ class S2L2AReader(S2L1CReader):
     def _get_resolution(self, band: str) -> str:
         """Return L2A resolution prefix"""
         if band.startswith("B"):
-            for res, bands in SENTINEL_L2_BANDS.items():
+            for resolution, bands in SENTINEL_L2_BANDS.items():
                 if band in bands:
-                    break
-        else:
-            for res, bands in SENTINEL_L2_PRODUCTS.items():
-                if band in bands:
-                    break
-        return res
+                    return resolution
+
+        for resolution, bands in SENTINEL_L2_PRODUCTS.items():
+            if band in bands:
+                return resolution
+
+        raise ValueError(f"Couldn't find resolution for Band {band}")
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
@@ -233,11 +237,11 @@ class S2L2ACOGReader(MultiBandReader):
     input: str = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
 
-    reader: Type[COGReader] = attr.ib(default=COGReader)
-    reader_options: Dict = attr.ib(factory=dict)
-
     minzoom: int = attr.ib(default=8)
     maxzoom: int = attr.ib(default=14)
+
+    reader: Type[Reader] = attr.ib(default=Reader)
+    reader_options: Dict = attr.ib(factory=dict)
 
     stac_item: Dict = attr.ib(init=False)
 
@@ -261,13 +265,19 @@ class S2L2ACOGReader(MultiBandReader):
         self.bounds = self.stac_item["bbox"]
         self.crs = WGS84_CRS
 
-        self.bands = tuple(
-            [
-                sentinel_l2a_band_map.get(band)
-                for band in self.stac_item["assets"]
-                if sentinel_l2a_band_map.get(band)
-            ]
-        )
+        if self.stac_item["stac_version"] == "1.0.0-beta.2":
+            self.bands = tuple(
+                [band for band in default_l2a_bands if band in self.stac_item["assets"]]
+            )
+
+        else:
+            self.bands = tuple(
+                [
+                    band
+                    for band, name in sentinel_l2a_band_map.items()
+                    if name in self.stac_item["assets"]
+                ]
+            )
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
