@@ -20,6 +20,7 @@ from rio_tiler_pds.sentinel.utils import s2_sceneid_parser
 SENTINEL_SCENE_L1 = "S2A_L1C_20170729_19UDP_0"
 SENTINEL_SCENE_L2 = "S2A_L2A_20170729_19UDP_0"
 SENTINEL_COG_SCENE_L2 = "S2A_29RKH_20200219_0_L2A"
+SENTINEL_COG_SCENE_L2_OLD = "S2A_31NBJ_20190524_0_L2A"
 SENTINEL_COG_PRODUCT = "S2A_MSIL2A_20200219T013442_N0204_R031_T29RKH_20200219T013443"
 SENTINEL_PRODUCT = "S2A_MSIL1C_20170105T013442_N0204_R031_T53NMJ_20170105T013443"
 SENTINEL_BUCKET = os.path.join(os.path.dirname(__file__), "fixtures", "sentinel-s2")
@@ -520,3 +521,58 @@ def test_no_readers():
 
     with pytest.raises(Exception):
         S2COGReader("S2A_29RKH_20200219_0_L2C")
+
+
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
+def test_AWSPDS_S2COGReader_OLDSTAC(get_object):
+    """Test AWSPDS_S2L2ACOGReader."""
+    L2A_OLD_COG_TJSON_PATH = os.path.join(
+        os.path.dirname(__file__),
+        "fixtures",
+        "sentinel-cogs",
+        "sentinel-s2-l2a-cogs",
+        "31",
+        "N",
+        "BJ",
+        "2019",
+        "5",
+        SENTINEL_COG_SCENE_L2_OLD,
+        f"{SENTINEL_COG_SCENE_L2_OLD}.json",
+    )
+
+    with open(L2A_OLD_COG_TJSON_PATH, "rb") as f:
+        L2A_OLD_COG_TJSON_PATH = f.read()
+
+    get_object.return_value = L2A_OLD_COG_TJSON_PATH
+
+    with S2COGReader(SENTINEL_COG_SCENE_L2_OLD) as sentinel:
+        assert isinstance(sentinel, S2L2ACOGReader)
+        assert sentinel.scene_params["scene"] == SENTINEL_COG_SCENE_L2_OLD
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sorted(sentinel.bands) == sorted(
+            (
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B11",
+                "B12",
+                "B8A",
+            )
+        )
+        with pytest.raises(InvalidBandName):
+            sentinel.statistics(bands="B30")
+
+        assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
+
+        assert (
+            sentinel._get_band_url("B01")
+            == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/31/N/BJ/2019/5/S2A_31NBJ_20190524_0_L2A/B01.tif"
+        )

@@ -1,7 +1,6 @@
 """AWS Sentinel 2 readers."""
 
 import json
-import re
 from collections import OrderedDict
 from typing import Any, Dict, Sequence, Type, Union
 
@@ -129,6 +128,7 @@ SENTINEL_L2_PRODUCTS = OrderedDict(
     ]
 )
 
+# STAC < 1.0.0
 default_l2a_bands = (
     "B01",
     "B02",
@@ -146,6 +146,23 @@ default_l2a_bands = (
     # "SCL",
     # "WVP",
 )
+
+# https://github.com/cogeotiff/rio-tiler-pds/issues/63
+# STAC >= 1.0.0
+sentinel_l2a_band_map = {
+    "B01": "coastal",
+    "B02": "blue",
+    "B03": "green",
+    "B04": "red",
+    "B05": "rededge1",
+    "B06": "rededge2",
+    "B07": "rededge3",
+    "B08": "nir",
+    "B8A": "nir08",
+    "B09": "nir09",
+    "B11": "swir16",
+    "B12": "swir22",
+}
 
 
 @attr.s
@@ -248,9 +265,19 @@ class S2L2ACOGReader(MultiBandReader):
         self.bounds = self.stac_item["bbox"]
         self.crs = WGS84_CRS
 
-        self.bands = tuple(
-            [band for band in self.stac_item["assets"] if re.match("B[0-9A]{2}", band)]
-        )
+        if self.stac_item["stac_version"] == "1.0.0-beta.2":
+            self.bands = tuple(
+                [band for band in default_l2a_bands if band in self.stac_item["assets"]]
+            )
+
+        else:
+            self.bands = tuple(
+                [
+                    band
+                    for band, name in sentinel_l2a_band_map.items()
+                    if name in self.stac_item["assets"]
+                ]
+            )
 
     def _get_band_url(self, band: str) -> str:
         """Validate band name and return band's url."""
