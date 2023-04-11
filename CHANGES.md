@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.8.0 (TBD)
+
+* remove Landsat 8 Collection 1
+* remove python 3.7 and add python 3.10/3.11 support
+* switch to ruff
+
 ## 0.7.0 (2022-06-08)
 
 * enable `bucket` and `prefix_pattern` as input (@author @f-skold, https://github.com/cogeotiff/rio-tiler-pds/pull/61)
