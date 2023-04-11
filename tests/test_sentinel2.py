@@ -160,7 +160,6 @@ def test_AWSPDS_S2L1CReader(rio, fetch):
 
         # Check for kwargs colision
         # If nodata=None is passed, it will overwrite the default nodata set in the reader
-        # https://github.com/cogeotiff/rio-tiler/blob/master/rio_tiler/io/cogeo.py#L277
         data, mask = sentinel.preview(bands="B01", nodata=None)
         assert mask.all()
 

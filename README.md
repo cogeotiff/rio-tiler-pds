@@ -11,7 +11,7 @@
       <img src="https://github.com/cogeotiff/rio-tiler-pds/workflows/CI/badge.svg" alt="Test">
   </a>
   <a href="https://codecov.io/gh/cogeotiff/rio-tiler-pds" target="_blank">
-      <img src="https://codecov.io/gh/cogeotiff/rio-tiler-pds/branch/master/graph/badge.svg" alt="Coverage">
+      <img src="https://codecov.io/gh/cogeotiff/rio-tiler-pds/branch/main/graph/badge.svg" alt="Coverage">
   </a>
   <a href="https://pypi.org/project/rio-tiler-pds" target="_blank">
       <img src="https://img.shields.io/pypi/v/rio-tiler-pds?color=%2334D058&label=pypi%20package" alt="Package version">
@@ -19,7 +19,7 @@
   <a href="https://pypistats.org/packages/rio-tiler-pds" target="_blank">
       <img src="https://img.shields.io/pypi/dm/rio-tiler-pds.svg" alt="Downloads">
   </a>
-  <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/master/LICENSE.txt" target="_blank">
+  <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/main/LICENSE.txt" target="_blank">
       <img src="https://img.shields.io/github/license/cogeotiff/rio-tiler-pds.svg" alt="Lincense">
   </a>
 </p>
@@ -326,18 +326,18 @@ with S2COGReader("S2A_L2A_20170729_19UDP_0") as sentinel:
 
 ## Changes
 
-See [CHANGES.md](https://github.com/cogeotiff/rio-tiler-pds/blob/master/CHANGES.md).
+See [CHANGES.md](https://github.com/cogeotiff/rio-tiler-pds/blob/main/CHANGES.md).
 
 ## Contribution & Development
 
-See [CONTRIBUTING.md](https://github.com/cogeotiff/rio-tiler/blob/master/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/cogeotiff/rio-tiler/blob/main/CONTRIBUTING.md)
 
 ## License
 
-See [LICENSE.txt](https://github.com/cogeotiff/rio-tiler-pds/blob/master/LICENSE.txt)
+See [LICENSE.txt](https://github.com/cogeotiff/rio-tiler-pds/blob/main/LICENSE.txt)
 
 ## Authors
 
 The rio-tiler project was begun at Mapbox and has been transferred in January 2019.
 
-See [AUTHORS.txt](https://github.com/cogeotiff/rio-tiler-pds/blob/master/AUTHORS.txt) for a listing of individual contributors.
+See [AUTHORS.txt](https://github.com/cogeotiff/rio-tiler-pds/blob/main/AUTHORS.txt) for a listing of individual contributors.
