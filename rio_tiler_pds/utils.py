@@ -35,7 +35,6 @@ def fetch(filepath: str, **kwargs: Any) -> Dict:
         dict: URL JSON content.
 
     """
-    print(filepath)
     parsed = urlparse(filepath)
     if parsed.scheme == "s3":
         bucket = parsed.netloc
