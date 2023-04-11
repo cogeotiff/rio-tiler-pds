@@ -1,5 +1,6 @@
 """tests rio_tiler.sentinel2"""
 
+import json
 import os
 from unittest.mock import patch
 
@@ -40,7 +41,7 @@ L1C_TJSON_PATH = os.path.join(
     "tileInfo.json",
 )
 with open(L1C_TJSON_PATH, "rb") as f:
-    L1C_TILEJSON = f.read()
+    L1C_TILEJSON = json.loads(f.read())
 
 
 @pytest.fixture(autouse=True)
@@ -61,12 +62,12 @@ def mock_rasterio_open(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.fetch")
 @patch("rio_tiler.io.rasterio.rasterio")
-def test_AWSPDS_S2L1CReader(rio, get_object):
+def test_AWSPDS_S2L1CReader(rio, fetch):
     """Test AWSPDS_S2L1CReader."""
     rio.open = mock_rasterio_open
-    get_object.return_value = L1C_TILEJSON
+    fetch.return_value = L1C_TILEJSON
 
     with pytest.raises(InvalidSentinelSceneId):
         with S2L1CReader("S2A_tile_20170323_17SNC"):
@@ -188,15 +189,15 @@ L2A_TJSON_PATH = os.path.join(
     "tileInfo.json",
 )
 with open(L2A_TJSON_PATH, "rb") as f:
-    L2A_TILEJSON = f.read()
+    L2A_TILEJSON = json.loads(f.read())
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.fetch")
 @patch("rio_tiler.io.rasterio.rasterio")
-def test_AWSPDS_S2L2AReader(rio, get_object):
+def test_AWSPDS_S2L2AReader(rio, fetch):
     """Test AWSPDS_S2L2AReader."""
     rio.open = mock_rasterio_open
-    get_object.return_value = L2A_TILEJSON
+    fetch.return_value = L2A_TILEJSON
 
     with pytest.raises(InvalidSentinelSceneId):
         with S2L1CReader("S2A_tile_20170323_17SNC"):
@@ -264,7 +265,7 @@ L2ACOG_TJSON_PATH = os.path.join(
     f"{SENTINEL_COG_SCENE_L2}.json",
 )
 with open(L2ACOG_TJSON_PATH, "rb") as f:
-    L2ACOG_JSON = f.read()
+    L2ACOG_JSON = json.loads(f.read())
 
 
 SENTINEL_COG_BUCKET = os.path.join(
@@ -279,12 +280,12 @@ def mock_rasterio_open_cogs(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.fetch")
 @patch("rio_tiler.io.rasterio.rasterio")
-def test_AWSPDS_S2COGReader(rio, get_object):
+def test_AWSPDS_S2COGReader(rio, fetch):
     """Test AWSPDS_S2L2ACOGReader."""
     rio.open = mock_rasterio_open_cogs
-    get_object.return_value = L2ACOG_JSON
+    fetch.return_value = L2ACOG_JSON
 
     with pytest.raises(InvalidSentinelSceneId):
         with S2COGReader("S2A_tile_20170323_17SNC"):
@@ -523,8 +524,8 @@ def test_no_readers():
         S2COGReader("S2A_29RKH_20200219_0_L2C")
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel2.get_object")
-def test_AWSPDS_S2COGReader_OLDSTAC(get_object):
+@patch("rio_tiler_pds.sentinel.aws.sentinel2.fetch")
+def test_AWSPDS_S2COGReader_OLDSTAC(fetch):
     """Test AWSPDS_S2L2ACOGReader."""
     L2A_OLD_COG_TJSON_PATH = os.path.join(
         os.path.dirname(__file__),
@@ -541,9 +542,9 @@ def test_AWSPDS_S2COGReader_OLDSTAC(get_object):
     )
 
     with open(L2A_OLD_COG_TJSON_PATH, "rb") as f:
-        L2A_OLD_COG_TJSON_PATH = f.read()
+        L2A_OLD_COG_TJSON_PATH = json.loads(f.read())
 
-    get_object.return_value = L2A_OLD_COG_TJSON_PATH
+    fetch.return_value = L2A_OLD_COG_TJSON_PATH
 
     with S2COGReader(SENTINEL_COG_SCENE_L2_OLD) as sentinel:
         assert isinstance(sentinel, S2L2ACOGReader)

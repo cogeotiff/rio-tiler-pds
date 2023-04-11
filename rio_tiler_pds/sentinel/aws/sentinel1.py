@@ -11,7 +11,7 @@ from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.sentinel.utils import s1_sceneid_parser
-from rio_tiler_pds.utils import get_object
+from rio_tiler_pds.utils import fetch
 
 
 @attr.s
@@ -68,8 +68,8 @@ class S1L1CReader(MultiBandReader):
             self.bands = ("vv",)
 
         prefix = self.prefix_pattern.format(**self.scene_params)
-        self.productInfo = json.loads(
-            get_object(self.bucket, f"{prefix}/productInfo.json", request_pays=True)
+        self.productInfo = fetch(
+            f"s3://{self.bucket}/{prefix}/productInfo.json", request_pays=True
         )
 
         self.datageom = self.productInfo["footprint"]

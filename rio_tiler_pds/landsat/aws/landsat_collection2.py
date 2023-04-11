@@ -31,7 +31,7 @@ from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.landsat.utils import sceneid_parser
-from rio_tiler_pds.utils import get_object
+from rio_tiler_pds.utils import fetch
 
 
 @attr.s
@@ -95,9 +95,7 @@ class LandsatC2Reader(MultiBandReader):
             stac_key = f"{prefix}_SR_stac.json"
 
         try:
-            self.stac_item = json.loads(
-                get_object(self.bucket, stac_key, request_pays=True)
-            )
+            self.stac_item = fetch(f"s3://{self.bucket}/{stac_key}", request_pays=True)
         except ClientError as e:
             if e.response["Error"]["Code"] == "NoSuchKey":
                 raise ValueError(

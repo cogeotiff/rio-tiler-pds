@@ -1,5 +1,6 @@
 """tests rio_tiler_pds.sentinel1"""
 
+import json
 import os
 from unittest.mock import patch
 
@@ -20,7 +21,7 @@ with open(
     ),
     "r",
 ) as f:
-    SENTINEL_METADATA = f.read()
+    SENTINEL_METADATA = json.loads(f.read())
 
 
 @pytest.fixture(autouse=True)
@@ -41,12 +42,12 @@ def mock_rasterio_open(band):
     return rasterio.open(band)
 
 
-@patch("rio_tiler_pds.sentinel.aws.sentinel1.get_object")
+@patch("rio_tiler_pds.sentinel.aws.sentinel1.fetch")
 @patch("rio_tiler.io.rasterio.rasterio")
-def test_AWSPDS_S1L1CReader(rio, get_object):
+def test_AWSPDS_S1L1CReader(rio, fetch):
     """Test AWSPDS_S1L1CReader."""
     rio.open = mock_rasterio_open
-    get_object.return_value = SENTINEL_METADATA
+    fetch.return_value = SENTINEL_METADATA
 
     with pytest.raises(InvalidSentinelSceneId):
         with S1L1CReader("S2A_tile_20170729_19UDP_0"):

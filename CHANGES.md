@@ -5,6 +5,7 @@
 * remove Landsat 8 Collection 1
 * remove python 3.7 and add python 3.10/3.11 support
 * switch to ruff
+* fix issue with latest STAC Items for Sentinel-2-l2a-cogs (author @dvd3v, https://github.com/cogeotiff/rio-tiler-pds/pull/64)
 
 ## 0.7.0 (2022-06-08)
 
