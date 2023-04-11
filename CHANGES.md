@@ -1,6 +1,6 @@
 # Release Notes
 
-## 0.8.0 (TBD)
+## 0.8.0 (2023-04-11)
 
 * remove Landsat 8 Collection 1
 * remove python 3.7 and add python 3.10/3.11 support
