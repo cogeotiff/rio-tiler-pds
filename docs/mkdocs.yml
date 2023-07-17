@@ -28,7 +28,6 @@ nav:
     - Overview: usage/overview.md
     - Sentinel: usage/sentinel.md
     - Landsat Collection 2: usage/landsat-c2.md
-    - Landsat: usage/landsat.md
     - CBERS: usage/cbers.md
     - MODIS: usage/modis.md
   - Development - Contributing: 'contributing.md'

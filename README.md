@@ -62,6 +62,7 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 | [CBERS 4/4A][cbers_cog]                   | L2/L4                                       | COG                        | AMS Kepler / AWS           | us-east-1    | **Requester-pays** |
 | [MODIS (modis-pds)][modis_pds]            | MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA | GTiff (External Overviews) | -                          | us-west-2    | Public             |
 | [MODIS (astraea-opendata)][modis_astraea] | MCD43A4, MOD11A1, MOD13A1, MYD11A1 MYD13A1  | COG                        | Astraea / AWS              | us-west-2    | **Requester-pays** |
+| [Copernicus Digital Elevation Model][copernicus_dem] | GLO-30, GLO-90                   | COG                        | Sinergise / AWS            | eu-central-1    | Public |
 
 [s2_l1c_jp2]: https://registry.opendata.aws/sentinel-2/
 [s2_l2a_jp2]: https://registry.opendata.aws/sentinel-2/
@@ -71,6 +72,7 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 [cbers_cog]: https://registry.opendata.aws/cbers/
 [modis_pds]: https://docs.opendata.aws/modis-pds/readme.html
 [modis_astraea]: https://registry.opendata.aws/modis-astraea/
+[copernicus_dem]: https://registry.opendata.aws/copernicus-dem/
 
 **Adding more dataset**:
 
@@ -119,6 +121,7 @@ from rio_tiler_pds.sentinel.aws import (
 
 from rio_tiler_pds.cbers.aws import CBERSReader
 from rio_tiler_pds.modis.aws import MODISPDSReader, MODISASTRAEAReader
+from rio_tiler_pds.copernicus.aws import Dem30Reader, Dem90Reader
 ```
 
 All Readers are subclass of [`rio_tiler.io.BaseReader`](https://github.com/cogeotiff/rio-tiler/blob/f917d0eaf27f8644f3bb18856a63fe45eeb4a2ef/rio_tiler/io/base.py#L17) and inherit its properties/methods.
@@ -322,6 +325,19 @@ with S2COGReader("S2A_L2A_20170729_19UDP_0") as sentinel:
 
       print(stats["B01"].min)
       >> 2.0
+```
+
+### Mosaic Reader: Copernicus DEM
+
+The Copernicus DEM GLO-30 and GLO-90 readers are not **per scene** but **mosaic** readers. This is possible because the dataset is a global dataset with file names having the `geo-location` of the COG, meaning we can easily contruct a filepath from a coordinate.
+
+```python
+from rio_tiler_pds.copernicus.aws import Dem30Reader
+
+with Dem30Reader() as dem:
+    print(dem.assets_for_point(-57.2, -11.2))
+
+>> ['s3://copernicus-dem-30m/Copernicus_DSM_COG_10_S12_00_W058_00_DEM/Copernicus_DSM_COG_10_S12_00_W058_00_DEM.tif']
 ```
 
 ## Changes

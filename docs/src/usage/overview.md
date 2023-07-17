@@ -14,5 +14,5 @@ from rio_tiler_pds.sentinel.aws import S2JP2Reader
 
 with rasterio.Env(AWS_REQUEST_PAYER="requester"):
     with S2JP2Reader("S2A_L1C_20170729_19UDP_0") as s2:
-        print(s2.preview(bands="B01", width=64, height=64))
+        print(s2.preview(bands="B01", width=64, height=64, max_size=None))
 ```

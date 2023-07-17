@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.9.0 (2023-07-13)
+
+* update rio-tiler requirement to `>=5.0,<6.0`
+* add `rio_tiler_pds.copernicus.aws.Dem30Reader` and `rio_tiler_pds.copernicus.aws.Dem90Reader` **mosaic** readers
+* add `boto3` in dependencies
+
 ## 0.8.0 (2023-04-11)
 
 * remove Landsat 8 Collection 1

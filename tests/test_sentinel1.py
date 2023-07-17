@@ -69,7 +69,7 @@ def test_AWSPDS_S1L1CReader(rio, fetch):
         assert metadata["band_descriptions"] == [("vv", "")]
 
         metadata = sentinel.statistics(bands=("vv", "vh"))
-        assert metadata["vv"]["min"] == 4
+        assert metadata["vv"]["min"] == 0
         assert metadata["vh"]["max"] == 623
 
         tile_z = 8

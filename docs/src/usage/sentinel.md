@@ -81,19 +81,34 @@ with rasterio.Env(AWS_REQUEST_PAYER="requester"):
         assert img.data.shape == (1, 256, 256)
 
         print(sentinel.point(-69.41, 48.25, bands=("B01", "B02")))
-        # Result is in form of
-        # [
-        #   value for band 1 in band B01,
-        #   value for band 1 in band B02
-        # ]
-        > [1230, 875]
+        >> PointData(
+            array=masked_array(data=[1201, 843], mask=[False, False], fill_value=999999, dtype=uint16),
+            band_names=['B01', 'B02'],
+            coordinates=(-69.41, 48.25),
+            crs=CRS.from_epsg(4326),
+            assets=[
+                's3://sentinel-s2-l1c/tiles/19/U/DP/2017/7/29/0/B01.jp2',
+                's3://sentinel-s2-l1c/tiles/19/U/DP/2017/7/29/0/B02.jp2'
+            ],
+            metadata={}
+        )
 
         # Working with Expression
         img = sentinel.tile(77, 89, 8, expression="B01/B02")
         assert igm.data.shape == (1, 256, 256)
 
         print(sentinel.point(-69.41, 48.25, expression="B01/B02"))
-        > [1.424673784104389]
+        >> PointData(
+            array=masked_array(data=[1.424673784104389], mask=[False], fill_value=999999, dtype=float32),
+            band_names=['B01/B02'],
+            coordinates=(-69.41, 48.25),
+            crs=CRS.from_epsg(4326),
+            assets=[
+                's3://sentinel-s2-l1c/tiles/19/U/DP/2017/7/29/0/B01.jp2',
+                's3://sentinel-s2-l1c/tiles/19/U/DP/2017/7/29/0/B02.jp2'
+            ],
+            metadata={}
+        )
 ```
 
 ### L2A - JPEG2000

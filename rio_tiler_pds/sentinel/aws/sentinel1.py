@@ -41,7 +41,7 @@ class S1L1CReader(MultiBandReader):
     maxzoom: int = attr.ib(default=14)
 
     reader: Type[Reader] = attr.ib(default=Reader)
-    reader_options: Dict = attr.ib(default={"options": {"nodata": 0}})
+    reader_options: Dict = attr.ib(factory=dict)
 
     productInfo: Dict = attr.ib(init=False)
     datageom: Dict = attr.ib(init=False)
