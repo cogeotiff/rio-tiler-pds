@@ -167,7 +167,7 @@ def test_AWS_MODISASTRAEAReader(rio):
         )
 
         metadata = modis.info(bands="B01")
-        assert metadata["band_descriptions"] == [("B01", "500m 16 days NDVI")]
+        assert metadata.band_descriptions == [("B01", "500m 16 days NDVI")]
 
         with pytest.warns(UserWarning):
             stats = modis.statistics()
@@ -175,8 +175,8 @@ def test_AWS_MODISASTRAEAReader(rio):
 
         stats = modis.statistics(bands="B05")
         assert len(stats.items()) == 1
-        assert stats["B05"]["percentile_2"]
-        assert stats["B05"]["percentile_98"]
+        assert stats["B05"].percentile_2
+        assert stats["B05"].percentile_98
 
         tile_z = 8
         tile_x = 219

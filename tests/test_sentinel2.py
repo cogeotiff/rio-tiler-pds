@@ -117,8 +117,8 @@ def test_AWSPDS_S2L1CReader(rio, fetch):
             assert values.data[0] == 1193.0 / 846.0
 
         stats = sentinel.statistics(bands="B01")
-        assert stats["B01"]["percentile_2"]
-        assert stats["B01"]["percentile_98"]
+        assert stats["B01"].percentile_2
+        assert stats["B01"].percentile_98
 
         tile_z = 8
         tile_x = 78
@@ -233,8 +233,8 @@ def test_AWSPDS_S2L2AReader(rio, fetch):
         assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
         stats = sentinel.statistics(bands="B01")
-        assert stats["B01"]["percentile_2"]
-        assert stats["B01"]["percentile_98"]
+        assert stats["B01"].percentile_2
+        assert stats["B01"].percentile_98
 
         tile_z = 8
         tile_x = 78
@@ -318,8 +318,8 @@ def test_AWSPDS_S2COGReader(rio, fetch):
         assert sentinel._get_band_url("B1") == sentinel._get_band_url("B01")
 
         stats = sentinel.statistics(bands="B01")
-        assert stats["B01"]["percentile_2"]
-        assert stats["B01"]["percentile_98"]
+        assert stats["B01"].percentile_2
+        assert stats["B01"].percentile_98
 
         assert (
             sentinel._get_band_url("B01")
@@ -352,8 +352,8 @@ def test_AWSPDS_S2COGReader(rio, fetch):
             sentinel.statistics(bands="B25")
 
         stats = sentinel.statistics(bands="B01")
-        assert stats["B01"]["percentile_2"]
-        assert stats["B01"]["percentile_98"]
+        assert stats["B01"].percentile_2
+        assert stats["B01"].percentile_98
 
         assert (
             sentinel._get_band_url("B01")
