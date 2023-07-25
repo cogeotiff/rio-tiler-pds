@@ -594,35 +594,35 @@ def test_LandsatC2L2Reader(rio, fetch):
             landsat.info(bands="BAND5")
 
         metadata = landsat.info(bands="SR_B5")
-        assert len(metadata["band_metadata"]) == 1
-        assert metadata["band_descriptions"] == [("SR_B5", "")]
+        assert len(metadata.band_metadata) == 1
+        assert metadata.band_descriptions == [("SR_B5", "")]
 
         metadata = landsat.info(bands=landsat.bands)
-        assert len(metadata["band_metadata"]) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
+        assert len(metadata.band_metadata) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
 
         with pytest.warns(UserWarning):
             stats = landsat.statistics()
         assert list(stats) == list(landsat.bands)
 
         stats = landsat.statistics(bands="SR_B1")
-        assert stats["SR_B1"]["percentile_2"]
-        assert stats["SR_B1"]["percentile_98"]
+        assert stats["SR_B1"].percentile_2
+        assert stats["SR_B1"].percentile_98
 
         stats = landsat.statistics(bands=landsat.bands)
         assert len(stats.items()) == len(OLI_SR_BANDS + TIRS_ST_BANDS)
         assert list(stats) == list(landsat.bands)
 
         stats = landsat.statistics(bands="SR_B1", hist_options={"bins": 20})
-        assert len(stats["SR_B1"]["histogram"][0]) == 20
+        assert len(stats["SR_B1"].histogram[0]) == 20
 
         stats = landsat.statistics(bands="QA_PIXEL")
-        assert stats["QA_PIXEL"]["min"] == 1
+        assert stats["QA_PIXEL"].min == 1
 
         stats = landsat.statistics(
             bands="QA_PIXEL", nodata=0, resampling_method="bilinear"
         )
         # nodata and resampling_method are set at reader level an shouldn't be set
-        assert stats["QA_PIXEL"]["min"] == 1
+        assert stats["QA_PIXEL"].min == 1
 
         tile_z = 8
         tile_x = 81

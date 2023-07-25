@@ -72,12 +72,12 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
             cbers.info(bands="BAND5")
 
         metadata = cbers.info(bands="B5")
-        assert len(metadata["band_metadata"]) == 1
-        assert metadata["band_descriptions"] == [("B5", "")]
+        assert len(metadata.band_metadata) == 1
+        assert metadata.band_descriptions == [("B5", "")]
 
         metadata = cbers.info(bands=cbers.bands)
-        assert len(metadata["band_metadata"]) == 4
-        assert metadata["band_descriptions"] == [
+        assert len(metadata.band_metadata) == 4
+        assert metadata.band_descriptions == [
             ("B5", ""),
             ("B6", ""),
             ("B7", ""),
@@ -90,11 +90,11 @@ def test_AWSPDS_CBERSReader_CB4_MUX(rio):
 
         stats = cbers.statistics(bands="B5")
         assert len(stats.items()) == 1
-        assert stats["B5"]["percentile_2"]
-        assert stats["B5"]["percentile_98"]
+        assert stats["B5"].percentile_2
+        assert stats["B5"].percentile_98
 
         stats = cbers.statistics(bands=cbers.bands, hist_options={"bins": 20})
-        assert len(stats["B5"]["histogram"][0]) == 20
+        assert len(stats["B5"].histogram[0]) == 20
 
         tile_z = 10
         tile_x = 664
@@ -208,12 +208,12 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
             cbers.info(bands="BAND5")
 
         metadata = cbers.info(bands="B5")
-        assert len(metadata["band_metadata"]) == 1
-        assert metadata["band_descriptions"] == [("B5", "")]
+        assert len(metadata.band_metadata) == 1
+        assert metadata.band_descriptions == [("B5", "")]
 
         metadata = cbers.info(bands=cbers.bands)
-        assert len(metadata["band_metadata"]) == 4
-        assert metadata["band_descriptions"] == [
+        assert len(metadata.band_metadata) == 4
+        assert metadata.band_descriptions == [
             ("B5", ""),
             ("B6", ""),
             ("B7", ""),
@@ -226,11 +226,11 @@ def test_AWSPDS_CBERSReader_CB4A_MUX(rio):
 
         stats = cbers.statistics(bands="B5")
         assert len(stats.items()) == 1
-        assert stats["B5"]["percentile_2"]
-        assert stats["B5"]["percentile_98"]
+        assert stats["B5"].percentile_2
+        assert stats["B5"].percentile_98
 
         stats = cbers.statistics(bands=cbers.bands, hist_options={"bins": 20})
-        assert len(stats["B5"]["histogram"][0]) == 20
+        assert len(stats["B5"].histogram[0]) == 20
 
         tile_z = 10
         tile_x = 385

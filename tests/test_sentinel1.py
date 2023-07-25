@@ -64,13 +64,13 @@ def test_AWSPDS_S1L1CReader(rio, fetch):
             sentinel.info(bands="B1")
 
         metadata = sentinel.info(bands="vv")
-        assert len(metadata["band_metadata"]) == 1
-        assert metadata["band_metadata"][0][0] == "vv"
-        assert metadata["band_descriptions"] == [("vv", "")]
+        assert len(metadata.band_metadata) == 1
+        assert metadata.band_metadata[0][0] == "vv"
+        assert metadata.band_descriptions == [("vv", "")]
 
         metadata = sentinel.statistics(bands=("vv", "vh"))
-        assert metadata["vv"]["min"] == 0
-        assert metadata["vh"]["max"] == 623
+        assert metadata["vv"].min == 0
+        assert metadata["vh"].max == 623
 
         tile_z = 8
         tile_x = 183
