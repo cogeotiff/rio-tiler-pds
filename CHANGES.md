@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.10.0 (2023-07-25)
+
+* update rio-tiler requirement to `>=5.0,<7.0`
+
 ## 0.9.0 (2023-07-13)
 
 * update rio-tiler requirement to `>=5.0,<6.0`
