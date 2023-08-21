@@ -57,7 +57,7 @@ $ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 | [Sentinel 2][s2_l1c_jp2]                  | L1C                                         | JPEG2000                   | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
 | [Sentinel 2][s2_l2a_jp2]                  | L2A                                         | JPEG2000                   | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
 | [Sentinel 2][s2_l2a_cog]                  | L2A                                         | COG                        | Digital Earth Africa / AWS | us-west-2    | Public             |
-| [Sentinel 1][s1_l1c_cog]                  | L1C                                         | COG (Internal GCPS)        | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
+| [Sentinel 1][s1_l1c_cog]                  | L1C GRD (IW, EW, S1-6)                      | COG (Internal GCPS)        | Sinergise / AWS            | eu-central-1 | **Requester-pays** |
 | [Landsat Collection 2][landsat_c2_cog]    | L1,L2                                       | COG                        | USGS / AWS                 | us-west-2    | **Requester-pays** |
 | [CBERS 4/4A][cbers_cog]                   | L2/L4                                       | COG                        | AMS Kepler / AWS           | us-east-1    | **Requester-pays** |
 | [MODIS (modis-pds)][modis_pds]            | MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA | GTiff (External Overviews) | -                          | us-west-2    | Public             |

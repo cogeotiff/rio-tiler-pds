@@ -210,6 +210,31 @@ SENTINEL1_SCENE_PARSER_TEST_CASES = (
             "_day": "20",
         },
     ),
+    (
+        "S1A_S1_GRDH_1SDV_20230809T020729_20230809T020754_049792_05FCE6_1175",
+        {
+            "sensor": "1",
+            "satellite": "A",
+            "beam": "S1",
+            "product": "GRD",
+            "resolution": "H",
+            "processing_level": "1",
+            "product_class": "S",
+            "polarisation": "DV",
+            "startDateTime": "20230809T020729",
+            "stopDateTime": "20230809T020754",
+            "absolute_orbit": "049792",
+            "mission_task": "05FCE6",
+            "product_id": "1175",
+            "acquisitionYear": "2023",
+            "acquisitionMonth": "08",
+            "acquisitionDay": "09",
+            "scene": "S1A_S1_GRDH_1SDV_20230809T020729_20230809T020754_049792_05FCE6_1175",
+            "date": "2023-08-09",
+            "_month": "8",
+            "_day": "9",
+        },
+    ),
 )
 
 
@@ -217,3 +242,60 @@ SENTINEL1_SCENE_PARSER_TEST_CASES = (
 def test_s1_sceneid_parser(sceneid, expected_content):
     """Parse Sentinel-1 Sceneid."""
     assert s1_sceneid_parser(sceneid) == expected_content
+
+
+@patch("rio_tiler_pds.sentinel.aws.sentinel1.fetch")
+def test_multipolygon_bounds(fetch):
+    """test fetching bounds from a multi polygon."""
+    with open(
+        f"{SENTINEL_BUCKET}/GRD/2023/7/26/IW/DV/S1A_IW_GRDH_1SDV_20230726T183302_20230726T183327_049598_05F6CA_31E7/productInfo.json",
+        "r",
+    ) as f:
+        SENTINEL_METADATA = json.loads(f.read())
+
+    fetch.return_value = SENTINEL_METADATA
+
+    with S1L1CReader(
+        "S1A_IW_GRDH_1SDV_20230726T183302_20230726T183327_049598_05F6CA_31E7"
+    ) as sentinel:
+        assert (
+            sentinel.scene_params["scene"]
+            == "S1A_IW_GRDH_1SDV_20230726T183302_20230726T183327_049598_05F6CA_31E7"
+        )
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sentinel.bounds[0] > sentinel.bounds[2]
+        assert sentinel.bands == ("vv", "vh")
+
+
+@patch("rio_tiler_pds.sentinel.aws.sentinel1.fetch")
+@patch("rio_tiler.io.rasterio.rasterio")
+def test_stripmap_beam(rio, fetch):
+    """test stripmap beam mode."""
+    rio.open = mock_rasterio_open
+
+    with open(
+        f"{SENTINEL_BUCKET}/GRD/2023/8/9/S1/DV/S1A_S1_GRDH_1SDV_20230809T020729_20230809T020754_049792_05FCE6_1175/productInfo.json",
+        "r",
+    ) as f:
+        SENTINEL_METADATA = json.loads(f.read())
+
+    fetch.return_value = SENTINEL_METADATA
+
+    with S1L1CReader(
+        "S1A_S1_GRDH_1SDV_20230809T020729_20230809T020754_049792_05FCE6_1175"
+    ) as sentinel:
+        assert (
+            sentinel.scene_params["scene"]
+            == "S1A_S1_GRDH_1SDV_20230809T020729_20230809T020754_049792_05FCE6_1175"
+        )
+        assert sentinel.minzoom == 8
+        assert sentinel.maxzoom == 14
+        assert len(sentinel.bounds) == 4
+        assert sentinel.bands == ("vv", "vh")
+
+        metadata = sentinel.info(bands="vh")
+        assert len(metadata.band_metadata) == 1
+        assert metadata.band_metadata[0][0] == "vh"
+        assert metadata.band_descriptions == [("vh", "")]

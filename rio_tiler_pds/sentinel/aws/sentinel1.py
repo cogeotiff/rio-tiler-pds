@@ -1,7 +1,7 @@
 """AWS Sentinel 1 reader."""
 
 import json
-from typing import Dict, Type
+from typing import Dict, Tuple, Type
 
 import attr
 from morecantile import TileMatrixSet
@@ -12,6 +12,22 @@ from rio_tiler.errors import InvalidBandName
 from rio_tiler.io import MultiBandReader, Reader
 from rio_tiler_pds.sentinel.utils import s1_sceneid_parser
 from rio_tiler_pds.utils import fetch
+
+
+def get_bounds(geom: Dict) -> Tuple[float, float, float, float]:
+    """Get Bounds from GeoJSON geometry and handle multi polygon crossing the antimeridian line.
+
+    ref: https://github.com/cogeotiff/rio-tiler-pds/issues/77
+    """
+    if geom["type"] == "MultiPolygon":
+        bounds = [
+            featureBounds({"type": "Polygon", "coordinates": poly})
+            for poly in geom["coordinates"]
+        ]
+        minx, miny, maxx, maxy = zip(*bounds)
+        return (max(minx), min(miny), min(maxx), max(maxy))
+
+    return featureBounds(geom)
 
 
 @attr.s
@@ -73,7 +89,7 @@ class S1L1CReader(MultiBandReader):
         )
 
         self.datageom = self.productInfo["footprint"]
-        self.bounds = featureBounds(self.datageom)
+        self.bounds = get_bounds(self.datageom)
         self.crs = WGS84_CRS
 
     def _get_band_url(self, band: str) -> str:
