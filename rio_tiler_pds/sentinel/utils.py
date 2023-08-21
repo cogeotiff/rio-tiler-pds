@@ -134,7 +134,7 @@ def s1_sceneid_parser(sceneid: str) -> Dict:
 
     """
     if not re.match(
-        "^S1[AB]_(IW|EW)_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$",
+        "^S1[AB]_(IW|EW|S[1-6])_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$",
         sceneid,
     ):
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))
@@ -144,7 +144,7 @@ def s1_sceneid_parser(sceneid: str) -> Dict:
         r"(?P<sensor>\w{1})"
         r"(?P<satellite>[AB]{1})"
         r"_"
-        r"(?P<beam>[A-Z]{2})"
+        r"(?P<beam>(IW)|(EW)|(S[1-6]))"
         r"_"
         r"(?P<product>[A-Z]{3})"
         r"(?P<resolution>[FHM])"

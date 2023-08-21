@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.10.1 (2023-08-21)
+
+* calculate scene bounds from multipolygons for Sentinel-1
+* allow `Stripmap` beam mode for sentinel-1 dataset
+
 ## 0.10.0 (2023-07-25)
 
 * update rio-tiler requirement to `>=5.0,<7.0`
