@@ -7,6 +7,7 @@ from unittest.mock import patch
 import morecantile
 import pytest
 import rasterio
+from rasterio.crs import CRS
 
 from rio_tiler_pds.copernicus.aws import Dem30Reader, Dem90Reader
 
@@ -53,11 +54,12 @@ def test_Dem30Reader(rio):
         assert dem.minzoom == 7
         assert dem.maxzoom == 8
         assert dem.bounds == (-180, -90, 180, 90)
-        assert dem.geographic_bounds == (-180, -90, 180, 90)
+        assert dem.get_geographic_bounds(CRS.from_epsg(4326)) == (-180, -90, 180, 90)
 
         info = dem.info()
-        assert info.minzoom == 7
-        assert info.maxzoom == 8
+        assert info.bounds == dem.bounds
+        crs = info.crs
+        assert CRS.from_user_input(crs) == dem.crs
 
         assert dem.statistics()["b1"]
 
@@ -147,11 +149,12 @@ def test_Dem90Reader(rio):
         assert dem.minzoom == 6
         assert dem.maxzoom == 7
         assert dem.bounds == (-180, -90, 180, 90)
-        assert dem.geographic_bounds == (-180, -90, 180, 90)
+        assert dem.get_geographic_bounds(CRS.from_epsg(4326)) == (-180, -90, 180, 90)
 
         info = dem.info()
-        assert info.minzoom == 6
-        assert info.maxzoom == 7
+        assert info.bounds == dem.bounds
+        crs = info.crs
+        assert CRS.from_user_input(crs) == dem.crs
 
         assert dem.statistics()["b1"]
 
