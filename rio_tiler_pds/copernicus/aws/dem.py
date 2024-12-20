@@ -20,6 +20,7 @@ from rio_tiler.io import BaseReader, Reader
 from rio_tiler.models import BandStatistics, ImageData, Info, PointData
 from rio_tiler.mosaic import mosaic_point_reader, mosaic_reader
 from rio_tiler.types import BBox
+from rio_tiler.utils import CRS_to_uri
 
 
 @attr.s
@@ -107,9 +108,8 @@ class Dem30Reader(BaseReader):
     def info(self) -> Info:
         """info."""
         meta = {
-            "bounds": self.geographic_bounds,
-            "minzoom": self.minzoom,
-            "maxzoom": self.maxzoom,
+            "bounds": self.bounds,
+            "crs": CRS_to_uri(self.crs) or self.crs.to_wkt(),
             "band_metadata": [("b1", {})],
             "band_descriptions": [("b1", "")],
             "dtype": "float32",

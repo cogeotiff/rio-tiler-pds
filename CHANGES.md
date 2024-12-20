@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.11.0 (TBD)
+
+* update rio-tiler requirement to `>=7.0,<8.0`
+* replace `geographic bounds` with dataset bounds in `Reader.info()` method's response **breaking change**
+* remove `minzoom` and `maxzoom` properties in `Info` model **breaking change**
+
 ## 0.10.1 (2023-08-21)
 
 * calculate scene bounds from multipolygons for Sentinel-1
