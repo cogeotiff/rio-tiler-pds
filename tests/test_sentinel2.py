@@ -513,13 +513,13 @@ def test_sentinel_productid_valid():
 
 def test_no_readers():
     """Test no reader found for level."""
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: B017
         S2JP2Reader("S2B_L1B_20170729_19UDP_0")
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: B017
         S2JP2Reader("S2A_L2C_20170729_19UDP_0")
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: B017
         S2COGReader("S2A_29RKH_20200219_0_L2C")
 
 

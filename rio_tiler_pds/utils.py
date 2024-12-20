@@ -66,6 +66,7 @@ def get_object(bucket: str, key: str, request_pays: bool = False) -> bytes:
     warnings.warn(
         "`rio_tiler_pds.utils.get_object` will be removed in version 1.0, Please use `rio_tiler_pds.utils.fetch`",
         DeprecationWarning,
+        stacklevel=1,
     )
     return aws_get_object(bucket, key, request_pays=request_pays)
 
