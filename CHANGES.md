@@ -1,10 +1,11 @@
 # Release Notes
 
-## 0.11.0 (TBD)
+## 0.11.0 (2024-12-20)
 
 * update rio-tiler requirement to `>=7.0,<8.0`
 * replace `geographic bounds` with dataset bounds in `Reader.info()` method's response **breaking change**
 * remove `minzoom` and `maxzoom` properties in `Info` model **breaking change**
+* add python 3.12 and 3.13 support
 
 ## 0.10.1 (2023-08-21)
 
