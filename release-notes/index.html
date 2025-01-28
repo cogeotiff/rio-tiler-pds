@@ -1,0 +1,1373 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A rio-tiler plugin to access and read Public hosted datasets.">
+      
+      
+      
+        <link rel="canonical" href="https://cogeotiff.github.io/rio-tiler-pds/release-notes/">
+      
+      
+        <link rel="prev" href="../contributing/">
+      
+      
+        <link rel="next" href="../API/sentinel/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>Release - rio-tiler-pds</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Nunito Sans";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="../css/mkapi-common.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#release-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="rio-tiler-pds" class="md-header__button md-logo" aria-label="rio-tiler-pds" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            rio-tiler-pds
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Release
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cogeotiff/rio-tiler-pds" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cogeotiff/rio-tiler-pds
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="rio-tiler-pds" class="md-nav__button md-logo" aria-label="rio-tiler-pds" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+
+    </a>
+    rio-tiler-pds
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cogeotiff/rio-tiler-pds" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cogeotiff/rio-tiler-pds
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/sentinel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sentinel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/landsat-c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landsat Collection 2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/cbers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CBERS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/modis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MODIS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development - Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Release
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Release
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0111-2025-01-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.11.1 (2025-01-28)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0110-2024-12-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.11.0 (2024-12-20)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0101-2023-08-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.10.1 (2023-08-21)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0100-2023-07-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.10.0 (2023-07-25)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#090-2023-07-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.9.0 (2023-07-13)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#080-2023-04-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.8.0 (2023-04-11)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#070-2022-06-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.7.0 (2022-06-08)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#060-2021-11-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.6.0 (2021-11-29)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#054-2021-10-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.4 (2021-10-08)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#053-2021-10-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.3 (2021-10-08)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#052-2021-10-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.2 (2021-10-06)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#051-2021-06-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.1 (2021-06-25)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#050-2021-02-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.0 (2021-02-02)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#041-2020-11-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.1 (2020-11-24)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040-2020-11-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.0 (2020-11-09)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#032-2020-10-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.2 (2020-10-13)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#031-2020-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.1 (2020-10-07)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#030-2020-10-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.0 (2020-10-03)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#021-2020-09-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.2.1 (2020-09-25)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#020-2020-08-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.2.0 (2020-08-31)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#011-2020-08-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.1.1 (2020-08-28)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#010-2020-08-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.1.0 (2020-08-27)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.1.0 (2020-08-27)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Readers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/sentinel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sentinel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/landsat-c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landsat Collection 2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/landsat.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landsat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/cbers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CBERS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/modis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MODIS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0111-2025-01-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.11.1 (2025-01-28)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0110-2024-12-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.11.0 (2024-12-20)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0101-2023-08-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.10.1 (2023-08-21)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0100-2023-07-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.10.0 (2023-07-25)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#090-2023-07-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.9.0 (2023-07-13)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#080-2023-04-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.8.0 (2023-04-11)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#070-2022-06-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.7.0 (2022-06-08)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#060-2021-11-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.6.0 (2021-11-29)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#054-2021-10-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.4 (2021-10-08)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#053-2021-10-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.3 (2021-10-08)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#052-2021-10-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.2 (2021-10-06)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#051-2021-06-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.1 (2021-06-25)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#050-2021-02-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.5.0 (2021-02-02)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#041-2020-11-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.1 (2020-11-24)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040-2020-11-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.4.0 (2020-11-09)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#032-2020-10-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.2 (2020-10-13)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#031-2020-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.1 (2020-10-07)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#030-2020-10-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.3.0 (2020-10-03)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#021-2020-09-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.2.1 (2020-09-25)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#020-2020-08-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.2.0 (2020-08-31)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#011-2020-08-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.1.1 (2020-08-28)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#010-2020-08-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      0.1.0 (2020-08-27)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.1.0 (2020-08-27)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Readers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="release-notes">Release Notes<a class="headerlink" href="#release-notes" title="Permanent link">&para;</a></h1>
+<h2 id="0111-2025-01-28">0.11.1 (2025-01-28)<a class="headerlink" href="#0111-2025-01-28" title="Permanent link">&para;</a></h2>
+<ul>
+<li>add support for Sentinel 2C</li>
+</ul>
+<h2 id="0110-2024-12-20">0.11.0 (2024-12-20)<a class="headerlink" href="#0110-2024-12-20" title="Permanent link">&para;</a></h2>
+<ul>
+<li>update rio-tiler requirement to <code>&gt;=7.0,&lt;8.0</code></li>
+<li>replace <code>geographic bounds</code> with dataset bounds in <code>Reader.info()</code> method's response <strong>breaking change</strong></li>
+<li>remove <code>minzoom</code> and <code>maxzoom</code> properties in <code>Info</code> model <strong>breaking change</strong></li>
+<li>add python 3.12 and 3.13 support</li>
+</ul>
+<h2 id="0101-2023-08-21">0.10.1 (2023-08-21)<a class="headerlink" href="#0101-2023-08-21" title="Permanent link">&para;</a></h2>
+<ul>
+<li>calculate scene bounds from multipolygons for Sentinel-1</li>
+<li>allow <code>Stripmap</code> beam mode for sentinel-1 dataset</li>
+</ul>
+<h2 id="0100-2023-07-25">0.10.0 (2023-07-25)<a class="headerlink" href="#0100-2023-07-25" title="Permanent link">&para;</a></h2>
+<ul>
+<li>update rio-tiler requirement to <code>&gt;=5.0,&lt;7.0</code></li>
+</ul>
+<h2 id="090-2023-07-13">0.9.0 (2023-07-13)<a class="headerlink" href="#090-2023-07-13" title="Permanent link">&para;</a></h2>
+<ul>
+<li>update rio-tiler requirement to <code>&gt;=5.0,&lt;6.0</code></li>
+<li>add <code>rio_tiler_pds.copernicus.aws.Dem30Reader</code> and <code>rio_tiler_pds.copernicus.aws.Dem90Reader</code> <strong>mosaic</strong> readers</li>
+<li>add <code>boto3</code> in dependencies</li>
+</ul>
+<h2 id="080-2023-04-11">0.8.0 (2023-04-11)<a class="headerlink" href="#080-2023-04-11" title="Permanent link">&para;</a></h2>
+<ul>
+<li>remove Landsat 8 Collection 1</li>
+<li>remove python 3.7 and add python 3.10/3.11 support</li>
+<li>switch to ruff</li>
+<li>fix issue with latest STAC Items for Sentinel-2-l2a-cogs (author @dvd3v, <a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/64" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #64">cogeotiff/rio-tiler-pds!64</a>)</li>
+<li>update rio-tiler requirement to <code>&gt;=4.0,&lt;5.0</code></li>
+</ul>
+<h2 id="070-2022-06-08">0.7.0 (2022-06-08)<a class="headerlink" href="#070-2022-06-08" title="Permanent link">&para;</a></h2>
+<ul>
+<li>enable <code>bucket</code> and <code>prefix_pattern</code> as input (@author @f-skold, <a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/61" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #61">cogeotiff/rio-tiler-pds!61</a>)</li>
+<li>switch to <code>pyproject.toml</code></li>
+</ul>
+<h2 id="060-2021-11-29">0.6.0 (2021-11-29)<a class="headerlink" href="#060-2021-11-29" title="Permanent link">&para;</a></h2>
+<ul>
+<li>update rio-tiler requirement to <code>&gt;=3.0.0</code></li>
+</ul>
+<p><strong>breaking changes</strong></p>
+<ul>
+<li>remove python 3.6 support</li>
+<li><code>sceneid</code> -&gt; <code>input</code> in Reader attributes</li>
+<li>remove <code>.stats()</code> and <code>.metadata()</code> methods</li>
+<li><code>bands</code> is now optional for <code>.info()</code> and <code>.statistics</code></li>
+<li>remove useless <code>band_expression</code> option</li>
+</ul>
+<h2 id="054-2021-10-08">0.5.4 (2021-10-08)<a class="headerlink" href="#054-2021-10-08" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>bands</code> should be stored as <code>tuple</code> in sentinel-1 reader</li>
+</ul>
+<h2 id="053-2021-10-08">0.5.3 (2021-10-08)<a class="headerlink" href="#053-2021-10-08" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix invalid sceneid parser for Sentinel-1</li>
+</ul>
+<h2 id="052-2021-10-06">0.5.2 (2021-10-06)<a class="headerlink" href="#052-2021-10-06" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix available <code>bands</code> for Sentinel-1 based on Polarisation type (<a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/59" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #59">cogeotiff/rio-tiler-pds!59</a>)</li>
+</ul>
+<h2 id="051-2021-06-25">0.5.1 (2021-06-25)<a class="headerlink" href="#051-2021-06-25" title="Permanent link">&para;</a></h2>
+<ul>
+<li>fix landsat <code>sceneid_parser</code> for Collection 2 Albers dataset (<a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/56" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #56">cogeotiff/rio-tiler-pds!56</a>)</li>
+<li>allow <code>standard</code> and <code>albers</code> collections for Landsat Collection 2 reader (<a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/58" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #58">cogeotiff/rio-tiler-pds!58</a>)</li>
+</ul>
+<h2 id="050-2021-02-02">0.5.0 (2021-02-02)<a class="headerlink" href="#050-2021-02-02" title="Permanent link">&para;</a></h2>
+<ul>
+<li>add AWS's Landsat Collection 2 support (author @kylebarron, <a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/42" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #42">cogeotiff/rio-tiler-pds!42</a>)</li>
+<li>add sentinel-2 product ID parsing (ref: <a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/33" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #33">cogeotiff/rio-tiler-pds!33</a>).</li>
+<li>fix issue where the sequence number of a sentinel scene id can be two digit (ref: <a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/35" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #35">cogeotiff/rio-tiler-pds!35</a>)</li>
+<li>fix issue where <code>utm</code> is only one sigle digit (ref: <a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/34" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #34">cogeotiff/rio-tiler-pds!34</a>)</li>
+<li>add top level export (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/cogeotiff/rio-tiler-pds/issues/45" title="GitHub Issue: cogeotiff/rio-tiler-pds #45">cogeotiff/rio-tiler-pds#45</a>)</li>
+<li>removes <code>get_object</code> from top level export</li>
+<li>add deprecation warning in L8Reader (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/cogeotiff/rio-tiler-pds/issues/40" title="GitHub Issue: cogeotiff/rio-tiler-pds #40">cogeotiff/rio-tiler-pds#40</a>)</li>
+</ul>
+<h2 id="041-2020-11-24">0.4.1 (2020-11-24)<a class="headerlink" href="#041-2020-11-24" title="Permanent link">&para;</a></h2>
+<ul>
+<li>update for rio-tiler 2.0.0rc3</li>
+</ul>
+<h2 id="040-2020-11-09">0.4.0 (2020-11-09)<a class="headerlink" href="#040-2020-11-09" title="Permanent link">&para;</a></h2>
+<ul>
+<li>update for rio-tiler==2.0.0rc</li>
+<li>internal refactor of the Landsat8 reader</li>
+<li>add <code>sentinel.aws.sentinel2.S2JP2Reader</code> and <code>aws.sentinel2.S2COGReader</code> proxies to readers.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.sentinel.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">S2COGReader</span><span class="p">,</span> <span class="n">S2JP2Reader</span>
+
+<span class="k">with</span> <span class="n">S2JP2Reader</span><span class="p">(</span><span class="s2">&quot;S2A_L2A_20170729_19UDP_0&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">scene</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">scene</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">rio_tiler_pds</span><span class="o">.</span><span class="n">sentinel</span><span class="o">.</span><span class="n">aws</span><span class="o">.</span><span class="n">sentinel2</span><span class="o">.</span><span class="n">S2L2AReader</span><span class="s1">&#39;&gt;</span>
+
+<span class="k">with</span> <span class="n">S2JP2Reader</span><span class="p">(</span><span class="s2">&quot;S2A_L1C_20170729_19UDP_0&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">scene</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">scene</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">rio_tiler_pds</span><span class="o">.</span><span class="n">sentinel</span><span class="o">.</span><span class="n">aws</span><span class="o">.</span><span class="n">sentinel2</span><span class="o">.</span><span class="n">S2L1CReader</span><span class="s1">&#39;&gt;</span>
+
+
+<span class="k">with</span> <span class="n">S2COGReader</span><span class="p">(</span><span class="s2">&quot;S2A_29RKH_20200219_0_L2A&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">scene</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">scene</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">rio_tiler_pds</span><span class="o">.</span><span class="n">sentinel</span><span class="o">.</span><span class="n">aws</span><span class="o">.</span><span class="n">sentinel2</span><span class="o">.</span><span class="n">S2L2ACOGReader</span><span class="s1">&#39;&gt;</span>
+</code></pre></div>
+<h2 id="032-2020-10-13">0.3.2 (2020-10-13)<a class="headerlink" href="#032-2020-10-13" title="Permanent link">&para;</a></h2>
+<ul>
+<li>add <code>TMS</code> options to adapt  for rio-tiler 2.0.0b17 (ref: <a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler/pull/285" title="GitHub Pull Request: cogeotiff/rio-tiler #285">cogeotiff/rio-tiler!285</a>)</li>
+</ul>
+<h2 id="031-2020-10-07">0.3.1 (2020-10-07)<a class="headerlink" href="#031-2020-10-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>remove <code>pkg_resources</code> (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/pypa/setuptools/issues/510" title="GitHub Issue: pypa/setuptools #510">pypa/setuptools#510</a>)</li>
+</ul>
+<h2 id="030-2020-10-03">0.3.0 (2020-10-03)<a class="headerlink" href="#030-2020-10-03" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Update sentinel2-cogs image path (<a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler-pds/pull/22" title="GitHub Pull Request: cogeotiff/rio-tiler-pds #22">cogeotiff/rio-tiler-pds!22</a>).</li>
+<li>Remove ContextManager requirement in base class and update for rio-tiler 2.0b13 (<a class="magiclink magiclink-github magiclink-pull" href="https://github.com/cogeotiff/rio-tiler/pull/265" title="GitHub Pull Request: cogeotiff/rio-tiler #265">cogeotiff/rio-tiler!265</a>).</li>
+<li>Add MODIS (PDS and Astraea) dataset (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/cogeotiff/rio-tiler-pds/issues/18" title="GitHub Issue: cogeotiff/rio-tiler-pds #18">cogeotiff/rio-tiler-pds#18</a>)</li>
+<li>move reader base classes to rio-tiler (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/cogeotiff/rio-tiler-pds/issues/24" title="GitHub Issue: cogeotiff/rio-tiler-pds #24">cogeotiff/rio-tiler-pds#24</a>)</li>
+<li>add missing <code>0</code> (e.g "B1" -&gt; "B01") when user forget it on sentinel and modis band names (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/cogeotiff/rio-tiler-pds/issues/25" title="GitHub Issue: cogeotiff/rio-tiler-pds #25">cogeotiff/rio-tiler-pds#25</a>)</li>
+</ul>
+<h2 id="021-2020-09-25">0.2.1 (2020-09-25)<a class="headerlink" href="#021-2020-09-25" title="Permanent link">&para;</a></h2>
+<ul>
+<li>add support for CBERS-4A (author @fredliporace)</li>
+</ul>
+<h2 id="020-2020-08-31">0.2.0 (2020-08-31)<a class="headerlink" href="#020-2020-08-31" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Revert the use of <code>assets</code> options to <code>bands</code> (#12)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.landsat.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">L8Reader</span>
+
+<span class="k">with</span> <span class="n">L8Reader</span><span class="p">(</span><span class="s2">&quot;LC08_L1TP_016037_20170813_20170814_01_RT&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">landsat</span><span class="p">:</span>
+    <span class="c1"># in 0.1.1 (PAST)</span>
+    <span class="n">tile</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">landsat</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">assets</span><span class="o">=</span><span class="s2">&quot;B1&quot;</span><span class="p">)</span>
+
+    <span class="c1"># in 0.2.0 (NOW)</span>
+    <span class="n">tile</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">landsat</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="s2">&quot;B1&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="011-2020-08-28">0.1.1 (2020-08-28)<a class="headerlink" href="#011-2020-08-28" title="Permanent link">&para;</a></h2>
+<ul>
+<li>avoid <code>nodata</code> options colision with kwargs in L8Reader</li>
+</ul>
+<h2 id="010-2020-08-27">0.1.0 (2020-08-27)<a class="headerlink" href="#010-2020-08-27" title="Permanent link">&para;</a></h2>
+<p>Initial release.</p>
+<ul>
+<li>Move code from rio-tiler</li>
+<li>Update for rio-tiler==2.0b8 (use COGReader and MultiBaseReader)</li>
+<li>Create new Classes (using attrs) and use ContextManager (<code>with Reader("sceneid") as scene:</code>)</li>
+<li>Remove Landsat 8 pre-collection support</li>
+<li>Add Sentinel 2 COGs dataset support</li>
+<li>Use TileInfo.json and ProductInfo.json to retrieve Sentinel 1 &amp; 2 bounds</li>
+<li>Use <code>assets</code> options instead of <code>bands</code></li>
+<li>Add <code>expression</code> options in readers</li>
+</ul>
+<h4 id="readers">Readers<a class="headerlink" href="#readers" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.landsat.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">L8Reader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.sentinel.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">S1L1CReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.sentinel.aws</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">S2L1CReader</span><span class="p">,</span>  <span class="c1"># JPEG2000</span>
+    <span class="n">S2L2AReader</span><span class="p">,</span>  <span class="c1"># JPEG2000</span>
+    <span class="n">S2L2ACOGReader</span><span class="p">,</span>   <span class="c1"># COG</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.cbers.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">CBERSReader</span>
+</code></pre></div>
+<h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.landsat.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">L8Reader</span>
+
+<span class="k">with</span> <span class="n">L8Reader</span><span class="p">(</span><span class="s2">&quot;LC08_L1TP_016037_20170813_20170814_01_RT&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">landsat</span><span class="p">:</span>
+    <span class="n">tile</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">landsat</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">assets</span><span class="o">=</span><span class="s2">&quot;B1&quot;</span><span class="p">)</span>
+    <span class="n">tile</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">landsat</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;B1/B2&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/cogeotiff" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/cogeotiff" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.cogeo.org/" target="_blank" rel="noopener" title="www.cogeo.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.4c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64h185.3c2.2 20.4 3.3 41.8 3.3 64m28.8-64h123.1c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64m112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6 78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7 10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5 11.6 26 20.9 58.2 27 94.7m-209 0H18.6c30-74.1 93.6-130.9 172-151.6-25.5 34.2-45.3 87.7-55.3 151.6M8.1 192h123.1c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64m186.6 254.6c-11.6-26-20.9-58.2-27-94.6h176.6c-6.1 36.4-15.5 68.6-27 94.6-10.5 23.6-22.2 40.7-33.5 51.5-11.2 10.7-20.5 13.9-27.8 13.9s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6-78.4-20.7-142-77.5-172-151.6zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6 25.5-34.2 45.2-87.7 55.3-151.6h116.7z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+        <script src="../js/mkapi.js"></script>
+      
+    
+  </body>
+</html>

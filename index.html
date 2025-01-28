@@ -1,0 +1,1488 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A rio-tiler plugin to access and read Public hosted datasets.">
+      
+      
+      
+        <link rel="canonical" href="https://cogeotiff.github.io/rio-tiler-pds/">
+      
+      
+      
+        <link rel="next" href="usage/overview/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>rio-tiler-pds</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.a40c8224.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Nunito Sans";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    
+      <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    
+      <link rel="stylesheet" href="css/mkapi-common.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rio-tiler-pds-a-rio-tiler-plugin-for-public-datasets" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="rio-tiler-pds" class="md-header__button md-logo" aria-label="rio-tiler-pds" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            rio-tiler-pds
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cogeotiff/rio-tiler-pds" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cogeotiff/rio-tiler-pds
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="rio-tiler-pds" class="md-nav__button md-logo" aria-label="rio-tiler-pds" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+
+    </a>
+    rio-tiler-pds
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cogeotiff/rio-tiler-pds" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cogeotiff/rio-tiler-pds
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Datasets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Warnings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Warnings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requester-pays-buckets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requester-pays Buckets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partial-reading-on-cloud-hosted-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partial reading on Cloud hosted dataset
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Readers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Readers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scene-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scene ID
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#band-per-assetfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Band Per Asset/File
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mosaic-reader-copernicus-dem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mosaic Reader: Copernicus DEM
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribution-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contribution &amp; Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authors
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/sentinel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sentinel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/landsat-c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landsat Collection 2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/cbers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CBERS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/modis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MODIS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development - Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release-notes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Release
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="API/sentinel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sentinel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="API/landsat-c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landsat Collection 2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="API/landsat.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landsat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="API/cbers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CBERS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="API/modis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MODIS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Datasets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Warnings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Warnings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requester-pays-buckets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requester-pays Buckets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partial-reading-on-cloud-hosted-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partial reading on Cloud hosted dataset
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Readers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Readers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scene-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scene ID
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#band-per-assetfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Band Per Asset/File
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mosaic-reader-copernicus-dem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mosaic Reader: Copernicus DEM
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribution-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contribution &amp; Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authors
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="rio-tiler-pds-a-rio-tiler-plugin-for-public-datasets">Rio-Tiler-PDS: A rio-tiler plugin for Public Datasets<a class="headerlink" href="#rio-tiler-pds-a-rio-tiler-plugin-for-public-datasets" title="Permanent link">&para;</a></h1>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/10407788/91102350-ffa75400-e636-11ea-8374-3450a72745c9.png" style="max-width: 800px;" alt="rio-tiler-pds"></a>
+</p>
+<p align="center">
+  <em>A rio-tiler plugin to read from publicly-available datasets.</em>
+</p>
+<p align="center">
+  <a href="https://github.com/cogeotiff/rio-tiler-pds/actions?query=workflow%3ACI" target="_blank">
+      <img src="https://github.com/cogeotiff/rio-tiler-pds/workflows/CI/badge.svg" alt="Test">
+  </a>
+  <a href="https://codecov.io/gh/cogeotiff/rio-tiler-pds" target="_blank">
+      <img src="https://codecov.io/gh/cogeotiff/rio-tiler-pds/branch/main/graph/badge.svg" alt="Coverage">
+  </a>
+  <a href="https://pypi.org/project/rio-tiler-pds" target="_blank">
+      <img src="https://img.shields.io/pypi/v/rio-tiler-pds?color=%2334D058&label=pypi%20package" alt="Package version">
+  </a>
+  <a href="https://pypistats.org/packages/rio-tiler-pds" target="_blank">
+      <img src="https://img.shields.io/pypi/dm/rio-tiler-pds.svg" alt="Downloads">
+  </a>
+  <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/main/LICENSE.txt" target="_blank">
+      <img src="https://img.shields.io/github/license/cogeotiff/rio-tiler-pds.svg" alt="Lincense">
+  </a>
+</p>
+
+<p><strong>Important</strong> This is the new module for rio-tiler missions specific (ref: <a class="magiclink magiclink-github magiclink-issue" href="https://github.com/cogeotiff/rio-tiler/issues/195" title="GitHub Issue: cogeotiff/rio-tiler #195">cogeotiff/rio-tiler#195</a>)</p>
+<hr />
+<p><strong>Documentation</strong>: <a href="https://cogeotiff.github.io/rio-tiler-pds/" target="_blank"><a href="https://cogeotiff.github.io/rio-tiler-pds/">cogeotiff.github.io/rio-tiler-pds/</a></a></p>
+<p><strong>Source Code</strong>: <a href="https://github.com/cogeotiff/rio-tiler-pds" target="_blank"><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/cogeotiff/rio-tiler-pds" title="GitHub Repository: cogeotiff/rio-tiler-pds">cogeotiff/rio-tiler-pds</a></a></p>
+<hr />
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>You can install rio-tiler-pds using pip</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>rio-tiler-pds
+</code></pre></div>
+<p>or install from source:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/cogeotiff/rio-tiler-pds.git
+</code></pre></div>
+<h2 id="datasets">Datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Level/Product</th>
+<th>Format</th>
+<th>Owner</th>
+<th>Region</th>
+<th>Bucket Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://registry.opendata.aws/sentinel-2/">Sentinel 2</a></td>
+<td>L1C</td>
+<td>JPEG2000</td>
+<td>Sinergise / AWS</td>
+<td>eu-central-1</td>
+<td><strong>Requester-pays</strong></td>
+</tr>
+<tr>
+<td><a href="https://registry.opendata.aws/sentinel-2/">Sentinel 2</a></td>
+<td>L2A</td>
+<td>JPEG2000</td>
+<td>Sinergise / AWS</td>
+<td>eu-central-1</td>
+<td><strong>Requester-pays</strong></td>
+</tr>
+<tr>
+<td><a href="https://registry.opendata.aws/sentinel-2-l2a-cogs/">Sentinel 2</a></td>
+<td>L2A</td>
+<td>COG</td>
+<td>Digital Earth Africa / AWS</td>
+<td>us-west-2</td>
+<td>Public</td>
+</tr>
+<tr>
+<td><a href="https://registry.opendata.aws/sentinel-1/">Sentinel 1</a></td>
+<td>L1C GRD (IW, EW, S1-6)</td>
+<td>COG (Internal GCPS)</td>
+<td>Sinergise / AWS</td>
+<td>eu-central-1</td>
+<td><strong>Requester-pays</strong></td>
+</tr>
+<tr>
+<td><a href="https://www.usgs.gov/core-science-systems/nli/landsat/landsat-commercial-cloud-data-access">Landsat Collection 2</a></td>
+<td>L1,L2</td>
+<td>COG</td>
+<td>USGS / AWS</td>
+<td>us-west-2</td>
+<td><strong>Requester-pays</strong></td>
+</tr>
+<tr>
+<td><a href="https://registry.opendata.aws/cbers/">CBERS 4/4A</a></td>
+<td>L2/L4</td>
+<td>COG</td>
+<td>AMS Kepler / AWS</td>
+<td>us-east-1</td>
+<td><strong>Requester-pays</strong></td>
+</tr>
+<tr>
+<td><a href="https://docs.opendata.aws/modis-pds/readme.html">MODIS (modis-pds)</a></td>
+<td>MCD43A4, MOD09GQ, MYD09GQ, MOD09GA, MYD09GA</td>
+<td>GTiff (External Overviews)</td>
+<td>-</td>
+<td>us-west-2</td>
+<td>Public</td>
+</tr>
+<tr>
+<td><a href="https://registry.opendata.aws/modis-astraea/">MODIS (astraea-opendata)</a></td>
+<td>MCD43A4, MOD11A1, MOD13A1, MYD11A1 MYD13A1</td>
+<td>COG</td>
+<td>Astraea / AWS</td>
+<td>us-west-2</td>
+<td><strong>Requester-pays</strong></td>
+</tr>
+<tr>
+<td><a href="https://registry.opendata.aws/copernicus-dem/">Copernicus Digital Elevation Model</a></td>
+<td>GLO-30, GLO-90</td>
+<td>COG</td>
+<td>Sinergise / AWS</td>
+<td>eu-central-1</td>
+<td>Public</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Adding more dataset</strong>:</p>
+<p>If you know of another publicly-available dataset that can easily be described
+with a "scene id", please feel free to <a href="https://github.com/cogeotiff/rio-tiler-pds/issues/new">open an
+issue</a>.</p>
+<h2 id="warnings">Warnings<a class="headerlink" href="#warnings" title="Permanent link">&para;</a></h2>
+<h4 id="requester-pays-buckets">Requester-pays Buckets<a class="headerlink" href="#requester-pays-buckets" title="Permanent link">&para;</a></h4>
+<p>On AWS, <code>sentinel2</code>, <code>sentinel1</code>, <code>cbers</code> and <code>modis</code> (in astraea-opendata) datasets are stored in <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html"><em>requester
+pays</em></a>
+buckets. This means that the cost of GET and LIST requests and egress fees for
+downloading files outside the AWS region will be charged to the <em>accessing
+users</em>, not the organization hosting the bucket. For <code>rio-tiler</code> and
+<code>rio-tiler-pds</code> to work with such buckets, you'll need to set
+<code>AWS_REQUEST_PAYER="requester"</code> in your shell environment.</p>
+<h4 id="partial-reading-on-cloud-hosted-dataset">Partial reading on Cloud hosted dataset<a class="headerlink" href="#partial-reading-on-cloud-hosted-dataset" title="Permanent link">&para;</a></h4>
+<p>When reading data, <code>rio-tiler-pds</code> performs <em>partial</em> reads when possible. Hence
+performance will be best on data stored as <a href="http://cogeo.org">Cloud Optimized GeoTIFF
+(COG)</a>. It's important to note that <strong>Sentinel-2 scenes hosted
+on AWS are not in Cloud Optimized format but in JPEG2000</strong>. Partial reads from
+JPEG2000 files are inefficient, and GDAL (the library underlying <code>rio-tiler-pds</code>
+and <code>rasterio</code>) will need to make <strong>many GET requests</strong> and transfer a lot of
+data. This will be both slow and expensive, since AWS's JPEG2000 collection of
+Sentinel 2 data is stored in a requester pays bucket.</p>
+<p>Ref: <a href="https://medium.com/@_VincentS_/do-you-really-want-people-using-your-data-ec94cd94dc3f">Do you really want people using your data</a> blog post.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<h3 id="readers">Readers<a class="headerlink" href="#readers" title="Permanent link">&para;</a></h3>
+<p>Each dataset has its own submodule (e.g sentinel2: <code>rio_tiler_pds.sentinel.aws</code>)</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.landsat.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">LandsatC2Reader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.sentinel.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">S1L1CReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.sentinel.aws</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">S2JP2Reader</span><span class="p">,</span>  <span class="c1"># JPEG2000</span>
+    <span class="n">S2COGReader</span><span class="p">,</span>   <span class="c1"># COG</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.cbers.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">CBERSReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.modis.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">MODISPDSReader</span><span class="p">,</span> <span class="n">MODISASTRAEAReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.copernicus.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dem30Reader</span><span class="p">,</span> <span class="n">Dem90Reader</span>
+</code></pre></div>
+<p>All Readers are subclass of <a href="https://github.com/cogeotiff/rio-tiler/blob/f917d0eaf27f8644f3bb18856a63fe45eeb4a2ef/rio_tiler/io/base.py#L17"><code>rio_tiler.io.BaseReader</code></a> and inherit its properties/methods.</p>
+<h4 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>bounds</strong>: Scene bounding box</li>
+<li><strong>crs</strong>: CRS of the bounding box</li>
+<li><strong>geographic_bounds</strong>: bounding box in geographic projection (e.g WGS84)</li>
+<li><strong>minzoom</strong>: WebMercator MinZoom (e.g 7 for Landsat 8)</li>
+<li><strong>maxzoom</strong>: WebMercator MaxZoom (e.g 12 for Landsat 8)</li>
+</ul>
+<h4 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>info</strong>: Returns band's simple info (e.g nodata, band_descriptions, ....)</li>
+<li><strong>statistics</strong>: Returns band's statistics (percentile, histogram, ...)</li>
+<li><strong>tile</strong>: Read web mercator map tile from bands</li>
+<li><strong>part</strong>: Extract part of bands</li>
+<li><strong>preview</strong>: Returns a low resolution preview from bands</li>
+<li><strong>point</strong>: Returns band's pixel value for a given lon,lat</li>
+<li><strong>feature</strong>: Extract part of bands</li>
+</ul>
+<h4 id="other">Other<a class="headerlink" href="#other" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>bands</strong> (property): List of available bands for each dataset</li>
+</ul>
+<h3 id="scene-id">Scene ID<a class="headerlink" href="#scene-id" title="Permanent link">&para;</a></h3>
+<p>All readers take scene id as main input. The <strong>scene id</strong> is used internaly by the reader to derive the full path of the data.</p>
+<p>e.g: Landsat on AWS</p>
+<p>Because the Landsat AWS PDS follows a regular schema to store the data (<code>s3://{bucket}/c1/L8/{path}/{row}/{scene}/{scene}_{band}.TIF"</code>), we can easily reconstruct the full band's path by parsing the scene id.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.landsat.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">LandsatC2Reader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.landsat.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">sceneid_parser</span>
+
+<span class="n">sceneid_parser</span><span class="p">(</span><span class="s2">&quot;LC08_L2SP_001062_20201031_20201106_02_T2&quot;</span><span class="p">)</span>
+
+<span class="o">&gt;</span> <span class="p">{</span><span class="s1">&#39;sensor&#39;</span><span class="p">:</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;satellite&#39;</span><span class="p">:</span> <span class="s1">&#39;08&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;processingCorrectionLevel&#39;</span><span class="p">:</span> <span class="s1">&#39;L2SP&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;001&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;row&#39;</span><span class="p">:</span> <span class="s1">&#39;062&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;acquisitionYear&#39;</span><span class="p">:</span> <span class="s1">&#39;2020&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;acquisitionMonth&#39;</span><span class="p">:</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;acquisitionDay&#39;</span><span class="p">:</span> <span class="s1">&#39;31&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;processingYear&#39;</span><span class="p">:</span> <span class="s1">&#39;2020&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;processingMonth&#39;</span><span class="p">:</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;processingDay&#39;</span><span class="p">:</span> <span class="s1">&#39;06&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;collectionNumber&#39;</span><span class="p">:</span> <span class="s1">&#39;02&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;collectionCategory&#39;</span><span class="p">:</span> <span class="s1">&#39;T2&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;scene&#39;</span><span class="p">:</span> <span class="s1">&#39;LC08_L2SP_001062_20201031_20201106_02_T2&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2020-10-31&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;_processingLevelNum&#39;</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;standard&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;sensor_name&#39;</span><span class="p">:</span> <span class="s1">&#39;oli-tirs&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;_sensor_s3_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;oli-tirs&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;bands&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;QA_PIXEL&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;QA_RADSAT&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_B1&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_B2&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_B3&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_B4&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_B5&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_B6&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_B7&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;SR_QA_AEROSOL&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_ATRAN&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_B10&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_CDIST&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_DRAD&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_EMIS&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_EMSD&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_QA&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_TRAD&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;ST_URAD&#39;</span><span class="p">)}</span>
+
+<span class="k">with</span> <span class="n">LandsatC2Reader</span><span class="p">(</span><span class="s2">&quot;LC08_L2SP_001062_20201031_20201106_02_T2&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">landsat</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">landsat</span><span class="o">.</span><span class="n">_get_band_url</span><span class="p">(</span><span class="s2">&quot;SR_B2&quot;</span><span class="p">))</span>
+
+<span class="o">&gt;</span> <span class="n">s3</span><span class="p">:</span><span class="o">//</span><span class="n">usgs</span><span class="o">-</span><span class="n">landsat</span><span class="o">/</span><span class="n">collection02</span><span class="o">/</span><span class="n">level</span><span class="o">-</span><span class="mi">2</span><span class="o">/</span><span class="n">standard</span><span class="o">/</span><span class="n">oli</span><span class="o">-</span><span class="n">tirs</span><span class="o">/</span><span class="mi">2020</span><span class="o">/</span><span class="mi">001</span><span class="o">/</span><span class="mi">062</span><span class="o">/</span><span class="n">LC08_L2SP_001062_20201031_20201106_02_T2</span><span class="o">/</span><span class="n">LC08_L2SP_001062_20201031_20201106_02_T2_SR_B2</span><span class="o">.</span><span class="n">TIF</span>
+</code></pre></div>
+<p>Each dataset has a specific scene id format:</p>
+<div class="admonition note">
+<p class="admonition-title">Scene ID formats</p>
+<ul>
+<li>
+<p>Landsat</p>
+<ul>
+<li>link: <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/landsat/utils.py#L35-L56">rio_tiler_pds.landsat.utils.sceneid_parser</a></li>
+<li>regex: <code>^L[COTEM]0[0-9]_L\d{1}[A-Z]{2}_\d{6}_\d{8}_\d{8}_\d{2}_(T1|T2|RT)$</code></li>
+<li>example: <code>LC08_L1TP_016037_20170813_20170814_01_RT</code></li>
+</ul>
+</li>
+<li>
+<p>Sentinel 1 L1C</p>
+<ul>
+<li>link: <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/sentinel/utils.py#L98-L121">rio_tiler_pds.sentinel.utils.s1_sceneid_parser</a></li>
+<li>regex: <code>^S1[AB]_(IW|EW)_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$</code></li>
+<li>example: <code>S1A_IW_GRDH_1SDV_20180716T004042_20180716T004107_022812_02792A_FD5B</code></li>
+</ul>
+</li>
+<li>
+<p>Sentinel 2 JPEG2000 and Sentinel 2 COG</p>
+<ul>
+<li>link: <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/sentinel/utils.py#L25-L60">rio_tiler_pds.sentinel.utils.s2_sceneid_parser</a></li>
+<li>regex: <code>^S2[AB]_[0-9]{2}[A-Z]{3}_[0-9]{8}_[0-9]_L[0-2][A-C]$</code> or <code>^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{2}[A-Z]{3}_[0-9]$</code></li>
+<li>example: <code>S2A_29RKH_20200219_0_L2A</code>, <code>S2A_L1C_20170729_19UDP_0</code>, <code>S2A_L2A_20170729_19UDP_0</code></li>
+</ul>
+</li>
+<li>
+<p>CBERS</p>
+<ul>
+<li>link: <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/e4421d3cf7c23b7b3552b8bb16ee5913a5483caf/rio_tiler_pds/cbers/utils.py#L28-L43">rio_tiler_pds.cbers.utils.sceneid_parser</a></li>
+<li>regex: <code>^CBERS_(4|4A)_\w+_[0-9]{8}_[0-9]{3}_[0-9]{3}_L\w+$</code></li>
+<li>example: <code>CBERS_4_MUX_20171121_057_094_L2</code>, <code>CBERS_4_AWFI_20170420_146_129_L2</code>, <code>CBERS_4_PAN10M_20170427_161_109_L4</code>, <code>CBERS_4_PAN5M_20170425_153_114_L4</code>, <code>CBERS_4A_WPM_20200730_209_139_L4</code></li>
+</ul>
+</li>
+<li>
+<p>MODIS (PDS and Astraea)</p>
+<ul>
+<li>link: <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/c533d38330f46738c46cb9927dbe91b299dc643d/rio_tiler_pds/modis/utils.py#L29-L42">rio_tiler_pds.modis.utils.sceneid_parser</a></li>
+<li>regex: <code>^M[COY]D[0-9]{2}[A-Z0-9]{2}\.A[0-9]{4}[0-9]{3}\.h[0-9]{2}v[0-9]{2}\.[0-9]{3}\.[0-9]{13}$</code></li>
+<li>example: <code>MCD43A4.A2017006.h21v11.006.2017018074804</code></li>
+</ul>
+</li>
+</ul>
+</div>
+<h3 id="band-per-assetfile">Band Per Asset/File<a class="headerlink" href="#band-per-assetfile" title="Permanent link">&para;</a></h3>
+<p><code>rio-tiler-pds</code> Readers assume that bands (e.g eo:band in STAC) are stored in separate files.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>aws<span class="w"> </span>s3<span class="w"> </span>ls<span class="w"> </span>s3://usgs-landsat/collection02/level-2/standard/oli-tirs/2020/001/062/LC08_L2SP_001062_20201031_20201106_02_T2/<span class="w"> </span>--request-payer
+LC08_L2SP_001062_20201031_20201106_02_T2_ANG.txt
+LC08_L2SP_001062_20201031_20201106_02_T2_MTL.json
+LC08_L2SP_001062_20201031_20201106_02_T2_MTL.txt
+LC08_L2SP_001062_20201031_20201106_02_T2_MTL.xml
+LC08_L2SP_001062_20201031_20201106_02_T2_QA_PIXEL.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_QA_RADSAT.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B1.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B2.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B3.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B4.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B5.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B6.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_B7.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_QA_AEROSOL.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_SR_stac.json
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_ATRAN.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_B10.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_CDIST.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_DRAD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_EMIS.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_EMSD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_QA.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_TRAD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_URAD.TIF
+LC08_L2SP_001062_20201031_20201106_02_T2_ST_stac.json
+LC08_L2SP_001062_20201031_20201106_02_T2_thumb_large.jpeg
+LC08_L2SP_001062_20201031_20201106_02_T2_thumb_small.jpeg
+</code></pre></div>
+<p>When reading data or metadata, readers will merge them.</p>
+<p>e.g
+<div class="highlight"><pre><span></span><code><span class="k">with</span> <span class="n">S2COGReader</span><span class="p">(</span><span class="s2">&quot;S2A_L2A_20170729_19UDP_0&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sentinel</span><span class="p">:</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">sentinel</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="mi">78</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;B01&quot;</span><span class="p">,</span> <span class="s2">&quot;B02&quot;</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">img</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">sentinel</span><span class="o">.</span><span class="n">statistics</span><span class="p">(</span><span class="n">bands</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;B01&quot;</span><span class="p">,</span> <span class="s2">&quot;B02&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+    <span class="o">&gt;&gt;</span> <span class="p">{</span>
+      <span class="s1">&#39;B01&#39;</span><span class="p">:</span> <span class="n">BandStatistics</span><span class="p">(</span>
+        <span class="nb">min</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+        <span class="nb">max</span><span class="o">=</span><span class="mf">17132.0</span><span class="p">,</span>
+        <span class="n">mean</span><span class="o">=</span><span class="mf">2183.7570706659685</span><span class="p">,</span>
+        <span class="n">count</span><span class="o">=</span><span class="mf">651247.0</span><span class="p">,</span>
+        <span class="nb">sum</span><span class="o">=</span><span class="mf">1422165241.0</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">=</span><span class="mf">3474.123975478363</span><span class="p">,</span>
+        <span class="n">median</span><span class="o">=</span><span class="mf">370.0</span><span class="p">,</span>
+        <span class="n">majority</span><span class="o">=</span><span class="mf">238.0</span><span class="p">,</span>
+        <span class="n">minority</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="mf">15112.0</span><span class="p">,</span>
+        <span class="n">histogram</span><span class="o">=</span><span class="p">[</span>
+          <span class="p">[</span><span class="mf">476342.0</span><span class="p">,</span> <span class="mf">35760.0</span><span class="p">,</span> <span class="mf">27525.0</span><span class="p">,</span> <span class="mf">24852.0</span><span class="p">,</span> <span class="mf">24379.0</span><span class="p">,</span> <span class="mf">23792.0</span><span class="p">,</span> <span class="mf">20891.0</span><span class="p">,</span> <span class="mf">13602.0</span><span class="p">,</span> <span class="mf">3891.0</span><span class="p">,</span> <span class="mf">213.0</span><span class="p">],</span>
+          <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1715.0</span><span class="p">,</span> <span class="mf">3428.0</span><span class="p">,</span> <span class="mf">5141.0</span><span class="p">,</span> <span class="mf">6854.0</span><span class="p">,</span> <span class="mf">8567.0</span><span class="p">,</span> <span class="mf">10280.0</span><span class="p">,</span> <span class="mf">11993.0</span><span class="p">,</span> <span class="mf">13706.0</span><span class="p">,</span> <span class="mf">15419.0</span><span class="p">,</span> <span class="mf">17132.0</span><span class="p">]</span>
+        <span class="p">],</span>
+        <span class="n">valid_percent</span><span class="o">=</span><span class="mf">62.11</span><span class="p">,</span>
+        <span class="n">masked_pixels</span><span class="o">=</span><span class="mf">397329.0</span><span class="p">,</span>
+        <span class="n">valid_pixels</span><span class="o">=</span><span class="mf">651247.0</span><span class="p">,</span>
+        <span class="n">percentile_2</span><span class="o">=</span><span class="mf">179.0</span><span class="p">,</span>
+        <span class="n">percentile_98</span><span class="o">=</span><span class="mf">12465.0</span>
+      <span class="p">),</span>
+      <span class="s1">&#39;B02&#39;</span><span class="p">:</span> <span class="n">BandStatistics</span><span class="p">(</span>
+        <span class="nb">min</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="nb">max</span><span class="o">=</span><span class="mf">15749.0</span><span class="p">,</span>
+        <span class="n">mean</span><span class="o">=</span><span class="mf">1941.2052554560712</span><span class="p">,</span>
+        <span class="n">count</span><span class="o">=</span><span class="mf">651247.0</span><span class="p">,</span>
+        <span class="nb">sum</span><span class="o">=</span><span class="mf">1264204099.0</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">=</span><span class="mf">3130.545395156859</span><span class="p">,</span>
+        <span class="n">median</span><span class="o">=</span><span class="mf">329.0</span><span class="p">,</span>
+        <span class="n">majority</span><span class="o">=</span><span class="mf">206.0</span><span class="p">,</span>
+        <span class="n">minority</span><span class="o">=</span><span class="mf">11946.0</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="mf">13904.0</span><span class="p">,</span>
+        <span class="n">histogram</span><span class="o">=</span><span class="p">[</span>
+          <span class="p">[</span><span class="mf">479174.0</span><span class="p">,</span> <span class="mf">34919.0</span><span class="p">,</span> <span class="mf">27649.0</span><span class="p">,</span> <span class="mf">25126.0</span><span class="p">,</span> <span class="mf">24913.0</span><span class="p">,</span> <span class="mf">24119.0</span><span class="p">,</span> <span class="mf">20223.0</span><span class="p">,</span> <span class="mf">12097.0</span><span class="p">,</span> <span class="mf">2872.0</span><span class="p">,</span> <span class="mf">155.0</span><span class="p">],</span>
+          <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1575.8</span><span class="p">,</span> <span class="mf">3150.6</span><span class="p">,</span> <span class="mf">4725.4</span><span class="p">,</span> <span class="mf">6300.2</span><span class="p">,</span> <span class="mf">7875.0</span><span class="p">,</span> <span class="mf">9449.8</span><span class="p">,</span> <span class="mf">11024.6</span><span class="p">,</span> <span class="mf">12599.4</span><span class="p">,</span> <span class="mf">14174.199999999999</span><span class="p">,</span> <span class="mf">15749.0</span><span class="p">]</span>
+        <span class="p">],</span>
+        <span class="n">valid_percent</span><span class="o">=</span><span class="mf">62.11</span><span class="p">,</span>
+        <span class="n">masked_pixels</span><span class="o">=</span><span class="mf">397329.0</span><span class="p">,</span>
+        <span class="n">valid_pixels</span><span class="o">=</span><span class="mf">651247.0</span><span class="p">,</span>
+        <span class="n">percentile_2</span><span class="o">=</span><span class="mf">134.0</span><span class="p">,</span>
+        <span class="n">percentile_98</span><span class="o">=</span><span class="mf">11227.079999999958</span>
+      <span class="p">)}</span>
+
+      <span class="nb">print</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;B01&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+      <span class="o">&gt;&gt;</span> <span class="mf">2.0</span>
+</code></pre></div></p>
+<h3 id="mosaic-reader-copernicus-dem">Mosaic Reader: Copernicus DEM<a class="headerlink" href="#mosaic-reader-copernicus-dem" title="Permanent link">&para;</a></h3>
+<p>The Copernicus DEM GLO-30 and GLO-90 readers are not <strong>per scene</strong> but <strong>mosaic</strong> readers. This is possible because the dataset is a global dataset with file names having the <code>geo-location</code> of the COG, meaning we can easily contruct a filepath from a coordinate.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">rio_tiler_pds.copernicus.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dem30Reader</span>
+
+<span class="k">with</span> <span class="n">Dem30Reader</span><span class="p">()</span> <span class="k">as</span> <span class="n">dem</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dem</span><span class="o">.</span><span class="n">assets_for_point</span><span class="p">(</span><span class="o">-</span><span class="mf">57.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.2</span><span class="p">))</span>
+
+<span class="o">&gt;&gt;</span> <span class="p">[</span><span class="s1">&#39;s3://copernicus-dem-30m/Copernicus_DSM_COG_10_S12_00_W058_00_DEM/Copernicus_DSM_COG_10_S12_00_W058_00_DEM.tif&#39;</span><span class="p">]</span>
+</code></pre></div>
+<h2 id="changes">Changes<a class="headerlink" href="#changes" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/main/CHANGES.md">CHANGES.md</a>.</p>
+<h2 id="contribution-development">Contribution &amp; Development<a class="headerlink" href="#contribution-development" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://github.com/cogeotiff/rio-tiler/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a></p>
+<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/main/LICENSE.txt">LICENSE.txt</a></p>
+<h2 id="authors">Authors<a class="headerlink" href="#authors" title="Permanent link">&para;</a></h2>
+<p>The rio-tiler project was begun at Mapbox and has been transferred in January 2019.</p>
+<p>See <a href="https://github.com/cogeotiff/rio-tiler-pds/blob/main/AUTHORS.txt">AUTHORS.txt</a> for a listing of individual contributors.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/cogeotiff" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/cogeotiff" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.cogeo.org/" target="_blank" rel="noopener" title="www.cogeo.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.4c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64h185.3c2.2 20.4 3.3 41.8 3.3 64m28.8-64h123.1c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64m112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6 78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7 10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5 11.6 26 20.9 58.2 27 94.7m-209 0H18.6c30-74.1 93.6-130.9 172-151.6-25.5 34.2-45.3 87.7-55.3 151.6M8.1 192h123.1c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64m186.6 254.6c-11.6-26-20.9-58.2-27-94.6h176.6c-6.1 36.4-15.5 68.6-27 94.6-10.5 23.6-22.2 40.7-33.5 51.5-11.2 10.7-20.5 13.9-27.8 13.9s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6-78.4-20.7-142-77.5-172-151.6zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6 25.5-34.2 45.2-87.7 55.3-151.6h116.7z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+        <script src="js/mkapi.js"></script>
+      
+    
+  </body>
+</html>
