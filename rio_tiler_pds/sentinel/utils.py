@@ -29,12 +29,12 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
 
     """
     if re.match(
-        "^S2[AB]_L[0-2][A-C]_[0-9]{8}_[0-9]{1,2}[A-Z]{3}_[0-9]{1,2}$", sceneid
+        "^S2[A-Z]_L[0-2][A-C]_[0-9]{8}_[0-9]{1,2}[A-Z]{3}_[0-9]{1,2}$", sceneid
     ):  # Legacy sceneid format
         pattern = (
             r"^S"
             r"(?P<sensor>\w{1})"
-            r"(?P<satellite>[AB]{1})"
+            r"(?P<satellite>[A-Z]{1})"
             r"_"
             r"(?P<processingLevel>L[0-2][ABC])"
             r"_"
@@ -50,12 +50,12 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
         )
 
     elif re.match(
-        r"^S2[AB]_[0-9]{1,2}[A-Z]{3}_[0-9]{8}_[0-9]{1,2}_L[0-2][A-C]$", sceneid
+        r"^S2[A-Z]_[0-9]{1,2}[A-Z]{3}_[0-9]{8}_[0-9]{1,2}_L[0-2][A-C]$", sceneid
     ):  # New sceneid format
         pattern = (
             r"^S"
             r"(?P<sensor>\w{1})"
-            r"(?P<satellite>[AB]{1})"
+            r"(?P<satellite>[A-Z]{1})"
             r"_"
             r"(?P<utm>[0-9]{1,2})"
             r"(?P<lat>\w{1})"
@@ -70,13 +70,13 @@ def s2_sceneid_parser(sceneid: str) -> Dict:
             r"(?P<processingLevel>L[0-2][ABC])$"
         )
     elif re.match(
-        r"^S2[AB]_MSIL[0-2][ABC]_[0-9]{8}T[0-9]{6}_N[0-9]{4}_R[0-9]{3}_T[0-9A-Z]{5}_[0-9]{8}T[0-9]{6}$",
+        r"^S2[A-Z]_MSIL[0-2][ABC]_[0-9]{8}T[0-9]{6}_N[0-9]{4}_R[0-9]{3}_T[0-9A-Z]{5}_[0-9]{8}T[0-9]{6}$",
         sceneid,
     ):  # product id
         pattern = (
             r"^S"
             r"(?P<sensor>\w{1})"
-            r"(?P<satellite>[AB]{1})"
+            r"(?P<satellite>[A-Z]{1})"
             r"_"
             r"MSI(?P<processingLevel>L[0-2][ABC])"
             r"_"
@@ -134,7 +134,7 @@ def s1_sceneid_parser(sceneid: str) -> Dict:
 
     """
     if not re.match(
-        "^S1[AB]_(IW|EW|S[1-6])_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$",
+        "^S1[A-Z]_(IW|EW|S[1-6])_[A-Z]{3}[FHM]_[0-9][SA][A-Z]{2}_[0-9]{8}T[0-9]{6}_[0-9]{8}T[0-9]{6}_[0-9A-Z]{6}_[0-9A-Z]{6}_[0-9A-Z]{4}$",
         sceneid,
     ):
         raise InvalidSentinelSceneId("Could not match {}".format(sceneid))
@@ -142,7 +142,7 @@ def s1_sceneid_parser(sceneid: str) -> Dict:
     sentinel_pattern = (
         r"^S"
         r"(?P<sensor>\w{1})"
-        r"(?P<satellite>[AB]{1})"
+        r"(?P<satellite>[A-Z]{1})"
         r"_"
         r"(?P<beam>(IW)|(EW)|(S[1-6]))"
         r"_"

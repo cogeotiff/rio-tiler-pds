@@ -576,3 +576,35 @@ def test_AWSPDS_S2COGReader_OLDSTAC(fetch):
             sentinel._get_band_url("B01")
             == "s3://sentinel-cogs/sentinel-s2-l2a-cogs/31/N/BJ/2019/5/S2A_31NBJ_20190524_0_L2A/B01.tif"
         )
+
+
+def test_sentinel2_c():
+    """Parse sentinel-2 product id valid sceneid and return metadata."""
+    expected_content = {
+        "sensor": "2",
+        "satellite": "C",
+        "processingLevel": "L2A",
+        "acquisitionYear": "2025",
+        "acquisitionMonth": "01",
+        "acquisitionDay": "27",
+        "acquisitionHMS": "110351",
+        "baseline_number": "0511",
+        "relative_orbit": "094",
+        "utm": "31",
+        "lat": "T",
+        "sq": "CL",
+        "stopDateTime": "20250127T150210",
+        "num": "0",
+        "scene": "S2C_MSIL2A_20250127T110351_N0511_R094_T31TCL_20250127T150210",
+        "date": "2025-01-27",
+        "_utm": "31",
+        "_month": "1",
+        "_day": "27",
+        "_levelLow": "l2a",
+    }
+    assert (
+        s2_sceneid_parser(
+            "S2C_MSIL2A_20250127T110351_N0511_R094_T31TCL_20250127T150210"
+        )
+        == expected_content
+    )

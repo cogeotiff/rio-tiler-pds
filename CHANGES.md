@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.11.1 (2025-01-28)
+
+* add support for Sentinel 2C
+
 ## 0.11.0 (2024-12-20)
 
 * update rio-tiler requirement to `>=7.0,<8.0`
