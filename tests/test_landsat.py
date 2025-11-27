@@ -744,10 +744,10 @@ def test_LandsatC2L2Reader(rio, fetch):
         )
         assert data.shape == (1, 369, 277)
 
-        data, mask = landsat.part(part, expression="SR_B5*0.8; SR_B4*1.1; SR_B3*0.8")
-        assert data.shape[0] == 3
-        assert data.dtype == numpy.float64
-        assert not mask.all()
+        img = landsat.part(part, expression="SR_B5*0.8; SR_B4*1.1; SR_B3*0.8")
+        assert img.data.shape[0] == 3
+        assert img.data.dtype == numpy.float64
+        assert not img._mask.all()
 
         data, mask = landsat.part(
             part,

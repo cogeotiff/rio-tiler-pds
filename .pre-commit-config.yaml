@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.12.1
+    rev: v0.24
     hooks:
       - id: validate-pyproject
 
@@ -25,5 +25,5 @@ repos:
         # No reason to run if only tests have changed. They intentionally break typing.
         exclude: tests/.*
         additional_dependencies:
-        - types-attrs
-        - types-cachetools
+          - types-attrs
+          - types-cachetools

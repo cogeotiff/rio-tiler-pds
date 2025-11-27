@@ -39,15 +39,15 @@
 You can install rio-tiler-pds using pip
 
 ```bash
-$ pip install -U pip
-$ pip install rio-tiler-pds
+pip install -U pip
+pip install rio-tiler-pds
 ```
 
 or install from source:
 
 ```bash
-$ pip install -U pip
-$ pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
+pip install -U pip
+pip install git+https://github.com/cogeotiff/rio-tiler-pds.git
 ```
 
 ## Datasets
